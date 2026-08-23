@@ -195,7 +195,7 @@ function aromamatrix_get_child_product_categories(WP_Term $term): array
         'taxonomy'   => 'product_cat',
         'parent'     => $term->term_id,
         'hide_empty' => true,
-        'orderby'    => 'name',
+        'orderby'    => 'menu_order',
         'order'      => 'ASC',
     ]);
 
