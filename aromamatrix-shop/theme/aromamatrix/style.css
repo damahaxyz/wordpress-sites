@@ -1992,8 +1992,10 @@ p {
     display: none;
   }
 
-  .header-cart {
-    display: none;
+  /* Keep the cart available beside search on mobile. */
+  .header-utilities .header-cart {
+    display: inline-flex;
+    min-width: 48px;
   }
 
   .header-search-panel {
@@ -2073,6 +2075,12 @@ p {
   .aroma-container,
   .site-main {
     width: min(calc(100% - 32px), var(--aroma-max));
+  }
+
+  /* Homepage content is intentionally edge-to-edge on phones. Other pages
+   * retain the readable 16px gutters above. */
+  .home .site-main--wide {
+    width: 100%;
   }
 
   .site-notice {
