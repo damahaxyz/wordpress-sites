@@ -251,6 +251,21 @@ p {
   font-weight: 700;
 }
 
+.header-account {
+  padding: 0 14px;
+  color: var(--aroma-graphite);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.header-account:hover,
+.header-account:focus-visible {
+  color: var(--aroma-black);
+}
+
 .header-cart:hover {
   border-color: var(--aroma-black);
 }
@@ -296,6 +311,419 @@ p {
   width: 1px;
   background: var(--aroma-line);
   content: "";
+}
+
+.header-utilities .header-account {
+  position: relative;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-utilities .header-account::after {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  bottom: 10px;
+  width: 1px;
+  background: var(--aroma-line);
+  content: "";
+}
+
+.header-utilities .header-account:hover,
+.header-utilities .header-account:focus-visible {
+  background: #f7f7f6;
+}
+
+.aromamatrix-account-modal-open {
+  overflow: hidden;
+}
+
+.aromamatrix-account-modal {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.aromamatrix-account-modal[hidden] {
+  display: none;
+}
+
+.aromamatrix-account-modal::-webkit-scrollbar {
+  display: none;
+}
+
+.aromamatrix-account-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.aromamatrix-account-modal__dialog {
+  position: relative;
+  width: min(100%, 440px);
+  max-height: none;
+  overflow: visible;
+  padding: 42px;
+  border: 1px solid var(--aroma-line);
+  background: var(--aroma-white);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+}
+
+.aromamatrix-account-modal__close {
+  position: absolute;
+  top: 13px;
+  right: 16px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  color: var(--aroma-graphite);
+  background: transparent;
+  cursor: pointer;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.aromamatrix-account-modal__close:hover,
+.aromamatrix-account-modal__close:focus-visible {
+  color: var(--aroma-black);
+}
+
+.aromamatrix-account-modal__eyebrow {
+  margin: 0 0 8px;
+  color: var(--aroma-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.aromamatrix-account-modal h2 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.1;
+}
+
+.aromamatrix-account-modal__intro {
+  margin: 12px 0 24px;
+  color: var(--aroma-muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.aromamatrix-account-modal__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--aroma-line);
+}
+
+.aromamatrix-account-modal__tabs button {
+  position: relative;
+  padding: 11px 8px;
+  border: 0;
+  color: var(--aroma-muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.aromamatrix-account-modal__tabs button[aria-selected="true"] {
+  color: var(--aroma-black);
+}
+
+.aromamatrix-account-modal__tabs button[aria-selected="true"]::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--aroma-black);
+  content: "";
+}
+
+.aromamatrix-account-modal__message {
+  min-height: 21px;
+  margin: -6px 0 12px;
+  color: #286b47;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.aromamatrix-account-modal__message.is-error {
+  color: #b02a2a;
+}
+
+.aromamatrix-account-form {
+  display: grid;
+  gap: 17px;
+}
+
+/* The form needs an explicit rule because its grid layout would otherwise
+ * override the browser's default [hidden] { display: none } declaration. */
+.aromamatrix-account-form[hidden] {
+  display: none !important;
+}
+
+.aromamatrix-account-form label:not(.aromamatrix-account-form__remember) {
+  display: grid;
+  gap: 7px;
+  color: var(--aroma-graphite);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.aromamatrix-account-form input:not([type="checkbox"]) {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--aroma-line);
+  border-radius: 0;
+  color: var(--aroma-black);
+  background: #fff;
+  font: inherit;
+}
+
+.aromamatrix-account-form input:focus {
+  outline: 2px solid var(--aroma-black);
+  outline-offset: 1px;
+}
+
+.aromamatrix-whatsapp-field {
+  display: grid;
+  gap: 7px;
+  color: var(--aroma-graphite);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.aromamatrix-whatsapp-field__control {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  border: 1px solid var(--aroma-line);
+  background: #fff;
+}
+
+.aromamatrix-whatsapp-field input {
+  min-width: 0;
+  height: 46px;
+  border: 0;
+  border-radius: 0;
+  color: var(--aroma-black);
+  background: transparent;
+  font: inherit;
+}
+
+.aromamatrix-whatsapp-field .aromamatrix-whatsapp-country-search {
+  padding: 0 8px;
+  border-right: 1px solid var(--aroma-line);
+  font-size: 12px;
+}
+
+.aromamatrix-whatsapp-field input {
+  width: 100%;
+  padding: 0 12px;
+}
+
+.aromamatrix-whatsapp-field__control:focus-within {
+  outline: 2px solid var(--aroma-black);
+  outline-offset: 1px;
+}
+
+.aromamatrix-whatsapp-field input:focus {
+  outline: 0;
+}
+
+.aromamatrix-account-form__remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--aroma-muted);
+  font-size: 12px;
+}
+
+.aromamatrix-account-form__submit {
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid var(--aroma-black);
+  color: var(--aroma-white);
+  background: var(--aroma-black);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.aromamatrix-account-form__submit:hover,
+.aromamatrix-account-form__submit:focus-visible {
+  color: var(--aroma-black);
+  background: var(--aroma-white);
+}
+
+.aromamatrix-account-form__submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.aromamatrix-native-account-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: min(100%, 708px);
+  margin: 0 auto 28px;
+  border-bottom: 1px solid var(--aroma-line);
+}
+
+.aromamatrix-native-account-tabs button {
+  position: relative;
+  padding: 18px 10px;
+  border: 0;
+  color: var(--aroma-muted);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.aromamatrix-native-account-tabs button[aria-selected="true"] {
+  color: var(--aroma-black);
+}
+
+.aromamatrix-native-account-tabs button[aria-selected="true"]::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  background: var(--aroma-black);
+  content: "";
+}
+
+.woocommerce-account .woocommerce {
+  width: min(100%, 708px);
+  margin: 42px auto 76px;
+}
+
+.woocommerce-account #customer_login .u-column1,
+.woocommerce-account #customer_login .u-column2 {
+  float: none;
+  width: 100%;
+}
+
+.woocommerce-account #customer_login .u-column1 > h2,
+.woocommerce-account #customer_login .u-column2 > h2 {
+  display: none;
+}
+
+.woocommerce-account #customer_login [hidden] {
+  display: none !important;
+}
+
+.woocommerce-account #customer_login .form-row {
+  margin: 0 0 19px;
+}
+
+.woocommerce-account #customer_login label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--aroma-graphite);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.woocommerce-account #customer_login input:not([type="checkbox"]) {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: 0 13px;
+  border: 1px solid var(--aroma-line);
+  border-radius: 0;
+  color: var(--aroma-black);
+  background: #fff;
+  font: inherit;
+}
+
+.woocommerce-account #customer_login input:focus {
+  outline: 2px solid var(--aroma-black);
+  outline-offset: 1px;
+}
+
+.woocommerce-account #customer_login .aromamatrix-whatsapp-field label,
+.woocommerce-account #customer_login .aromamatrix-whatsapp-field > span:first-child {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.woocommerce-account #customer_login .aromamatrix-whatsapp-field__control {
+  display: grid;
+}
+
+.woocommerce-account #customer_login .aromamatrix-whatsapp-field input {
+  height: 48px;
+}
+
+.woocommerce-account #customer_login .woocommerce-form-login__rememberme {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--aroma-muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.woocommerce-account #customer_login input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.woocommerce-account #customer_login .button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 22px;
+  padding: 12px 18px;
+  border: 1px solid var(--aroma-black);
+  border-radius: 0;
+  color: var(--aroma-white);
+  background: var(--aroma-black);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.woocommerce-account #customer_login .button:hover,
+.woocommerce-account #customer_login .button:focus-visible {
+  color: var(--aroma-black);
+  background: var(--aroma-white);
+}
+
+.woocommerce-account #customer_login .lost_password {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.woocommerce-account #customer_login .woocommerce-privacy-policy-text {
+  margin: 20px 0 0;
+  color: var(--aroma-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .header-utilities .header-cart:hover {

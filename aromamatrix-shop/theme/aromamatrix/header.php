@@ -51,6 +51,18 @@ $shop_search_term = isset($_GET['am_search']) ? sanitize_text_field(wp_unslash($
             </nav>
 
             <div class="header-utilities">
+                <?php if (class_exists('WooCommerce')) : ?>
+                    <?php if (is_user_logged_in()) : ?>
+                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">
+                            <?php esc_html_e('My account', 'aromamatrix'); ?>
+                        </a>
+                    <?php else : ?>
+                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open>
+                            <?php esc_html_e('Sign in', 'aromamatrix'); ?>
+                        </a>
+                    <?php endif; ?>
+                <?php endif; ?>
+
                 <button class="header-search-toggle" type="button" aria-expanded="false" aria-controls="header-product-search" data-header-search-open>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.75" cy="10.75" r="5.75"></circle><path d="m15.2 15.2 4.3 4.3"></path></svg>
                     <span class="screen-reader-text"><?php esc_html_e('Search products', 'aromamatrix'); ?></span>

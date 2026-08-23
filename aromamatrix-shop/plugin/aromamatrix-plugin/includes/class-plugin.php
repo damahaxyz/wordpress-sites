@@ -51,6 +51,7 @@ final class Plugin
     public function loaded(): void
     {
         if (class_exists('WooCommerce')) {
+            (new AccountAccess())->register();
             (new FactoryModel())->register();
             (new ProductNote())->register();
         }

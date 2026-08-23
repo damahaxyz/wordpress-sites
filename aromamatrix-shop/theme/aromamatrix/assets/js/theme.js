@@ -1,4 +1,179 @@
 (() => {
+  const accountConfig = window.aromamatrixAccount;
+  const accountModal = document.querySelector("[data-account-modal]");
+
+  if (accountConfig && accountModal && !accountConfig.isLoggedIn) {
+    const dialog = accountModal.querySelector("[role='dialog']");
+    const message = accountModal.querySelector("[data-account-message]");
+    const intro = accountModal.querySelector("[data-account-modal-intro]");
+    let lastFocusedElement = null;
+    let pendingAction = null;
+
+    const setMessage = (copy = "", isError = false) => {
+      message.textContent = copy;
+      message.classList.toggle("is-error", isError);
+    };
+
+    const setTab = (name) => {
+      accountModal.querySelectorAll("[data-account-tab]").forEach((tab) => {
+        const active = tab.dataset.accountTab === name;
+        tab.setAttribute("aria-selected", String(active));
+      });
+      accountModal.querySelectorAll("[data-account-form]").forEach((form) => {
+        form.hidden = form.dataset.accountForm !== name;
+      });
+      setMessage();
+      accountModal.querySelector(`[data-account-form='${name}'] input`)?.focus();
+    };
+
+    const closeAccountModal = () => {
+      accountModal.hidden = true;
+      accountModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("aromamatrix-account-modal-open");
+      lastFocusedElement?.focus();
+    };
+
+    const openAccountModal = (action = null) => {
+      pendingAction = action;
+      lastFocusedElement = document.activeElement;
+      accountModal.hidden = false;
+      accountModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("aromamatrix-account-modal-open");
+      intro.textContent = action ? accountConfig.messages.loginRequired : "Sign in to manage your orders and account details.";
+      setTab("login");
+      window.setTimeout(() => dialog?.focus(), 0);
+    };
+
+    const resumePendingAction = () => {
+      const action = pendingAction;
+      pendingAction = null;
+      if (!action) return;
+
+      if (action.type === "form") {
+        action.form.requestSubmit?.(action.submitter);
+      } else if (action.type === "link") {
+        window.location.assign(action.url);
+      }
+    };
+
+    const updateHeaderAccount = () => {
+      document.querySelectorAll(".header-account").forEach((link) => {
+        link.href = accountConfig.accountUrl;
+        link.textContent = "My account";
+        link.removeAttribute("data-account-modal-open");
+      });
+    };
+
+    accountModal.querySelectorAll("[data-account-modal-close]").forEach((button) => {
+      button.addEventListener("click", closeAccountModal);
+    });
+
+    accountModal.querySelectorAll("[data-account-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => setTab(tab.dataset.accountTab));
+    });
+
+    document.querySelectorAll("[data-account-modal-open]").forEach((trigger) => {
+      trigger.addEventListener("click", (event) => {
+        if (!trigger.hasAttribute("data-account-modal-open")) {
+          return;
+        }
+        event.preventDefault();
+        openAccountModal();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !accountModal.hidden) {
+        closeAccountModal();
+      }
+    });
+
+    accountModal.querySelectorAll("[data-account-form]").forEach((form) => {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const password = form.elements.password?.value;
+        const confirmation = form.elements.password_confirmation?.value;
+        if (form.dataset.accountForm === "register" && password !== confirmation) {
+          setMessage("The password confirmation does not match.", true);
+          return;
+        }
+        const submitButton = form.querySelector("button[type='submit']");
+        submitButton.disabled = true;
+        setMessage(accountConfig.messages.working);
+
+        try {
+          const payload = new URLSearchParams(new FormData(form));
+          payload.set("action", `aromamatrix_account_${form.dataset.accountForm === "register" ? "register" : "login"}`);
+          payload.set("nonce", accountConfig.nonce);
+          const response = await fetch(accountConfig.ajaxUrl, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+            body: payload,
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.data?.message || accountConfig.messages.genericError);
+          }
+          accountConfig.isLoggedIn = true;
+          updateHeaderAccount();
+          closeAccountModal();
+          resumePendingAction();
+        } catch (error) {
+          setMessage(error.message || accountConfig.messages.genericError, true);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    });
+
+    const isAddToCartForm = (form) => form?.matches("form.cart, .aromamatrix-loop-cart");
+    document.addEventListener("submit", (event) => {
+      if (!accountConfig.requiresLogin || accountConfig.isLoggedIn || !isAddToCartForm(event.target)) return;
+      const submitter = event.submitter || event.target.querySelector("button[name='add-to-cart'], .single_add_to_cart_button");
+      if (submitter?.disabled || submitter?.getAttribute("aria-disabled") === "true") return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openAccountModal({ type: "form", form: event.target, submitter });
+    }, true);
+
+    document.addEventListener("click", (event) => {
+      if (!accountConfig.requiresLogin || accountConfig.isLoggedIn) return;
+      const link = event.target.closest("a.add_to_cart_button, a[href*='add-to-cart']");
+      if (!link) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openAccountModal({ type: "link", url: link.href });
+    }, true);
+  }
+
+  const nativeAccountTabs = document.querySelector(".aromamatrix-native-account-tabs");
+  const nativeAccount = document.querySelector("#customer_login");
+
+  if (nativeAccountTabs && nativeAccount) {
+    const columns = nativeAccount.querySelectorAll(":scope > .u-column1, :scope > .u-column2");
+    if (columns.length === 2) {
+      const [loginColumn, registerColumn] = columns;
+      loginColumn.id = "aromamatrix-native-login";
+      registerColumn.id = "aromamatrix-native-register";
+      document.body.classList.add("aromamatrix-native-account-tabs-ready");
+
+      const selectNativeTab = (name) => {
+        const isLogin = name === "login";
+        loginColumn.hidden = !isLogin;
+        registerColumn.hidden = isLogin;
+        nativeAccountTabs.querySelectorAll("[data-native-account-tab]").forEach((tab) => {
+          tab.setAttribute("aria-selected", String(tab.dataset.nativeAccountTab === name));
+        });
+      };
+
+      nativeAccountTabs.querySelectorAll("[data-native-account-tab]").forEach((tab) => {
+        tab.addEventListener("click", () => selectNativeTab(tab.dataset.nativeAccountTab));
+      });
+      selectNativeTab("login");
+    }
+  }
+
   const toggle = document.querySelector(".menu-toggle");
   const navigation = document.querySelector(".primary-navigation");
 
