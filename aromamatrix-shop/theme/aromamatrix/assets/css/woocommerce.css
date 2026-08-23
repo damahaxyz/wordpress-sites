@@ -1288,13 +1288,15 @@
 }
 
 /* Do not render product descriptions in Cart line items. */
-.wc-block-cart-item__description {
+.wc-block-cart-item__description,
+.wc-block-cart-items .wc-block-components-product-metadata,
+.wp-block-woocommerce-cart .wc-block-components-product-metadata {
   display: none;
 }
 
 /* Empty-cart recommendations reuse the catalogue card treatment. */
 .wp-block-woocommerce-empty-cart-block .wc-block-grid__products {
-  display: grid;
+  display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 22px 16px;
   padding: 0;
@@ -1302,8 +1304,10 @@
 }
 
 .wp-block-woocommerce-empty-cart-block .wc-block-grid__product {
-  width: auto;
-  max-width: none;
+  width: 100% !important;
+  min-width: 0;
+  max-width: none !important;
+  flex: none !important;
   padding: 0 0 16px;
   margin: 0;
   border: 1px solid var(--aroma-line);
