@@ -669,6 +669,14 @@ add_filter('woocommerce_product_get_short_description', static function (string 
     return '';
 }, 10, 2);
 
+add_filter('woocommerce_product_get_description', static function (string $description, WC_Product $product): string {
+    if (! aromamatrix_is_store_api_cart_request()) {
+        return $description;
+    }
+
+    return '';
+}, 10, 2);
+
 add_action('wp', static function (): void {
     if (! class_exists('WooCommerce')) {
         return;
