@@ -943,6 +943,65 @@ add_filter('woocommerce_add_to_cart_fragments', static function (array $fragment
     return $fragments;
 });
 
+/**
+ * The core empty-cart block renders an older, simplified product grid. Replace
+ * only that recommendation grid with the same loop markup used by the shop,
+ * category previews, and home-page product sections.
+ */
+add_filter('render_block_woocommerce/product-new', static function (string $block_content): string {
+    if (! is_cart() || ! function_exists('wc_get_products')) {
+        return $block_content;
+    }
+
+    $products = wc_get_products([
+        'status'  => 'publish',
+        'limit'   => 4,
+        'orderby' => 'date',
+        'order'   => 'DESC',
+    ]);
+
+    if (! $products) {
+        return $block_content;
+    }
+
+    $previous_post = $GLOBALS['post'] ?? null;
+    $previous_product = $GLOBALS['product'] ?? null;
+
+    ob_start();
+    ?>
+    <div class="woocommerce aromamatrix-empty-cart-recommendations">
+        <div class="aromamatrix-product-cards">
+            <?php wc_set_loop_prop('columns', 4); ?>
+            <?php wc_set_loop_prop('aromamatrix_category_preview', true); ?>
+            <?php woocommerce_product_loop_start(); ?>
+            <?php foreach ($products as $product) : ?>
+                <?php
+                $product_post = get_post($product->get_id());
+
+                if (! $product_post instanceof WP_Post) {
+                    continue;
+                }
+
+                $GLOBALS['post'] = $product_post;
+                $GLOBALS['product'] = $product;
+                setup_postdata($product_post);
+                wc_get_template_part('content', 'product');
+                ?>
+            <?php endforeach; ?>
+            <?php woocommerce_product_loop_end(); ?>
+            <?php wp_reset_postdata(); ?>
+            <?php wc_set_loop_prop('aromamatrix_category_preview', false); ?>
+        </div>
+    </div>
+    <?php
+    $replacement = (string) ob_get_clean();
+
+    $GLOBALS['post'] = $previous_post;
+    $GLOBALS['product'] = $previous_product;
+
+    return $replacement;
+}, 10);
+
 add_filter('loop_shop_columns', static fn (): int => 4);
 add_filter('loop_shop_per_page', static fn (): int => 16);
 
@@ -950,23 +1009,67 @@ add_filter('single_product_archive_thumbnail_size', static function (string $siz
     return wc_get_loop_prop('aromamatrix_category_preview') ? 'full' : $size;
 });
 
+/**
+ * Visual highlights for product cards. A product can carry both tags, in
+ * which case both compact icons are rendered.
+ */
+function aromamatrix_get_product_card_badges(WC_Product $product): string
+{
+    $badges = [];
+    $product_id = $product->get_id();
+
+    if (has_term('featured', 'product_tag', $product_id)) {
+        $badges[] = sprintf(
+            '<span class="aromamatrix-product-badge aromamatrix-product-badge--featured" role="img" aria-label="%1$s" title="%1$s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.85 5.78 6.38.93-4.62 4.5 1.09 6.36-5.7-3-5.7 3 1.09-6.36-4.62-4.5 6.38-.93L12 2.5Z"/></svg></span>',
+            esc_attr__('Featured product', 'aromamatrix')
+        );
+    }
+
+    if (has_term('premium', 'product_tag', $product_id)) {
+        $badges[] = sprintf(
+            '<span class="aromamatrix-product-badge aromamatrix-product-badge--premium" role="img" aria-label="%1$s" title="%1$s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 9.2 5.4 4 2.6-7 2.6 7 5.4-4-1.6 10.3H5.6L4 9.2Zm2.1 11.3h11.8V19H6.1v1.5Z"/></svg></span>',
+            esc_attr__('Premium product', 'aromamatrix')
+        );
+    }
+
+    return $badges
+        ? '<span class="aromamatrix-product-badges">' . implode('', $badges) . '</span>'
+        : '';
+}
+
 add_filter('woocommerce_product_get_image', static function (string $image, WC_Product $product): string {
-    if (
-        ! wc_get_loop_prop('aromamatrix_category_preview')
-        || '' === $product->get_sku()
-    ) {
+    if (! wc_get_loop_prop('aromamatrix_category_preview')) {
         return $image;
     }
 
+    $sku = $product->get_sku();
+    $sku_html = '' === $sku
+        ? ''
+        : sprintf(
+            '<span class="aromamatrix-preview-media__sku">%s</span>',
+            esc_html(sprintf(__('SKU: %s', 'aromamatrix'), $sku))
+        );
+
     return sprintf(
-        '<span class="aromamatrix-preview-media">%1$s<span class="aromamatrix-preview-media__sku">%2$s</span></span>',
+        '<span class="aromamatrix-preview-media">%1$s%2$s%3$s</span>',
         $image,
-        esc_html(sprintf(__('SKU: %s', 'aromamatrix'), $product->get_sku()))
+        aromamatrix_get_product_card_badges($product),
+        $sku_html
     );
 }, 10, 2);
 
 remove_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10);
 add_action('woocommerce_shop_loop_item_title', 'woocommerce_template_loop_price', 20);
+
+add_action('woocommerce_before_shop_loop_item_title', static function (): void {
+    global $product;
+
+    if (! $product instanceof WC_Product || wc_get_loop_prop('aromamatrix_category_preview')) {
+        return;
+    }
+
+    echo aromamatrix_get_product_card_badges($product); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}, 8);
 
 add_action('woocommerce_before_shop_loop_item_title', static function (): void {
     global $product;

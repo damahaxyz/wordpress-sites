@@ -1369,6 +1369,16 @@
   text-transform: uppercase;
 }
 
+/* Empty-cart recommendations use the same product-card markup as the rest of
+ * the catalogue, including SKU, quantity control, and cart action. */
+.wp-block-woocommerce-empty-cart-block .aromamatrix-empty-cart-recommendations {
+  margin-top: 28px;
+}
+
+.wp-block-woocommerce-empty-cart-block .aromamatrix-empty-cart-recommendations .products {
+  margin-top: 0;
+}
+
 .woocommerce form .form-row label {
   display: block;
   margin-bottom: 7px;
@@ -1982,6 +1992,11 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
 }
 
 @media (max-width: 640px) {
+  .wp-block-woocommerce-empty-cart-block .aromamatrix-empty-cart-recommendations .aromamatrix-product-cards ul.products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 10px;
+  }
+
   .wp-block-woocommerce-empty-cart-block .wc-block-grid__products {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 16px 10px;
