@@ -2831,8 +2831,8 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
 
   .woocommerce.aromamatrix-product-cards ul.products,
   .aromamatrix-product-cards ul.products {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 10px;
   }
 
   .woocommerce.aromamatrix-product-cards ul.products li.product,
