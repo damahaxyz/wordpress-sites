@@ -52,6 +52,7 @@ final class Plugin
     {
         if (class_exists('WooCommerce')) {
             (new FactoryModel())->register();
+            (new ProductNote())->register();
         }
 
         /**

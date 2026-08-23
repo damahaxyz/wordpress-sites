@@ -1,6 +1,6 @@
 # AROMAMATRIX Theme
 
-Code-first English WooCommerce catalogue theme for `shop.aromamatrix.com`.
+Code-first English WooCommerce catalogue theme for `www.13799.com`.
 
 ## Responsibilities
 

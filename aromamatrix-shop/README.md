@@ -211,22 +211,22 @@ git status
 正式網站使用：
 
 ```text
-https://shop.aromamatrix.com
+https://www.13799.com
 ```
 
 主機 Nginx 配置來源：
 
 ```text
-nginx/host/shop.aromamatrix.com.conf
+nginx/host/www.13799.com.conf
 ```
 
 伺服器上的配置與憑證位置：
 
 ```text
-/etc/nginx/sites-available/shop.aromamatrix.com
-/etc/nginx/sites-enabled/shop.aromamatrix.com
-/etc/nginx/ssl/shop.aromamatrix.com.pem
-/etc/nginx/ssl/shop.aromamatrix.com.key
+/etc/nginx/sites-available/www.13799.com
+/etc/nginx/sites-enabled/www.13799.com
+/etc/nginx/ssl/www.13799.com.pem
+/etc/nginx/ssl/www.13799.com.key
 ```
 
 Cloudflare SSL/TLS 模式應使用 `Full (strict)`。Origin Certificate 與私鑰只保存在本機 `cert/` 和伺服器 `/etc/nginx/ssl/`，整個 `cert/` 已被 Git 忽略。

@@ -1,12 +1,12 @@
 # AROMAMATRIX WordPress 部署文档
 
-本文档用于部署和维护 `shop.aromamatrix.com` 的 WordPress + WooCommerce 服务。当前网站主要用于 Private Label 香水产品、规格和价格展示，并通过 WhatsApp 引导客户询价；架构同时保留了后续创建订单和在线收款的能力。
+本文档用于部署和维护 `www.13799.com` 的 WordPress + WooCommerce 服务。当前网站主要用于 Private Label 香水产品、规格和价格展示，并通过 WhatsApp 引导客户询价；架构同时保留了后续创建订单和在线收款的能力。
 
 ## 1. 当前生产环境
 
 | 项目 | 当前值 |
 |---|---|
-| 域名 | `https://shop.aromamatrix.com` |
+| 域名 | `https://www.13799.com` |
 | SSH | `root@site` |
 | 服务器系统 | Ubuntu 24.04 |
 | 服务器项目目录 | `/root/wordpress-sites/aromamatrix-shop` |
@@ -55,11 +55,11 @@ wordpress-sites/aromamatrix-shop/
 ├── DEPLOYMENT.md
 ├── README.md
 ├── cert/
-│   ├── all.aromamatrix.com.pem
-│   └── all.aromamatrix.com.key
+│   ├── www.13799.com.pem
+│   └── www.13799.com.key
 ├── nginx/
 │   ├── conf.d/default.conf
-│   └── host/shop.aromamatrix.com.conf
+│   └── host/www.13799.com.conf
 ├── php/uploads.ini
 └── scripts/backup.sh
 ```
@@ -106,7 +106,7 @@ systemctl is-active nginx
 
 ### 4.2 DNS 与 Cloudflare
 
-在 Cloudflare 中为 `shop.aromamatrix.com` 创建指向 VPS 公网 IP 的 DNS 记录。
+在 Cloudflare 中为 `www.13799.com` 创建指向 VPS 公网 IP 的 DNS 记录，并将根域名 `13799.com` 指向同一位置。
 
 Cloudflare 设置：
 
@@ -202,19 +202,19 @@ ssh root@site 'install -d -m 700 /etc/nginx/ssl'
 从本地上传证书：
 
 ```bash
-scp cert/all.aromamatrix.com.pem \
-  root@site:/etc/nginx/ssl/shop.aromamatrix.com.pem
+scp cert/www.13799.com.pem \
+  root@site:/etc/nginx/ssl/www.13799.com.pem
 
-scp cert/all.aromamatrix.com.key \
-  root@site:/etc/nginx/ssl/shop.aromamatrix.com.key
+scp cert/www.13799.com.key \
+  root@site:/etc/nginx/ssl/www.13799.com.key
 ```
 
 设置权限：
 
 ```bash
 ssh root@site
-chmod 644 /etc/nginx/ssl/shop.aromamatrix.com.pem
-chmod 600 /etc/nginx/ssl/shop.aromamatrix.com.key
+chmod 644 /etc/nginx/ssl/www.13799.com.pem
+chmod 600 /etc/nginx/ssl/www.13799.com.key
 ```
 
 私钥不得发送到聊天、提交 Git 或放入公开下载目录。
@@ -224,16 +224,16 @@ chmod 600 /etc/nginx/ssl/shop.aromamatrix.com.key
 从本地上传：
 
 ```bash
-scp nginx/host/shop.aromamatrix.com.conf \
-  root@site:/etc/nginx/sites-available/shop.aromamatrix.com
+scp nginx/host/www.13799.com.conf \
+  root@site:/etc/nginx/sites-available/www.13799.com
 ```
 
 服务器执行：
 
 ```bash
 ln -sfn \
-  /etc/nginx/sites-available/shop.aromamatrix.com \
-  /etc/nginx/sites-enabled/shop.aromamatrix.com
+  /etc/nginx/sites-available/www.13799.com \
+  /etc/nginx/sites-enabled/www.13799.com
 
 nginx -t
 systemctl reload nginx
@@ -276,7 +276,7 @@ docker compose down -v
 访问：
 
 ```text
-https://shop.aromamatrix.com
+https://www.13799.com
 ```
 
 完成 WordPress 初始化时：
@@ -456,7 +456,7 @@ curl -I http://127.0.0.1:8080/
 ### 7.4 公网 HTTPS
 
 ```bash
-curl -I https://shop.aromamatrix.com/
+curl -I https://www.13799.com/
 ```
 
 检查：
@@ -664,7 +664,7 @@ journalctl -u nginx --since '30 minutes ago'
 - Cloudflare SSL/TLS 使用 `Full (strict)`。
 - 主机 Nginx 传递 `X-Forwarded-Proto https`。
 - `.env` 中 `HTTP_BIND_IP=127.0.0.1`。
-- WordPress Address 和 Site Address 都使用 `https://shop.aromamatrix.com`。
+- WordPress Address 和 Site Address 都使用 `https://www.13799.com`。
 
 ### MariaDB 不健康
 
@@ -684,7 +684,7 @@ free -h
 ```text
 php/uploads.ini
 nginx/conf.d/default.conf
-nginx/host/shop.aromamatrix.com.conf
+nginx/host/www.13799.com.conf
 ```
 
 三处限制需要保持一致，修改后重新部署容器并 reload 主机 Nginx。

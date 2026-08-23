@@ -6,6 +6,8 @@
  */
 
 $cart_count = class_exists('WooCommerce') && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+$shop_url = class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/');
+$shop_search_term = isset($_GET['am_search']) ? sanitize_text_field(wp_unslash($_GET['am_search'])) : '';
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -21,22 +23,19 @@ $cart_count = class_exists('WooCommerce') && WC()->cart ? WC()->cart->get_cart_c
     <?php esc_html_e('Skip to content', 'aromamatrix'); ?>
 </a>
 <div class="site-notice">
-    <?php esc_html_e('Private Label · OEM · ODM · Global Dangerous-Goods Shipping Support', 'aromamatrix'); ?>
+    <?php esc_html_e('Designer Fragrances · Wholesale Pricing · US Warehouse · Fast Domestic Shipping', 'aromamatrix'); ?>
 </div>
 <header class="site-header">
     <div class="site-header__inner aroma-container">
-        <a class="site-branding" href="<?php echo esc_url(home_url('/')); ?>" aria-label="<?php esc_attr_e('AROMAMATRIX home', 'aromamatrix'); ?>">
+        <a class="site-branding" href="<?php echo esc_url(home_url('/')); ?>" aria-label="<?php esc_attr_e('13799.com home', 'aromamatrix'); ?>">
             <img
-                class="site-branding__symbol"
-                src="https://www.aromamatrix.com/assets/images/brand/aromamatrix-logo-square.png"
-                width="52"
-                height="52"
-                alt=""
+                class="site-branding__logo"
+                src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/13799-logo-header.png'); ?>"
+                width="2172"
+                height="724"
+                alt="<?php esc_attr_e('13799.com Perfume Wholesale', 'aromamatrix'); ?>"
+                style="width: clamp(130px, 20vw, 200px); height: auto;"
             >
-            <span class="site-branding__copy">
-                <span class="site-branding__name">AROMAMATRIX</span>
-                <span class="site-branding__tagline"><?php esc_html_e('B2B Perfume Manufacturing', 'aromamatrix'); ?></span>
-            </span>
         </a>
 
         <div class="header-actions">
@@ -51,17 +50,34 @@ $cart_count = class_exists('WooCommerce') && WC()->cart ? WC()->cart->get_cart_c
                 ?>
             </nav>
 
-            <?php if (class_exists('WooCommerce')) : ?>
-                <a class="header-cart" href="<?php echo esc_url(wc_get_cart_url()); ?>" aria-label="<?php esc_attr_e('View cart', 'aromamatrix'); ?>">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 10h9.8l1.7-7H7M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
-                    <span class="header-cart__count"><?php echo esc_html((string) $cart_count); ?></span>
-                </a>
-            <?php endif; ?>
+            <div class="header-utilities">
+                <button class="header-search-toggle" type="button" aria-expanded="false" aria-controls="header-product-search" data-header-search-open>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.75" cy="10.75" r="5.75"></circle><path d="m15.2 15.2 4.3 4.3"></path></svg>
+                    <span class="screen-reader-text"><?php esc_html_e('Search products', 'aromamatrix'); ?></span>
+                </button>
+
+                <?php if (class_exists('WooCommerce')) : ?>
+                    <a class="header-cart" href="<?php echo esc_url(wc_get_cart_url()); ?>" aria-label="<?php esc_attr_e('View cart', 'aromamatrix'); ?>">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 10h9.8l1.7-7H7M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
+                        <span class="header-cart__count"><?php echo esc_html((string) $cart_count); ?></span>
+                    </a>
+                <?php endif; ?>
+            </div>
 
             <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false">
                 <span></span><span></span><span></span>
                 <span class="screen-reader-text"><?php esc_html_e('Open menu', 'aromamatrix'); ?></span>
             </button>
         </div>
+    </div>
+
+    <div id="header-product-search" class="header-search-panel" hidden data-header-search-panel>
+        <form class="header-search-form" action="<?php echo esc_url($shop_url); ?>" method="get" role="search">
+            <label class="screen-reader-text" for="header-product-search-input"><?php esc_html_e('Search products by name or SKU', 'aromamatrix'); ?></label>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.75" cy="10.75" r="5.75"></circle><path d="m15.2 15.2 4.3 4.3"></path></svg>
+            <input id="header-product-search-input" name="am_search" type="search" value="<?php echo esc_attr($shop_search_term); ?>" placeholder="<?php esc_attr_e('Search by product name or SKU', 'aromamatrix'); ?>" autocomplete="off">
+            <button type="submit"><?php esc_html_e('Search', 'aromamatrix'); ?></button>
+            <button class="header-search-form__close" type="button" aria-label="<?php esc_attr_e('Close search', 'aromamatrix'); ?>" data-header-search-close>×</button>
+        </form>
     </div>
 </header>
