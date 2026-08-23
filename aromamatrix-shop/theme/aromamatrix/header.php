@@ -53,12 +53,14 @@ $shop_search_term = isset($_GET['am_search']) ? sanitize_text_field(wp_unslash($
             <div class="header-utilities">
                 <?php if (class_exists('WooCommerce')) : ?>
                     <?php if (is_user_logged_in()) : ?>
-                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">
-                            <?php esc_html_e('My account', 'aromamatrix'); ?>
+                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" aria-label="<?php esc_attr_e('My account', 'aromamatrix'); ?>">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.25"></circle><path d="M5 21c.65-3.65 3.15-5.5 7-5.5s6.35 1.85 7 5.5"></path></svg>
+                            <span class="screen-reader-text"><?php esc_html_e('My account', 'aromamatrix'); ?></span>
                         </a>
                     <?php else : ?>
-                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open>
-                            <?php esc_html_e('Sign in', 'aromamatrix'); ?>
+                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open aria-label="<?php esc_attr_e('Sign in', 'aromamatrix'); ?>">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.25"></circle><path d="M5 21c.65-3.65 3.15-5.5 7-5.5s6.35 1.85 7 5.5"></path></svg>
+                            <span class="screen-reader-text"><?php esc_html_e('Sign in', 'aromamatrix'); ?></span>
                         </a>
                     <?php endif; ?>
                 <?php endif; ?>
