@@ -56,10 +56,15 @@
       }
     };
 
+    const accountIconMarkup = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.25"></circle><circle cx="12" cy="9.25" r="2.25"></circle><path d="M7.8 17.1c.9-1.55 2.3-2.35 4.2-2.35s3.3.8 4.2 2.35"></path></svg><span class="screen-reader-text">My account</span>';
+
     const updateHeaderAccount = () => {
       document.querySelectorAll(".header-account").forEach((link) => {
         link.href = accountConfig.accountUrl;
-        link.textContent = "My account";
+        link.classList.remove("header-account--sign-in");
+        link.classList.add("header-account--icon");
+        link.setAttribute("aria-label", "My account");
+        link.innerHTML = accountIconMarkup;
         link.removeAttribute("data-account-modal-open");
       });
     };

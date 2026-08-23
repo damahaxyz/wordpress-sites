@@ -1287,33 +1287,9 @@
   text-align: center;
 }
 
-/* The Cart block receives this label from the Store API instead of the product short description. */
-.wc-block-cart-item__description .aromamatrix-cart-sku,
-.wc-block-components-product-metadata .aromamatrix-cart-sku {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 9px;
-  margin-top: 8px;
-  color: var(--aroma-white);
-  background: var(--aroma-black);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.wc-block-cart-item__description .aromamatrix-cart-sku > span,
-.wc-block-components-product-metadata .aromamatrix-cart-sku > span {
-  color: #c9cdd2;
-  font-size: 8px;
-}
-
-.wc-block-cart-item__description .aromamatrix-cart-sku strong,
-.wc-block-components-product-metadata .aromamatrix-cart-sku strong {
-  color: inherit;
-  font-size: 11px;
+/* Do not render product descriptions in Cart line items. */
+.wc-block-cart-item__description {
+  display: none;
 }
 
 .woocommerce form .form-row label {

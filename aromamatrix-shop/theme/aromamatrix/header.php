@@ -53,14 +53,13 @@ $shop_search_term = isset($_GET['am_search']) ? sanitize_text_field(wp_unslash($
             <div class="header-utilities">
                 <?php if (class_exists('WooCommerce')) : ?>
                     <?php if (is_user_logged_in()) : ?>
-                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" aria-label="<?php esc_attr_e('My account', 'aromamatrix'); ?>">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.25"></circle><path d="M5 21c.65-3.65 3.15-5.5 7-5.5s6.35 1.85 7 5.5"></path></svg>
+                        <a class="header-account header-account--icon no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" aria-label="<?php esc_attr_e('My account', 'aromamatrix'); ?>">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.25"></circle><circle cx="12" cy="9.25" r="2.25"></circle><path d="M7.8 17.1c.9-1.55 2.3-2.35 4.2-2.35s3.3.8 4.2 2.35"></path></svg>
                             <span class="screen-reader-text"><?php esc_html_e('My account', 'aromamatrix'); ?></span>
                         </a>
                     <?php else : ?>
-                        <a class="header-account no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open aria-label="<?php esc_attr_e('Sign in', 'aromamatrix'); ?>">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.25"></circle><path d="M5 21c.65-3.65 3.15-5.5 7-5.5s6.35 1.85 7 5.5"></path></svg>
-                            <span class="screen-reader-text"><?php esc_html_e('Sign in', 'aromamatrix'); ?></span>
+                        <a class="header-account header-account--sign-in no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open>
+                            <?php esc_html_e('Sign in', 'aromamatrix'); ?>
                         </a>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -71,10 +70,17 @@ $shop_search_term = isset($_GET['am_search']) ? sanitize_text_field(wp_unslash($
                 </button>
 
                 <?php if (class_exists('WooCommerce')) : ?>
-                    <a class="header-cart" href="<?php echo esc_url(wc_get_cart_url()); ?>" aria-label="<?php esc_attr_e('View cart', 'aromamatrix'); ?>">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 10h9.8l1.7-7H7M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
-                        <span class="header-cart__count"><?php echo esc_html((string) $cart_count); ?></span>
-                    </a>
+                    <?php if (is_user_logged_in()) : ?>
+                        <a class="header-cart" href="<?php echo esc_url(wc_get_cart_url()); ?>" aria-label="<?php esc_attr_e('View cart', 'aromamatrix'); ?>">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 10h9.8l1.7-7H7M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
+                            <span class="header-cart__count"><?php echo esc_html((string) $cart_count); ?></span>
+                        </a>
+                    <?php else : ?>
+                        <a class="header-cart no-prefetch" href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" data-account-modal-open aria-label="<?php esc_attr_e('Sign in to view cart', 'aromamatrix'); ?>">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 10h9.8l1.7-7H7M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 0 0 0 0 2Z"/></svg>
+                            <span class="header-cart__count"><?php echo esc_html((string) $cart_count); ?></span>
+                        </a>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 

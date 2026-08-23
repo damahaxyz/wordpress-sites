@@ -635,8 +635,7 @@ function aromamatrix_render_active_shop_filters(): void
 
 /**
  * The Cart block exposes the product short description through the Store API.
- * Show the catalogue SKU there instead, while preserving descriptions everywhere
- * else on the storefront.
+ * Keep product descriptions on their own pages, but omit them from cart lines.
  */
 function aromamatrix_is_store_api_cart_request(): bool
 {
@@ -658,7 +657,8 @@ function aromamatrix_is_store_api_cart_request(): bool
         $route = (string) parse_url((string) wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH);
     }
 
-    return false !== strpos($route, '/wc/store/v1/cart');
+    return false !== strpos($route, '/wc/store/v1/cart')
+        || false !== strpos($route, '/wc/store/v1/batch');
 }
 
 add_filter('woocommerce_product_get_short_description', static function (string $short_description, WC_Product $product): string {
@@ -666,17 +666,7 @@ add_filter('woocommerce_product_get_short_description', static function (string 
         return $short_description;
     }
 
-    $sku = $product->get_sku();
-
-    if ('' === $sku) {
-        return '';
-    }
-
-    return sprintf(
-        '<span class="aromamatrix-cart-sku"><span>%1$s</span><strong>%2$s</strong></span>',
-        esc_html__('SKU', 'woocommerce'),
-        esc_html($sku)
-    );
+    return '';
 }, 10, 2);
 
 add_action('wp', static function (): void {

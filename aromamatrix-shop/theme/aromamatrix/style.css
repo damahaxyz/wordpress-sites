@@ -252,22 +252,37 @@ p {
 }
 
 .header-account {
-  display: inline-grid;
-  width: 40px;
   height: 40px;
-  place-items: center;
   padding: 0;
   color: var(--aroma-graphite);
 }
 
-.header-account svg {
-  width: 19px;
-  height: 19px;
+.header-account--icon {
+  display: grid;
+  width: 40px;
+  place-items: center;
+}
+
+.header-account--icon svg {
+  width: 21px;
+  height: 21px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.7;
+  stroke-width: 1.5;
+}
+
+.header-account--sign-in {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 13px;
+  color: var(--aroma-graphite);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .header-account:hover,
@@ -325,6 +340,15 @@ p {
 .header-utilities .header-account {
   position: relative;
   height: 40px;
+}
+
+.header-utilities .header-account--icon {
+  display: grid;
+  width: 40px;
+  place-items: center;
+}
+
+.header-utilities .header-account--sign-in {
   display: inline-flex;
   align-items: center;
 }
