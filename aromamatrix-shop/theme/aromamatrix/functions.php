@@ -1049,12 +1049,16 @@ add_filter('woocommerce_product_get_image', static function (string $image, WC_P
             '<span class="aromamatrix-preview-media__sku">%s</span>',
             esc_html(sprintf(__('SKU: %s', 'aromamatrix'), $sku))
         );
+    $badges_html = aromamatrix_get_product_card_badges($product);
+    $meta_content = $badges_html . $sku_html;
+    $meta_html = '' === $meta_content
+        ? ''
+        : '<span class="aromamatrix-preview-media__meta">' . $meta_content . '</span>';
 
     return sprintf(
-        '<span class="aromamatrix-preview-media">%1$s%2$s%3$s</span>',
+        '<span class="aromamatrix-preview-media">%1$s%2$s</span>',
         $image,
-        aromamatrix_get_product_card_badges($product),
-        $sku_html
+        $meta_html
     );
 }, 10, 2);
 

@@ -2446,6 +2446,38 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
   color: #b47d35;
 }
 
+.aromamatrix-preview-media__meta {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  color: var(--aroma-white);
+  background: rgba(17, 17, 17, 0.84);
+}
+
+.aromamatrix-preview-media__meta .aromamatrix-product-badges {
+  position: static;
+  display: inline-flex;
+  flex-direction: row;
+  gap: 3px;
+  padding-left: 6px;
+}
+
+.aromamatrix-preview-media__meta .aromamatrix-product-badge,
+.aromamatrix-preview-media__meta .aromamatrix-product-badge--premium {
+  width: 16px;
+  height: 16px;
+  color: var(--aroma-white);
+}
+
+.aromamatrix-preview-media__meta .aromamatrix-product-badge svg {
+  width: 13px;
+  height: 13px;
+}
+
 .woocommerce .aromamatrix-product-cards ul.products li.product .aromamatrix-preview-media img {
   display: block;
   width: 100%;
@@ -2458,13 +2490,10 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
 }
 
 .woocommerce .aromamatrix-product-cards ul.products li.product .aromamatrix-preview-media__sku {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 1;
+  position: static;
   padding: 5px 8px;
   color: var(--aroma-white);
-  background: rgba(17, 17, 17, 0.84);
+  background: transparent;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -2637,13 +2666,10 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
 }
 
 .woocommerce :is(.related.products, .upsells.products) ul.products li.product .aromamatrix-preview-media__sku {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  z-index: 1;
+  position: static;
   padding: 5px 8px;
   color: var(--aroma-white);
-  background: rgba(17, 17, 17, 0.84);
+  background: transparent;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -2824,9 +2850,12 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
     object-fit: contain;
   }
 
-  .woocommerce .aromamatrix-product-cards ul.products li.product .aromamatrix-preview-media__sku {
+  .woocommerce .aromamatrix-product-cards ul.products li.product .aromamatrix-preview-media__meta {
     right: 6px;
     bottom: 6px;
+  }
+
+  .woocommerce .aromamatrix-product-cards ul.products li.product .aromamatrix-preview-media__sku {
     padding: 4px 5px;
     font-size: 8px;
     letter-spacing: 0.04em;
@@ -2898,9 +2927,12 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
     margin: 0 -10px 12px;
   }
 
-  .woocommerce :is(.related.products, .upsells.products) ul.products li.product .aromamatrix-preview-media__sku {
+  .woocommerce :is(.related.products, .upsells.products) ul.products li.product .aromamatrix-preview-media__meta {
     right: 6px;
     bottom: 6px;
+  }
+
+  .woocommerce :is(.related.products, .upsells.products) ul.products li.product .aromamatrix-preview-media__sku {
     padding: 4px 5px;
     font-size: 8px;
     letter-spacing: 0.04em;
