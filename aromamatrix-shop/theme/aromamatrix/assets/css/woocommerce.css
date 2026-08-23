@@ -685,7 +685,7 @@
 
 .woocommerce div.product .product_title {
   margin-bottom: 18px;
-  font-size: clamp(30px, 3vw, 42px);
+  font-size: clamp(28px, 2.4vw, 34px);
   font-weight: 700;
   letter-spacing: -0.045em;
 }
@@ -2073,7 +2073,7 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content .button:focus-
   }
 
   .woocommerce div.product .product_title {
-    font-size: clamp(34px, 11vw, 46px);
+    font-size: clamp(24px, 7.5vw, 30px);
     margin-bottom: 12px;
   }
 
