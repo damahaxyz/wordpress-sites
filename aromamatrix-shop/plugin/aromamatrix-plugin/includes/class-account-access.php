@@ -26,7 +26,6 @@ final class AccountAccess
         add_action('wp_ajax_nopriv_aromamatrix_account_register', [$this, 'register_customer']);
         add_filter('woocommerce_add_to_cart_validation', [$this, 'prevent_guest_cart_addition'], 10, 2);
         add_filter('authenticate', [$this, 'authenticate_by_whatsapp'], 5, 3);
-        add_filter('authenticate', [$this, 'prevent_username_authentication'], 40, 3);
         add_filter('woocommerce_registration_generate_password', '__return_false');
         add_filter('option_woocommerce_registration_generate_password', [$this, 'disable_generated_registration_passwords']);
         add_action('woocommerce_before_customer_login_form', [$this, 'render_my_account_tabs']);
@@ -98,8 +97,8 @@ final class AccountAccess
 
                 <form id="aromamatrix-login-panel" class="aromamatrix-account-form" data-account-form="login" role="tabpanel" aria-labelledby="aromamatrix-login-tab">
                     <label>
-                        <span><?php esc_html_e('Email or WhatsApp number', 'aromamatrix-plugin'); ?></span>
-                        <input name="log" type="text" autocomplete="username" placeholder="<?php esc_attr_e('e.g. +1 212 555 0100', 'aromamatrix-plugin'); ?>" required>
+                        <span><?php esc_html_e('Username, email, or WhatsApp number', 'aromamatrix-plugin'); ?></span>
+                        <input name="log" type="text" autocomplete="username" placeholder="<?php esc_attr_e('Username, email, or +1 212 555 0100', 'aromamatrix-plugin'); ?>" required>
                     </label>
                     <label>
                         <span><?php esc_html_e('Password', 'aromamatrix-plugin'); ?></span>
@@ -143,18 +142,14 @@ final class AccountAccess
         ];
 
         if ($credentials['user_login'] === '' || $credentials['user_password'] === '') {
-            wp_send_json_error(['message' => __('Enter your email or WhatsApp number and password.', 'aromamatrix-plugin')], 400);
+            wp_send_json_error(['message' => __('Enter your username, email, or WhatsApp number and password.', 'aromamatrix-plugin')], 400);
         }
 
         $credentials['user_login'] = $this->resolve_login_identifier($credentials['user_login']);
-        if (! is_email($credentials['user_login']) && $this->normalise_full_phone($credentials['user_login']) === '') {
-            wp_send_json_error(['message' => __('Use the email address or full WhatsApp number associated with your account.', 'aromamatrix-plugin')], 400);
-        }
-
         $user = wp_signon($credentials, $this->uses_secure_cookies());
 
         if (is_wp_error($user)) {
-            wp_send_json_error(['message' => __('The email, WhatsApp number, or password is incorrect.', 'aromamatrix-plugin')], 401);
+            wp_send_json_error(['message' => __('The username, email, WhatsApp number, or password is incorrect.', 'aromamatrix-plugin')], 401);
         }
 
         wp_send_json_success(['message' => __('You are signed in.', 'aromamatrix-plugin')]);
@@ -240,25 +235,6 @@ final class AccountAccess
         return wp_authenticate_email_password(null, $resolved_login, $password);
     }
 
-    /**
-     * Keep the public account identifier limited to email or WhatsApp number;
-     * WordPress may still maintain an internal username for compatibility.
-     *
-     * @param \WP_User|\WP_Error|null $user Authentication result.
-     * @return \WP_User|\WP_Error|null
-     */
-    public function prevent_username_authentication($user, string $username, string $password)
-    {
-        if ($username === '' || is_email($username) || $this->normalise_full_phone($username) !== '') {
-            return $user;
-        }
-
-        return new \WP_Error(
-            'aromamatrix_email_or_whatsapp_required',
-            __('Please sign in with your email address or WhatsApp number.', 'aromamatrix-plugin')
-        );
-    }
-
     public function render_my_account_tabs(): void
     {
         if (is_user_logged_in() || ! $this->registration_is_enabled()) {
@@ -323,7 +299,7 @@ final class AccountAccess
         }
 
         if ($text === 'Username or email address') {
-            return __('Email or WhatsApp number', 'aromamatrix-plugin');
+            return __('Username, email, or WhatsApp number', 'aromamatrix-plugin');
         }
 
         if ($text === 'Email address') {

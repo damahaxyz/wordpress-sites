@@ -20,7 +20,14 @@ wordpress-sites/
 │   ├── nginx/
 │   ├── php/
 │   └── scripts/
-└── perfumehouse-shop/
+├── perfumehouse-shop/
+│   ├── compose.yaml
+│   ├── theme/
+│   ├── plugin/
+│   ├── nginx/
+│   ├── php/
+│   └── scripts/
+└── trovesia-shop/
     ├── compose.yaml
     ├── theme/
     ├── plugin/
@@ -39,6 +46,10 @@ Redis 部署。新增站点时应使用新的子目录、Compose 项目名、宿
 `perfumehouse-shop` 是第三个独立 WordPress 商店，包含专属主题与插件。
 默认监听 `127.0.0.1:8082`，MariaDB 通过 `127.0.0.1:3308` 供 SSH Tunnel
 使用；正式域名为 `https://www.perfumehouse.vip`。
+
+`trovesia-shop` 是第四个独立 WordPress 商店，包含 Trovesia 专属主题与插件。
+默认监听 `127.0.0.1:8083`，MariaDB 通过 `127.0.0.1:3309` 供 SSH Tunnel
+使用；正式域名为 `https://www.trovesia.com`。
 
 ## AROMAMATRIX Shop
 
@@ -82,3 +93,15 @@ docker compose up -d --wait
 ```
 
 详细说明见 [perfumehouse-shop/README.md](perfumehouse-shop/README.md)。
+
+## Trovesia Shop
+
+```bash
+cd trovesia-shop
+cp .env.example .env
+# 替换 .env 中的两个数据库密码
+docker compose config --quiet
+docker compose up -d --wait
+```
+
+详细说明见 [trovesia-shop/README.md](trovesia-shop/README.md)。

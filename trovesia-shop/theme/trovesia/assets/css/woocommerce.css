@@ -1,0 +1,94 @@
+.woocommerce .woocommerce-breadcrumb {
+  margin-bottom: 28px;
+  color: var(--shop-muted);
+  font-size: 13px;
+}
+
+.woocommerce ul.products {
+  display: grid;
+  margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.woocommerce ul.products::before,
+.woocommerce ul.products::after {
+  display: none;
+}
+
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+  width: auto;
+  padding: 16px;
+  margin: 0;
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+  box-shadow: var(--shop-shadow);
+}
+
+.woocommerce ul.products li.product a img {
+  margin-bottom: 18px;
+  border-radius: calc(var(--shop-radius) - 8px);
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+  padding: 0;
+  color: var(--shop-ink);
+  font-size: 17px;
+}
+
+.woocommerce ul.products li.product .price,
+.woocommerce div.product p.price,
+.woocommerce div.product span.price {
+  color: var(--shop-brand);
+  font-weight: 800;
+}
+
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit {
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-brand);
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce #respond input#submit:hover {
+  color: var(--shop-white);
+  background: var(--shop-brand-dark);
+}
+
+.woocommerce div.product {
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+  box-shadow: var(--shop-shadow);
+}
+
+.woocommerce div.product div.images img {
+  border-radius: calc(var(--shop-radius) - 8px);
+}
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+  border-radius: 12px;
+  background: var(--shop-white);
+}
+
+@media (max-width: 900px) {
+  .woocommerce ul.products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .woocommerce ul.products {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,12 +2,12 @@
 /**
  * Main plugin service.
  *
- * @package AromamatrixPlugin
+ * @package TrovesiaShopPlugin
  */
 
 declare(strict_types=1);
 
-namespace Aromamatrix\Plugin;
+namespace Trovesia\Plugin;
 
 if (! defined('ABSPATH')) {
     exit;
@@ -34,7 +34,7 @@ final class Plugin
 
     public static function activate(): void
     {
-        update_option('aromamatrix_plugin_version', AROMAMATRIX_PLUGIN_VERSION);
+        update_option('trovesia_plugin_version', TROVESIA_PLUGIN_VERSION);
     }
 
     public function boot(): void
@@ -46,26 +46,27 @@ final class Plugin
         $this->booted = true;
 
         add_action('plugins_loaded', [$this, 'loaded']);
+        add_shortcode('trovesia_year', [$this, 'year_shortcode']);
     }
 
     public function loaded(): void
     {
-        if (class_exists('WooCommerce')) {
-            (new AccountAccess())->register();
-            (new FactoryModel())->register();
-            (new ProductNote())->register();
-        }
-
-        (new MediaFolderApi())->register();
-
         /**
-         * Fires after the AROMAMATRIX plugin is ready.
+         * Fires after the Trovesia shop plugin is ready.
          *
-         * Add future site-specific services from this hook or register them
-         * directly in this class.
+         * Register future site-specific services here or directly in this
+         * class. Keep presentation-only behavior in the custom theme.
          *
          * @param Plugin $plugin Main plugin service.
          */
-        do_action('aromamatrix_plugin_loaded', $this);
+        do_action('trovesia_plugin_loaded', $this);
+    }
+
+    /**
+     * Example shortcode proving the custom plugin is active.
+     */
+    public function year_shortcode(): string
+    {
+        return esc_html(wp_date('Y'));
     }
 }
