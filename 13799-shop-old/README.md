@@ -1,14 +1,14 @@
-# Trovesia Shop
+# 13799 Shop
 
-`trovesia-shop` 是一套独立的 WordPress + Nginx + MariaDB + Redis 商店环境。
+`13799-shop-old` 是一套独立的 WordPress + Nginx + MariaDB + Redis 商店环境。
 它与 `13799-shop` 使用不同的 Compose 项目名、宿主机端口、named
 volumes、数据库凭据与 Redis 键前缀，可以在同一台服务器上同时运行。
 
 站点自定义代码位于：
 
 ```text
-theme/trovesia/                 页面模板、样式和前端交互
-plugin/trovesia-plugin/         站点业务功能和 WordPress hooks
+theme/13799/                 页面模板、样式和前端交互
+plugin/13799-plugin/         站点业务功能和 WordPress hooks
 ```
 
 这两个目录独立挂载到 WordPress 容器，本地修改后可直接刷新页面验证。
@@ -17,10 +17,10 @@ plugin/trovesia-plugin/         站点业务功能和 WordPress hooks
 
 | 用途 | 地址 |
 |---|---|
-| WordPress HTTP（供主机 Nginx 反向代理） | `127.0.0.1:8083` |
-| MariaDB（供 SSH Tunnel） | `127.0.0.1:3309` |
+| WordPress HTTP（供主机 Nginx 反向代理） | `127.0.0.1:8081` |
+| MariaDB（供 SSH Tunnel） | `127.0.0.1:3307` |
 
-这两个端口与现有站点使用的 `8080`–`8082` 和 `3306`–`3308` 错开。
+这两个端口特意与 `13799-shop` 的 `8080` 和 `3306` 错开。
 
 ## 启动
 
@@ -55,14 +55,14 @@ docker compose ps
 首次启动后，在 WordPress 后台启用：
 
 ```text
-外观 → 主题 → Trovesia Shop → 启用
-插件 → 已安装的插件 → Trovesia Shop Plugin → 启用
+外观 → 主题 → 13799 Shop → 启用
+插件 → 已安装的插件 → 13799 Shop Plugin → 启用
 ```
 
-默认仅绑定 `127.0.0.1:8083`。在服务器本机上检查：
+默认仅绑定 `127.0.0.1:8081`。在服务器本机上检查：
 
 ```bash
-curl -I http://127.0.0.1:8083/
+curl -I http://127.0.0.1:8081/
 ```
 
 如果确实需要临时从外部直连，可将 `HTTP_BIND_IP` 改成 `0.0.0.0`，
@@ -70,17 +70,16 @@ curl -I http://127.0.0.1:8083/
 
 ## 域名与 HTTPS
 
-正式域名为 `https://www.trovesia.com`，`https://trovesia.com` 会重定向到
-`www`。主机 Nginx 配置位于 `nginx/host/www.trovesia.com.conf`，反向代理
+正式域名为 `https://www.13799.com`，`https://13799.com` 会重定向到
+`www`。主机 Nginx 配置位于 `nginx/host/www.13799.com.conf`，反向代理
 上游为：
 
 ```nginx
-proxy_pass http://127.0.0.1:8083;
+proxy_pass http://127.0.0.1:8081;
 ```
 
-部署前请将 Trovesia 自己的 Cloudflare Origin Certificate 安装到主机 Nginx
-配置引用的 `/etc/nginx/ssl/www.trovesia.com.pem` 和
-`/etc/nginx/ssl/www.trovesia.com.key`。私钥不得提交 Git 或写入聊天内容。
+本地 Cloudflare Origin Certificate 位于 `cert/all.13799.com.pem` 和
+`cert/all.13799.com.key`。私钥不得提交 Git 或写入聊天内容。
 
 ## 自定义开发与部署
 

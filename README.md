@@ -6,14 +6,14 @@
 
 ```text
 wordpress-sites/
-├── aromamatrix-shop/
+├── 13799-shop/
 │   ├── compose.yaml
 │   ├── theme/
 │   ├── plugin/
 │   ├── nginx/
 │   ├── php/
 │   └── scripts/
-├── 13799-shop/
+├── 13799-shop-old/
 │   ├── compose.yaml
 │   ├── theme/
 │   ├── plugin/
@@ -36,11 +36,11 @@ wordpress-sites/
     └── scripts/
 ```
 
-`aromamatrix-shop` 是 `shop.aromamatrix.com` 的独立 WordPress、MariaDB 与
-Redis 部署。新增站点时应使用新的子目录、Compose 项目名、宿主机端口、
-数据库凭据、数据卷与备份目录。
+`13799-shop` 是当前 `www.13799.com` 的 WordPress、MariaDB 与 Redis 部署，
+默认使用宿主机端口 `8080` / `3306`。为保持现有数据卷与容器连续性，
+Compose 项目名继续使用 `wordpress`。
 
-`13799-shop` 是第二个独立 WordPress 商店。默认仅在宿主机本地监听
+`13799-shop-old` 是保留的旧版独立 WordPress 商店。默认仅在宿主机本地监听
 `127.0.0.1:8081`，MariaDB 通过 `127.0.0.1:3307` 供 SSH Tunnel 使用。
 
 `perfumehouse-shop` 是第三个独立 WordPress 商店，包含专属主题与插件。
@@ -51,10 +51,10 @@ Redis 部署。新增站点时应使用新的子目录、Compose 项目名、宿
 默认监听 `127.0.0.1:8083`，MariaDB 通过 `127.0.0.1:3309` 供 SSH Tunnel
 使用；正式域名为 `https://www.trovesia.com`。
 
-## AROMAMATRIX Shop
+## 13799 Shop
 
 ```bash
-cd aromamatrix-shop
+cd 13799-shop
 docker compose config --quiet
 docker compose ps
 ```
@@ -62,25 +62,25 @@ docker compose ps
 主题和插件部署：
 
 ```bash
-cd aromamatrix-shop
+cd 13799-shop
 ./scripts/deploy-all.sh
 ```
 
-详细说明见 [aromamatrix-shop/README.md](aromamatrix-shop/README.md)、
-[aromamatrix-shop/DEVELOPMENT.md](aromamatrix-shop/DEVELOPMENT.md) 和
-[aromamatrix-shop/DEPLOYMENT.md](aromamatrix-shop/DEPLOYMENT.md)。
+详细说明见 [13799-shop/README.md](13799-shop/README.md)、
+[13799-shop/DEVELOPMENT.md](13799-shop/DEVELOPMENT.md) 和
+[13799-shop/DEPLOYMENT.md](13799-shop/DEPLOYMENT.md)。
 
-## 13799 Shop
+## 13799 Shop Old
 
 ```bash
-cd 13799-shop
+cd 13799-shop-old
 cp .env.example .env
 # 替换 .env 中的两个数据库密码
 docker compose config --quiet
 docker compose up -d --wait
 ```
 
-详细说明见 [13799-shop/README.md](13799-shop/README.md)。
+详细说明见 [13799-shop-old/README.md](13799-shop-old/README.md)。
 
 ## PerfumeHouse Shop
 

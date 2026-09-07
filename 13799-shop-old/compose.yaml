@@ -1,4 +1,4 @@
-name: ${COMPOSE_PROJECT_NAME:-wordpress}
+name: ${COMPOSE_PROJECT_NAME:-13799-shop}
 
 services:
   db:
@@ -15,8 +15,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      # 僅供伺服器本機及 SSH Tunnel 使用，不公開到外網。
-      - "127.0.0.1:${MARIADB_HOST_PORT:-3306}:3306"
+      - "127.0.0.1:${MARIADB_HOST_PORT:-3307}:3306"
     networks:
       - backend
       - management
@@ -32,7 +31,6 @@ services:
     restart: unless-stopped
     command:
       - redis-server
-      # Object Cache 可安全重建；关闭持久化可以减少 VPS 磁盘 I/O。
       - --save
       - ""
       - --appendonly
@@ -59,24 +57,31 @@ services:
       WORDPRESS_DB_USER: ${MARIADB_USER}
       WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.13799.com}
+      WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.13799.com}
       WORDPRESS_REDIS_HOST: redis
       WORDPRESS_REDIS_PORT: 6379
       WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
-      WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-wordpress}:"
+      WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-13799-shop}:"
       WORDPRESS_CONFIG_EXTRA: |
         define('DISALLOW_FILE_EDIT', true);
-        define('WP_MEMORY_LIMIT', '256M');
-        define('WP_MAX_MEMORY_LIMIT', '512M');
+        define('WP_MEMORY_LIMIT', '500M');
+        define('WP_MAX_MEMORY_LIMIT', '500M');
+        define('WP_HOME', getenv('WORDPRESS_HOME') ?: 'https://www.13799.com');
+        define('WP_SITEURL', getenv('WORDPRESS_SITEURL') ?: 'https://www.13799.com');
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && strpos($$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
+            $$_SERVER['HTTPS'] = 'on';
+        }
         define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'redis');
         define('WP_REDIS_PORT', (int) (getenv('WORDPRESS_REDIS_PORT') ?: 6379));
         define('WP_REDIS_DATABASE', (int) (getenv('WORDPRESS_REDIS_DATABASE') ?: 0));
-        define('WP_REDIS_PREFIX', getenv('WORDPRESS_REDIS_PREFIX') ?: 'wordpress:');
+        define('WP_REDIS_PREFIX', getenv('WORDPRESS_REDIS_PREFIX') ?: '13799-shop:');
         define('WP_REDIS_TIMEOUT', 1);
         define('WP_REDIS_READ_TIMEOUT', 1);
     volumes:
       - wordpress_data:/var/www/html
-      - ./theme/aromamatrix:/var/www/html/wp-content/themes/aromamatrix
-      - ./plugin/aromamatrix-plugin:/var/www/html/wp-content/plugins/aromamatrix-plugin
+      - ./theme/13799:/var/www/html/wp-content/themes/13799
+      - ./plugin/13799-plugin:/var/www/html/wp-content/plugins/13799-plugin
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
     networks:
       - frontend
@@ -97,12 +102,12 @@ services:
     image: ${NGINX_IMAGE:-nginx:1.28-alpine}
     restart: unless-stopped
     ports:
-      - "${HTTP_BIND_IP:-0.0.0.0}:${HTTP_PORT:-8080}:80"
+      - "${HTTP_BIND_IP:-127.0.0.1}:${HTTP_PORT:-8081}:80"
     volumes:
       - wordpress_data:/var/www/html:ro
-      # Nginx 也需要读取主题与插件的 CSS、JS、图片等静态资源。
-      - ./theme/aromamatrix:/var/www/html/wp-content/themes/aromamatrix:ro
-      - ./plugin/aromamatrix-plugin:/var/www/html/wp-content/plugins/aromamatrix-plugin:ro
+      # Nginx 需要直接读取自定义主题和插件的静态资源。
+      - ./theme/13799:/var/www/html/wp-content/themes/13799:ro
+      - ./plugin/13799-plugin:/var/www/html/wp-content/plugins/13799-plugin:ro
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - frontend
@@ -110,7 +115,9 @@ services:
       wordpress:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      # 首次安装时 WordPress 会将 HTTP 跳转到正式 HTTPS 域名，
+      # 使用 nginx -t 可避免 wget 跟随跳转后产生假阴性。
+      test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 5s
       retries: 3

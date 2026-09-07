@@ -1,107 +1,234 @@
-# 13799 Shop
+# WordPress + Nginx + MariaDB
 
-`13799-shop` 是一套独立的 WordPress + Nginx + MariaDB + Redis 商店环境。
-它与 `aromamatrix-shop` 使用不同的 Compose 项目名、宿主机端口、named
-volumes、数据库凭据与 Redis 键前缀，可以在同一台服务器上同时运行。
+這是一套適合部署在單台 VPS 的 Docker Compose 設定：
 
-站点自定义代码位于：
+- Nginx 對外提供 HTTP
+- WordPress 使用 PHP-FPM
+- MariaDB 對主機僅綁定 `127.0.0.1`，不公開資料庫連接埠
+- WordPress 檔案與資料庫分別保存在 Docker named volumes
+- 自研 AROMAMATRIX 主題與外掛以 Git 管理並掛載進容器
+
+## 自研主題與外掛
 
 ```text
-theme/13799/                 页面模板、样式和前端交互
-plugin/13799-plugin/         站点业务功能和 WordPress hooks
+theme/aromamatrix/
+plugin/aromamatrix-plugin/
 ```
 
-这两个目录独立挂载到 WordPress 容器，本地修改后可直接刷新页面验证。
+本地初始化與一鍵部署方式請見：
 
-## 默认端口
+```text
+DEVELOPMENT.md
+```
 
-| 用途 | 地址 |
-|---|---|
-| WordPress HTTP（供主机 Nginx 反向代理） | `127.0.0.1:8081` |
-| MariaDB（供 SSH Tunnel） | `127.0.0.1:3307` |
+常用發布命令：
 
-这两个端口特意与 `aromamatrix-shop` 的 `8080` 和 `3306` 错开。
+```bash
+./scripts/deploy-theme.sh
+./scripts/deploy-plugin.sh
+./scripts/deploy-all.sh
+```
 
-## 启动
+## 啟動
+
+需求：Docker Engine 與 Docker Compose v2。
 
 ```bash
 cp .env.example .env
-chmod 600 .env
 ```
 
-编辑 `.env`，至少替换：
+編輯 `.env`，至少替換以下兩個密碼：
 
 ```dotenv
-MARIADB_PASSWORD=CHANGE_ME_DATABASE_PASSWORD
-MARIADB_ROOT_PASSWORD=CHANGE_ME_ROOT_PASSWORD
+MARIADB_PASSWORD=請換成高強度隨機密碼
+MARIADB_ROOT_PASSWORD=請換成另一組高強度隨機密碼
 ```
 
-可以生成两个不同的强密码：
+檢查設定並啟動：
 
 ```bash
-openssl rand -base64 36
-openssl rand -base64 36
-```
-
-然后启动：
-
-```bash
-docker compose config --quiet
+docker compose config
 docker compose pull
-docker compose up -d --wait --wait-timeout 180
+docker compose up -d
 docker compose ps
 ```
 
-首次启动后，在 WordPress 后台启用：
+預設開啟：
 
 ```text
-外观 → 主题 → 13799 Shop → 启用
-插件 → 已安装的插件 → 13799 Shop Plugin → 启用
+http://伺服器IP:8080
 ```
 
-默认仅绑定 `127.0.0.1:8081`。在服务器本机上检查：
+第一次進入時，依 WordPress 安裝畫面建立網站管理員。請不要使用 `admin` 作為管理員名稱。
+
+## 常用操作
+
+查看日誌：
 
 ```bash
-curl -I http://127.0.0.1:8081/
+docker compose logs -f --tail=100
 ```
 
-如果确实需要临时从外部直连，可将 `HTTP_BIND_IP` 改成 `0.0.0.0`，
-但正式环境建议继续使用 `127.0.0.1` 并由主机 Nginx 终止 HTTPS。
+停止服務但保留資料：
 
-## 域名与 HTTPS
-
-正式域名为 `https://www.13799.com`，`https://13799.com` 会重定向到
-`www`。主机 Nginx 配置位于 `nginx/host/www.13799.com.conf`，反向代理
-上游为：
-
-```nginx
-proxy_pass http://127.0.0.1:8081;
+```bash
+docker compose down
 ```
 
-本地 Cloudflare Origin Certificate 位于 `cert/all.13799.com.pem` 和
-`cert/all.13799.com.key`。私钥不得提交 Git 或写入聊天内容。
+重新啟動：
 
-## 自定义开发与部署
+```bash
+docker compose up -d
+```
 
-主题和插件的文件职责、PHP 命名规则与一键部署方式见
-[`DEVELOPMENT.md`](DEVELOPMENT.md)。
+> 請勿執行 `docker compose down -v`，這會刪除 WordPress 與資料庫 volumes。
 
-## 备份
+## 使用 DBeaver + SSH Tunnel
+
+MariaDB 在伺服器上僅監聽：
+
+```text
+127.0.0.1:3306
+```
+
+請勿把它改成 `0.0.0.0:3306`，也不需要在防火牆開放 3306。
+
+在 DBeaver 建立 MariaDB 連線：
+
+```text
+Main
+  Host: 127.0.0.1
+  Port: 3306
+  Database: wordpress
+  Username: wordpress
+  Password: .env 中的 MARIADB_PASSWORD
+
+SSH
+  Host/IP: VPS 的 IP 或網域
+  Port: 22
+  User name: VPS 的 Linux 使用者
+  Authentication: Public Key 或 SSH Agent
+```
+
+如果伺服器的 3306 已被其他服務占用，可修改 `.env`：
+
+```dotenv
+MARIADB_HOST_PORT=3307
+```
+
+此時 DBeaver 的資料庫 Port 也要改成 `3307`。
+
+## 備份
+
+備份必須同時包含：
+
+1. MariaDB 資料庫
+2. `wp-content` 中的上傳檔案、外掛與佈景主題
+3. Compose、Nginx、PHP 設定與備份腳本（可提交 Git）
+4. `.env`（只保存在密碼管理器或加密備份中）
+
+執行完整備份：
 
 ```bash
 ./scripts/backup.sh
 ```
 
-备份会写入本目录的 `backups/`，不会与其他 shop 混用。脚本会导出
-MariaDB、归档 `wp-content` 并生成 SHA-256 校验文件。
+腳本會在 `backups/` 產生：
 
-## 常用命令
-
-```bash
-docker compose logs -f --tail=100
-docker compose restart
-docker compose down
+```text
+database-時間.sql.gz
+wp-content-時間.tar.gz
+checksums-時間.sha256
 ```
 
-`docker compose down` 会保留 named volumes。请勿执行 `docker compose down -v`，
-因为 `-v` 会删除该 shop 的 WordPress 文件与数据库。
+備份先寫入暫存檔，完成壓縮檔驗證後才會改成正式檔名。
+
+### 排程
+
+例如每天凌晨 03:15 備份：
+
+```cron
+15 3 * * * cd /opt/wordpress-sites/13799-shop && ./scripts/backup.sh >> /var/log/wordpress-backup.log 2>&1
+```
+
+請把 `/opt/wordpress-sites/13799-shop` 換成伺服器上的實際專案路徑。
+
+### 異地備份
+
+本機 `backups/` 只能防止操作失誤，無法防止整台 VPS 損壞或遭入侵。建議使用 restic 將它加密備份到 S3 相容物件儲存、Backblaze B2 或另一台伺服器。
+
+建議保留策略：
+
+```text
+每日備份保留 7 份
+每週備份保留 4 份
+每月備份保留 6 份
+```
+
+至少每月實際測試一次還原，不要只確認備份檔案存在。
+
+### 還原資料庫
+
+還原會改寫資料，執行前先建立一份當下備份：
+
+```bash
+gzip -dc backups/database-時間.sql.gz | \
+  docker compose exec -T db sh -ec \
+  'exec mariadb --user=root --password="$MARIADB_ROOT_PASSWORD"'
+```
+
+還原 `wp-content`：
+
+```bash
+docker compose exec -T wordpress \
+  tar -C /var/www/html -xzf - < backups/wp-content-時間.tar.gz
+```
+
+### GitHub
+
+可以提交 GitHub：
+
+- `compose.yaml`
+- `nginx/`、`php/`
+- `scripts/`
+- 自行開發的佈景主題或外掛原始碼
+
+不要提交 GitHub，即使是 private repository：
+
+- `.env`、密碼、SSH Key
+- 資料庫 `.sql` 或 `.sql.gz`
+- `wp-content/uploads`
+- 完整備份壓縮檔
+
+Git 會永久累積每一版大型備份，而且資料庫可能包含使用者信箱、密碼雜湊、工作階段、訂單或其他個人資料。`.gitignore` 已排除這些檔案，但提交前仍應檢查：
+
+```bash
+git status
+```
+
+## HTTPS
+
+正式網站使用：
+
+```text
+https://www.13799.com
+```
+
+主機 Nginx 配置來源：
+
+```text
+nginx/host/www.13799.com.conf
+```
+
+伺服器上的配置與憑證位置：
+
+```text
+/etc/nginx/sites-available/www.13799.com
+/etc/nginx/sites-enabled/www.13799.com
+/etc/nginx/ssl/www.13799.com.pem
+/etc/nginx/ssl/www.13799.com.key
+```
+
+Cloudflare SSL/TLS 模式應使用 `Full (strict)`。Origin Certificate 與私鑰只保存在本機 `cert/` 和伺服器 `/etc/nginx/ssl/`，整個 `cert/` 已被 Git 忽略。
+
+WordPress 容器仍只監聽 `127.0.0.1:8080`，由主機 Nginx 負責 HTTPS 與反向代理。

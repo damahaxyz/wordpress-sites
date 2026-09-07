@@ -7,7 +7,7 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 project_dir="$(cd -- "${script_dir}/.." && pwd)"
 
 deploy_host="${DEPLOY_HOST:-root@site}"
-deploy_path="${DEPLOY_PATH:-/root/wordpress-sites/aromamatrix-shop}"
+deploy_path="${DEPLOY_PATH:-/root/wordpress-sites/13799-shop-old}"
 deploy_url="${DEPLOY_URL:-https://www.13799.com/}"
 timestamp="$(date -u +'%Y%m%dT%H%M%SZ')"
 
@@ -30,15 +30,15 @@ for component in "$@"; do
     case "${component}" in
         theme)
             component_types+=("theme")
-            component_slugs+=("aromamatrix")
-            local_paths+=("${project_dir}/theme/aromamatrix")
+            component_slugs+=("13799")
+            local_paths+=("${project_dir}/theme/13799")
             required_files+=("style.css")
             ;;
         plugin)
             component_types+=("plugin")
-            component_slugs+=("aromamatrix-plugin")
-            local_paths+=("${project_dir}/plugin/aromamatrix-plugin")
-            required_files+=("aromamatrix-plugin.php")
+            component_slugs+=("13799-plugin")
+            local_paths+=("${project_dir}/plugin/13799-plugin")
+            required_files+=("13799-plugin.php")
             ;;
         *)
             echo "Unknown component: ${component}. Expected theme or plugin." >&2

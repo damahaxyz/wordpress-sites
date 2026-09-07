@@ -20,8 +20,8 @@ plugin/perfumehouse-plugin/         站点业务功能和 WordPress hooks
 | WordPress HTTP（供主机 Nginx 反向代理） | `127.0.0.1:8082` |
 | MariaDB（供 SSH Tunnel） | `127.0.0.1:3308` |
 
-这两个端口与现有商店错开：`aromamatrix-shop` 使用 `8080` / `3306`，
-`13799-shop` 使用 `8081` / `3307`。
+这两个端口与现有商店错开：`13799-shop` 使用 `8080` / `3306`，
+`13799-shop-old` 使用 `8081` / `3307`。
 
 ## 启动
 
@@ -99,7 +99,7 @@ SSH:       root@perfumehouse
 数据库:    127.0.0.1:3308（仅本机）
 ```
 
-旧 `13799-shop` 的 2026-07-31 SQL 与同时间点 WordPress 文件已迁移至该
+旧 `13799-shop-old` 的 2026-07-31 SQL 与同时间点 WordPress 文件已迁移至该
 环境。服务器上的旧站目录和原始备份保留不动，切换前的宝塔 Nginx 配置
 保存在 `/root/perfumehouse-shop/migration-backups/`。
 

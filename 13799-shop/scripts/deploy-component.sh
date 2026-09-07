@@ -30,15 +30,15 @@ for component in "$@"; do
     case "${component}" in
         theme)
             component_types+=("theme")
-            component_slugs+=("13799")
-            local_paths+=("${project_dir}/theme/13799")
+            component_slugs+=("aromamatrix")
+            local_paths+=("${project_dir}/theme/aromamatrix")
             required_files+=("style.css")
             ;;
         plugin)
             component_types+=("plugin")
-            component_slugs+=("13799-plugin")
-            local_paths+=("${project_dir}/plugin/13799-plugin")
-            required_files+=("13799-plugin.php")
+            component_slugs+=("aromamatrix-plugin")
+            local_paths+=("${project_dir}/plugin/aromamatrix-plugin")
+            required_files+=("aromamatrix-plugin.php")
             ;;
         *)
             echo "Unknown component: ${component}. Expected theme or plugin." >&2

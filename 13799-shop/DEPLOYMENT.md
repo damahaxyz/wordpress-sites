@@ -9,8 +9,8 @@
 | 域名 | `https://www.13799.com` |
 | SSH | `root@site` |
 | 服务器系统 | Ubuntu 24.04 |
-| 服务器项目目录 | `/root/wordpress-sites/aromamatrix-shop` |
-| 本地项目目录 | `~/Documents/wordpress-sites/aromamatrix-shop` |
+| 服务器项目目录 | `/root/wordpress-sites/13799-shop` |
+| 本地项目目录 | `~/Documents/wordpress-sites/13799-shop` |
 | 主机 Nginx | Nginx 1.24 |
 | Docker | Docker 29.1 |
 | Docker Compose | Compose 2.40 |
@@ -49,7 +49,7 @@ flowchart LR
 ## 3. 项目目录
 
 ```text
-wordpress-sites/aromamatrix-shop/
+wordpress-sites/13799-shop/
 ├── compose.yaml
 ├── .env.example
 ├── DEPLOYMENT.md
@@ -131,16 +131,16 @@ SSL/TLS mode: Full (strict)
 在本地执行：
 
 ```bash
-cd ~/Documents/wordpress-sites/aromamatrix-shop
+cd ~/Documents/wordpress-sites/13799-shop
 
-ssh root@site 'mkdir -p /root/wordpress-sites/aromamatrix-shop'
+ssh root@site 'mkdir -p /root/wordpress-sites/13799-shop'
 
 rsync -av \
   --exclude '.git/' \
   --exclude '.env' \
   --exclude 'cert/' \
   --exclude 'backups/' \
-  ./ root@site:/root/wordpress-sites/aromamatrix-shop/
+  ./ root@site:/root/wordpress-sites/13799-shop/
 ```
 
 不要使用未经确认的 `rsync --delete`，避免误删服务器上的 `.env`、备份或其他生产文件。
@@ -151,7 +151,7 @@ rsync -av \
 
 ```bash
 ssh root@site
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 cp .env.example .env
 chmod 600 .env
@@ -246,7 +246,7 @@ systemctl reload nginx
 服务器执行：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 docker compose config --quiet
 docker compose pull
@@ -316,7 +316,7 @@ WordPress 后台
 服务器验证：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 docker compose exec redis redis-cli ping
 
@@ -347,14 +347,14 @@ Redis 设置说明：
 
 ## 6. 日常发布与更新
 
-当前服务器 `/root/wordpress-sites/aromamatrix-shop` 不是 Git 工作区，发布使用“本地确认、上传临时文件、远端校验、备份切换”的方式。
+当前服务器 `/root/wordpress-sites/13799-shop` 不是 Git 工作区，发布使用“本地确认、上传临时文件、远端校验、备份切换”的方式。
 
 ### 6.1 更新前
 
 本地检查：
 
 ```bash
-cd ~/Documents/wordpress-sites/aromamatrix-shop
+cd ~/Documents/wordpress-sites/13799-shop
 git status
 docker compose --env-file .env.example config --quiet
 ```
@@ -363,7 +363,7 @@ docker compose --env-file .env.example config --quiet
 
 ```bash
 ssh root@site
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 ./scripts/backup.sh
 ```
 
@@ -373,14 +373,14 @@ cd /root/wordpress-sites/aromamatrix-shop
 
 ```bash
 scp compose.yaml \
-  root@site:/root/wordpress-sites/aromamatrix-shop/compose.yaml.new
+  root@site:/root/wordpress-sites/13799-shop/compose.yaml.new
 ```
 
 服务器校验并切换：
 
 ```bash
 ssh root@site
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 docker compose -f compose.yaml.new config --quiet
 
@@ -401,7 +401,7 @@ docker compose ps
 上传相关文件后执行：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 docker compose config --quiet
 docker compose up -d --wait --wait-timeout 180
@@ -429,7 +429,7 @@ systemctl reload nginx
 ### 7.1 容器
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 docker compose ps
 ```
 
@@ -492,7 +492,7 @@ docker compose logs -f --tail=100
 执行完整备份：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 ./scripts/backup.sh
 ```
 
@@ -507,7 +507,7 @@ backups/checksums-时间.sha256
 校验：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop/backups
+cd /root/wordpress-sites/13799-shop/backups
 sha256sum -c checksums-时间.sha256
 gzip -t database-时间.sql.gz
 tar -tzf wp-content-时间.tar.gz >/dev/null
@@ -516,7 +516,7 @@ tar -tzf wp-content-时间.tar.gz >/dev/null
 建议排程：
 
 ```cron
-15 3 * * * cd /root/wordpress-sites/aromamatrix-shop && ./scripts/backup.sh >> /var/log/wordpress-backup.log 2>&1
+15 3 * * * cd /root/wordpress-sites/13799-shop && ./scripts/backup.sh >> /var/log/wordpress-backup.log 2>&1
 ```
 
 建议保留：
@@ -536,7 +536,7 @@ tar -tzf wp-content-时间.tar.gz >/dev/null
 先停止容器 Nginx，避免恢复过程中继续写入：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 docker compose stop nginx
 ```
 
@@ -574,7 +574,7 @@ docker compose ps
 查看备份：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 ls -1t compose.yaml.bak.*
 ```
 
@@ -593,7 +593,7 @@ Compose 回滚不会回滚数据库、插件或上传文件。数据回滚必须
 ## 11. 常用操作
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 
 # 查看状态
 docker compose ps
@@ -627,7 +627,7 @@ docker compose up -d --wait --wait-timeout 180
 说明 WordPress 容器没有加载 Compose 中的新环境变量：
 
 ```bash
-cd /root/wordpress-sites/aromamatrix-shop
+cd /root/wordpress-sites/13799-shop
 docker compose up -d redis
 docker compose up -d --force-recreate wordpress
 

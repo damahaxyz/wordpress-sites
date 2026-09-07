@@ -1,6 +1,6 @@
 # 13799 Shop Theme
 
-This is the site-specific presentation layer for `13799-shop`.
+This is the site-specific presentation layer for `13799-shop-old`.
 
 - Edit `front-page.php` to change the storefront landing-page structure.
 - Edit `header.php` and `footer.php` to change global navigation and footer content.
