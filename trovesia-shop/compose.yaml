@@ -56,13 +56,13 @@ services:
       WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
       WORDPRESS_DB_USER: ${MARIADB_USER}
       WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
-      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
-      WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.trovesia.com}
-      WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.trovesia.com}
       WORDPRESS_REDIS_HOST: redis
       WORDPRESS_REDIS_PORT: 6379
       WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
       WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-trovesia-shop}:"
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.trovesia.com}
+      WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.trovesia.com}
       WORDPRESS_CONFIG_EXTRA: |
         define('DISALLOW_FILE_EDIT', true);
         define('WP_MEMORY_LIMIT', '500M');
@@ -122,6 +122,38 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+
+  wpcli:
+    image: ${WPCLI_IMAGE:-wordpress:cli-php8.3}
+    profiles:
+      - tools
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
+      WORDPRESS_DB_USER: ${MARIADB_USER}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
+      WORDPRESS_REDIS_HOST: redis
+      WORDPRESS_REDIS_PORT: 6379
+      WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
+      WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-trovesia-shop}:"
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'redis');
+        define('WP_REDIS_PORT', (int) (getenv('WORDPRESS_REDIS_PORT') ?: 6379));
+        define('WP_REDIS_DATABASE', (int) (getenv('WORDPRESS_REDIS_DATABASE') ?: 0));
+        define('WP_REDIS_PREFIX', getenv('WORDPRESS_REDIS_PREFIX') ?: 'trovesia-shop:');
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
+      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   db_data:

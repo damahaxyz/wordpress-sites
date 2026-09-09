@@ -15,6 +15,10 @@ theme/trovesia/
 plugin/trovesia-plugin/
 ├── trovesia-plugin.php        插件入口与常量
 ├── includes/class-plugin.php
+├── includes/class-site-experience.php
+├── includes/class-catalog-migrator.php
+├── includes/class-review-migrator.php
+├── data/catalog.php
 └── uninstall.php           卸载时清理插件自己的设置
 ```
 
@@ -39,6 +43,35 @@ find theme/trovesia plugin/trovesia-plugin \
 
 docker compose config --quiet
 ```
+
+## 商品迁移
+
+安装并启用 WooCommerce 与 Trovesia 插件后，可重复执行：
+
+```bash
+docker compose --profile tools run --rm wpcli trovesia migrate-catalog
+```
+
+命令会按来源 handle 与 SKU 更新商品，并避免重复下载已经迁移的图片。
+
+公开评论及评论图片使用以下幂等命令迁移；图片会保存进本站媒体库：
+
+```bash
+docker compose --profile tools run --rm wpcli trovesia migrate-reviews
+```
+
+如果只需要同步评论文字，可附加 `--skip-media`。
+
+## 通用关联加购规则
+
+商品编辑页的 **Trovesia product add-ons** 配置框可以添加多个关联商品，且不
+依赖固定的变体属性名称。每条规则支持跟随售价、固定金额、百分比优惠、数量、
+可配置原价、默认选择以及适用的变体值。原价留空时读取关联商品原价，前台自动
+计算并显示 `SAVE xx%` 与划线价格。
+
+关联商品会作为独立购物车和订单行加入，因此继续使用自身的库存、税率、重量、
+配送和退款逻辑。Batana 主商品只保留 Buy 1 / Buy 2 / Buy 3 三个基础变体；滚轮
+作为通用关联商品处理。重新执行商品迁移不会覆盖后台已经保存的加购规则。
 
 Compose 会将自定义代码挂载进容器，修改 PHP、CSS 或 JavaScript 后
 无需重新构建镜像。

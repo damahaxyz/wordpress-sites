@@ -6,35 +6,45 @@
     "color": {
       "palette": [
         {
-          "color": "#1f1b17",
+          "color": "#17211d",
           "name": "Ink",
           "slug": "ink"
         },
         {
-          "color": "#8a5a44",
-          "name": "Terracotta",
-          "slug": "terracotta"
+          "color": "#315f4f",
+          "name": "Botanical green",
+          "slug": "botanical-green"
         },
         {
-          "color": "#d3a15f",
-          "name": "Accent",
-          "slug": "accent"
+          "color": "#183c33",
+          "name": "Deep green",
+          "slug": "deep-green"
         },
         {
-          "color": "#faf7f1",
-          "name": "Paper",
-          "slug": "paper"
+          "color": "#c6965c",
+          "name": "Warm gold",
+          "slug": "warm-gold"
         },
         {
-          "color": "#fffdf9",
-          "name": "White",
-          "slug": "white"
+          "color": "#eef2eb",
+          "name": "Sage mist",
+          "slug": "sage-mist"
+        },
+        {
+          "color": "#f8f7f2",
+          "name": "Warm paper",
+          "slug": "warm-paper"
+        },
+        {
+          "color": "#fffefb",
+          "name": "Ivory",
+          "slug": "ivory"
         }
       ]
     },
     "layout": {
       "contentSize": "820px",
-      "wideSize": "1200px"
+      "wideSize": "1240px"
     },
     "spacing": {
       "units": ["px", "rem", "%", "vw", "vh"]
@@ -42,20 +52,25 @@
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
-          "name": "System Sans",
-          "slug": "system-sans"
+          "fontFamily": "\"Avenir Next\", Avenir, Inter, ui-sans-serif, system-ui, sans-serif",
+          "name": "Trovesia Sans",
+          "slug": "trovesia-sans"
+        },
+        {
+          "fontFamily": "\"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "name": "Trovesia Serif",
+          "slug": "trovesia-serif"
         }
       ]
     }
   },
   "styles": {
     "color": {
-      "background": "#faf7f1",
-      "text": "#1f1b17"
+      "background": "#f8f7f2",
+      "text": "#17211d"
     },
     "typography": {
-      "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
+      "fontFamily": "\"Avenir Next\", Avenir, Inter, ui-sans-serif, system-ui, sans-serif",
       "lineHeight": "1.65"
     }
   }

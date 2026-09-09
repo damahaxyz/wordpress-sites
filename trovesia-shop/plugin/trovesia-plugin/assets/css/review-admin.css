@@ -1,0 +1,51 @@
+.trovesia-review-editor {
+  display: grid;
+  padding: 8px 2px;
+  gap: 24px;
+}
+
+.trovesia-review-editor__featured {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.trovesia-review-editor__featured input {
+  margin-top: 3px;
+}
+
+.trovesia-review-editor__featured span,
+.trovesia-review-media-editor > strong {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trovesia-review-editor__featured small {
+  color: #646970;
+  font-weight: 400;
+}
+
+.trovesia-review-media-editor__preview {
+  display: grid;
+  width: 180px;
+  min-height: 120px;
+  margin-top: 10px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px dashed #c3c4c7;
+  border-radius: 8px;
+  color: #646970;
+  background: #f6f7f7;
+}
+
+.trovesia-review-media-editor__preview img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.trovesia-review-media-editor .button-link-delete {
+  margin-left: 10px;
+}

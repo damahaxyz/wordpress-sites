@@ -1,13 +1,34 @@
 .woocommerce .woocommerce-breadcrumb {
-  margin-bottom: 28px;
+  margin-bottom: 38px;
   color: var(--shop-muted);
-  font-size: 13px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.woocommerce .woocommerce-breadcrumb a:hover {
+  color: var(--shop-brand);
+}
+
+.woocommerce .woocommerce-result-count,
+.woocommerce .woocommerce-ordering {
+  margin-bottom: 34px;
+  color: var(--shop-muted);
+  font-size: 12px;
+}
+
+.woocommerce .woocommerce-ordering select {
+  padding: 10px 36px 10px 14px;
+  border: 1px solid var(--shop-line);
+  border-radius: 999px;
+  background: var(--shop-white);
 }
 
 .woocommerce ul.products {
   display: grid;
+  clear: both;
   margin: 0;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -18,38 +39,112 @@
 
 .woocommerce ul.products li.product,
 .woocommerce-page ul.products li.product {
-  width: auto;
-  padding: 16px;
+  position: relative;
+  display: flex;
+  width: 100% !important;
+  min-width: 0;
+  overflow: hidden;
+  float: none;
+  flex-direction: column;
+  padding: 0 0 24px;
   margin: 0;
   border: 1px solid var(--shop-line);
   border-radius: var(--shop-radius);
   background: var(--shop-white);
+  box-shadow: none;
+  transition: box-shadow var(--shop-transition), transform var(--shop-transition);
+}
+
+.woocommerce ul.products li.product:hover {
   box-shadow: var(--shop-shadow);
+  transform: translateY(-5px);
+}
+
+.woocommerce ul.products li.product a.woocommerce-LoopProduct-link {
+  display: block;
 }
 
 .woocommerce ul.products li.product a img {
-  margin-bottom: 18px;
-  border-radius: calc(var(--shop-radius) - 8px);
+  width: 100%;
+  aspect-ratio: 1 / 1.08;
+  margin: 0 0 22px;
+  background: #f0eee7;
+  object-fit: cover;
+  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.woocommerce ul.products li.product:hover a img {
+  transform: scale(1.025);
 }
 
 .woocommerce ul.products li.product .woocommerce-loop-product__title {
-  padding: 0;
+  min-height: 3em;
+  padding: 0 22px;
+  margin: 0 0 12px;
   color: var(--shop-ink);
-  font-size: 17px;
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: clamp(21px, 2vw, 27px);
+  font-weight: 500;
+  line-height: 1.15;
 }
 
-.woocommerce ul.products li.product .price,
-.woocommerce div.product p.price,
-.woocommerce div.product span.price {
+.woocommerce ul.products li.product .star-rating {
+  margin: 0 22px 10px;
+  color: var(--shop-accent);
+  font-size: 11px;
+}
+
+.woocommerce ul.products li.product .price {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 22px;
+  margin: 0 0 18px;
   color: var(--shop-brand);
+  font-size: 14px;
   font-weight: 800;
+}
+
+.woocommerce ul.products li.product .price del {
+  order: 2;
+  color: #929a94;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 1;
+}
+
+.woocommerce ul.products li.product .price ins {
+  text-decoration: none;
+}
+
+.woocommerce ul.products li.product .button {
+  width: calc(100% - 44px);
+  margin: auto 22px 0;
+}
+
+.woocommerce span.onsale {
+  z-index: 3;
+  top: 16px;
+  right: auto;
+  left: 16px;
+  min-width: 0;
+  min-height: 0;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-brand-dark);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .woocommerce a.button,
 .woocommerce button.button,
 .woocommerce input.button,
 .woocommerce #respond input#submit {
-  border-radius: 999px;
   color: var(--shop-white);
   background: var(--shop-brand);
 }
@@ -63,21 +158,782 @@
 }
 
 .woocommerce div.product {
-  padding: clamp(24px, 4vw, 48px);
-  border: 1px solid var(--shop-line);
+  display: flow-root;
+}
+
+.trovesia-product-layout {
+  position: relative;
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(0, 1.12fr) minmax(390px, 0.88fr);
+  gap: clamp(42px, 6vw, 82px);
+}
+
+.trovesia-product-gallery-column {
+  position: relative;
+  min-width: 0;
+}
+
+.woocommerce div.product div.images {
+  width: 100%;
+  float: none;
+  margin-bottom: 70px;
+}
+
+.woocommerce div.product div.images .woocommerce-product-gallery__wrapper {
+  overflow: hidden;
   border-radius: var(--shop-radius);
-  background: var(--shop-white);
-  box-shadow: var(--shop-shadow);
+  background: #f0eee7;
 }
 
 .woocommerce div.product div.images img {
-  border-radius: calc(var(--shop-radius) - 8px);
+  border-radius: var(--shop-radius);
+}
+
+.woocommerce div.product div.images .flex-control-thumbs {
+  display: grid;
+  margin-top: 12px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.woocommerce div.product div.images .flex-control-thumbs li {
+  width: auto;
+}
+
+.woocommerce div.product div.images .flex-control-thumbs img {
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+
+.woocommerce div.product div.images .flex-control-thumbs img.flex-active {
+  border-color: var(--shop-brand);
+}
+
+.woocommerce div.product div.summary {
+  width: 100%;
+  float: none;
+  padding-top: 12px;
+  margin-bottom: 70px;
+}
+
+.trovesia-product-eyebrow {
+  margin-bottom: 12px;
+  color: var(--shop-brand);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.woocommerce div.product .product_title {
+  margin-bottom: 20px;
+  font-size: clamp(40px, 4.5vw, 64px);
+}
+
+.woocommerce div.product p.price,
+.woocommerce div.product span.price {
+  color: var(--shop-brand);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.woocommerce div.product p.price del,
+.woocommerce div.product span.price del {
+  color: #8a928d;
+  font-size: 16px;
+  opacity: 1;
+}
+
+.woocommerce div.product p.price ins,
+.woocommerce div.product span.price ins {
+  text-decoration: none;
+}
+
+.woocommerce-product-details__short-description {
+  color: var(--shop-muted);
+  font-size: 16px;
+}
+
+.trovesia-product-benefits {
+  display: grid;
+  padding: 20px 0;
+  margin: 20px 0;
+  border-top: 1px solid var(--shop-line);
+  border-bottom: 1px solid var(--shop-line);
+  gap: 10px;
+  list-style: none;
+}
+
+.trovesia-product-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.trovesia-product-benefits li span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--shop-white);
+  background: var(--shop-brand);
+  font-size: 10px;
+}
+
+.woocommerce div.product form.cart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0;
+}
+
+.woocommerce div.product form.cart .variations {
+  width: 100%;
+  margin: 0 0 14px;
+}
+
+.woocommerce div.product form.cart .variations th,
+.woocommerce div.product form.cart .variations td {
+  display: block;
+  padding: 0;
+  text-align: left;
+}
+
+.woocommerce div.product form.cart .variations label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.woocommerce div.product form.cart .variations select {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--shop-line);
+  border-radius: 12px;
+  background: var(--shop-white);
+}
+
+.woocommerce div.product form.cart .reset_variations {
+  display: inline-block;
+  margin-top: 7px;
+  color: var(--shop-muted);
+  font-size: 11px;
+}
+
+.trovesia-variant-picker {
+  width: 100%;
+  margin: 12px 0 4px;
+}
+
+.trovesia-variant-picker.is-ready+table.variations {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.trovesia-variant-picker__heading {
+  display: grid;
+  align-items: center;
+  margin-bottom: 16px;
+  color: var(--shop-accent);
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.trovesia-variant-picker__heading span {
+  height: 1px;
+  background: color-mix(in srgb, var(--shop-accent) 40%, transparent);
+}
+
+.trovesia-variant-picker__heading strong {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+}
+
+.trovesia-bundle-options {
+  display: grid;
+  gap: 10px;
+}
+
+.trovesia-bundle-card,
+.trovesia-roller-addon {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--shop-line);
+  color: var(--shop-ink);
+  background: var(--shop-white);
+  box-shadow: none;
+  text-align: left;
+  transition: border-color var(--shop-transition), background var(--shop-transition), box-shadow var(--shop-transition), transform var(--shop-transition);
+}
+
+.trovesia-bundle-card {
+  display: grid;
+  min-height: 92px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.trovesia-bundle-card:hover,
+.trovesia-roller-addon:hover {
+  border-color: var(--shop-accent);
+  color: var(--shop-ink);
+  background: var(--shop-soft);
+  transform: translateY(-1px);
+}
+
+.trovesia-bundle-card.is-selected,
+.trovesia-roller-addon.is-selected {
+  border-color: var(--shop-accent);
+  color: var(--shop-ink);
+  background: #f2e4cd;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--shop-accent) 25%, transparent);
+}
+
+.trovesia-bundle-card__visual {
+  display: grid;
+  width: 62px;
+  height: 66px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 12px;
+  background: #eeeae0;
+}
+
+.trovesia-bundle-card__visual img {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  object-fit: cover;
+}
+
+.trovesia-bundle-card__copy,
+.trovesia-bundle-card__price {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.trovesia-bundle-card__copy strong {
+  font-size: 16px;
+}
+
+.trovesia-bundle-card__copy small {
+  margin-top: 3px;
+  color: var(--shop-muted);
+  font-size: 10px;
+}
+
+.trovesia-bundle-card__save {
+  align-self: flex-end;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-accent);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.trovesia-bundle-card__price {
+  align-items: flex-end;
+  gap: 3px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.trovesia-bundle-card__price strong {
+  font-size: 16px;
+}
+
+.trovesia-bundle-card__price del {
+  color: var(--shop-muted);
+  font-size: 10px;
+}
+
+.trovesia-addon-heading {
+  margin: 20px 0 9px;
+  color: var(--shop-brand);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.trovesia-roller-addon {
+  display: grid;
+  min-height: 98px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  grid-template-columns: 28px 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.trovesia-product-addon[hidden] {
+  display: none;
+}
+
+.trovesia-product-addon__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trovesia-generic-addons {
+  width: 100%;
+  margin: 8px 0 16px;
+}
+
+.trovesia-product-addons {
+  display: grid;
+  gap: 10px;
+}
+
+.trovesia-roller-addon__check {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--shop-line);
+  border-radius: 6px;
+  color: transparent;
+  background: var(--shop-white);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.trovesia-roller-addon.is-selected .trovesia-roller-addon__check {
+  border-color: var(--shop-accent);
+  color: var(--shop-white);
+  background: var(--shop-accent);
+}
+
+.trovesia-roller-addon__image {
+  display: block;
+  width: 64px;
+  height: 68px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.trovesia-roller-addon__image img {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  object-fit: cover;
+}
+
+.trovesia-roller-addon__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.trovesia-roller-addon__copy strong {
+  font-size: 14px;
+}
+
+.trovesia-roller-addon__copy small {
+  margin-top: 4px;
+  color: var(--shop-muted);
+  font-size: 10px;
+}
+
+.trovesia-roller-addon__price {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.trovesia-roller-addon__price strong {
+  font-size: 16px;
+}
+
+.trovesia-roller-addon__price del {
+  color: var(--shop-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.trovesia-product-addon__save {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-accent);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.woocommerce div.product form.cart .woocommerce-variation-add-to-cart,
+.woocommerce div.product form.cart:not(.variations_form) {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.woocommerce div.product form.cart .single_variation_wrap {
+  width: 100%;
+}
+
+.woocommerce div.product form.cart .trovesia-quantity-stepper {
+  display: grid;
+  width: 142px;
+  min-width: 142px;
+  min-height: 60px;
+  overflow: hidden;
+  border: 1px solid #cfd7d1;
+  border-radius: 18px;
+  background: var(--shop-white);
+  box-shadow: 0 8px 24px rgba(31, 48, 40, 0.07);
+  grid-template-columns: 42px minmax(52px, 1fr) 42px;
+}
+
+.woocommerce div.product form.cart .trovesia-quantity-stepper .qty {
+  width: 100%;
+  min-height: 58px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--shop-ink);
+  background: transparent;
+  box-shadow: none;
+  font-size: 17px;
+  font-weight: 750;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.woocommerce div.product form.cart .trovesia-quantity-stepper .qty::-webkit-inner-spin-button,
+.woocommerce div.product form.cart .trovesia-quantity-stepper .qty::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.trovesia-qty-button {
+  display: grid;
+  padding: 0;
+  border: 0;
+  color: var(--shop-brand);
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  place-items: center;
+}
+
+.trovesia-qty-button:hover {
+  color: var(--shop-white);
+  background: var(--shop-brand);
+}
+
+.trovesia-qty-button:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--shop-accent);
+  outline-offset: -3px;
+}
+
+.trovesia-qty-button:disabled {
+  color: #a9b1ac;
+  background: transparent;
+  cursor: not-allowed;
+}
+
+.woocommerce div.product form.cart .single_add_to_cart_button.button {
+  flex: 1;
+  min-height: 60px;
+  padding: 0 30px;
+  border: 1px solid var(--shop-brand-dark);
+  border-radius: 18px;
+  color: var(--shop-white);
+  background: linear-gradient(135deg, var(--shop-brand) 0%, var(--shop-brand-dark) 100%);
+  box-shadow: 0 12px 28px rgba(24, 60, 51, 0.2);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.woocommerce div.product form.cart .single_add_to_cart_button.button:hover {
+  border-color: var(--shop-brand-deep);
+  background: var(--shop-brand-deep);
+  box-shadow: 0 14px 34px rgba(24, 60, 51, 0.27);
+  transform: translateY(-1px);
+}
+
+.woocommerce div.product form.cart .single_add_to_cart_button.button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--shop-accent) 55%, transparent);
+  outline-offset: 3px;
+}
+
+.trovesia-assurance-grid {
+  display: grid;
+  margin: 30px 0 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.trovesia-order-activity {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 15px;
+  margin: 18px 0 -10px;
+  border-radius: 999px;
+  color: #33345f;
+  background: #f1f0fa;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.trovesia-order-activity>span {
+  color: var(--shop-accent);
+}
+
+.trovesia-assurance-grid>div {
+  display: flex;
+  min-height: 122px;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 18px 10px;
+  border: 1px solid var(--shop-line);
+  border-radius: 16px;
+  background: rgba(255, 254, 251, 0.72);
+  text-align: center;
+}
+
+.trovesia-assurance-grid>div>span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 10px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--shop-accent);
+  background: #f5eadb;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.trovesia-assurance-grid strong {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.trovesia-assurance-grid small {
+  margin-top: 5px;
+  color: var(--shop-muted);
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.trovesia-delivery-estimate {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  color: var(--shop-brand-dark);
+  background: var(--shop-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.trovesia-product-accordions details {
+  border-top: 1px solid var(--shop-line);
+}
+
+.trovesia-product-accordions details:last-child {
+  border-bottom: 1px solid var(--shop-line);
+}
+
+.trovesia-product-accordions summary {
+  padding: 15px 2px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+}
+
+.trovesia-product-accordions p {
+  padding: 0 2px 15px;
+  margin: 0;
+  color: var(--shop-muted);
+  font-size: 12px;
+}
+
+.woocommerce div.product .woocommerce-tabs {
+  clear: both;
+  padding: 58px clamp(24px, 6vw, 82px);
+  margin: 0 0 90px;
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs {
+  padding: 0;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs::before {
+  border-color: var(--shop-line);
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li {
+  border: 0;
+  background: transparent;
+}
+
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active {
+  color: var(--shop-brand);
+  background: transparent;
+}
+
+.woocommerce div.product .woocommerce-tabs h2,
+.woocommerce .related.products>h2 {
+  font-size: clamp(34px, 4vw, 52px);
+}
+
+.trovesia-review-media {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+.trovesia-review-media__image {
+  display: block;
+  width: 148px;
+  height: 148px;
+  border: 1px solid var(--shop-line);
+  border-radius: 14px;
+  object-fit: cover;
+  transition: transform var(--shop-transition), box-shadow var(--shop-transition);
+}
+
+.trovesia-review-media:hover .trovesia-review-media__image {
+  box-shadow: var(--shop-shadow);
+  transform: translateY(-2px);
+}
+
+.woocommerce .related.products {
+  clear: both;
 }
 
 .woocommerce-message,
 .woocommerce-info,
 .woocommerce-error {
+  border-top-color: var(--shop-brand);
   border-radius: 12px;
+  background: var(--shop-white);
+  box-shadow: var(--shop-shadow);
+}
+
+.woocommerce-message::before,
+.woocommerce-info::before {
+  color: var(--shop-brand);
+}
+
+.woocommerce table.shop_table {
+  overflow: hidden;
+  border-color: var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-white);
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals,
+.woocommerce-checkout #order_review {
+  padding: 28px;
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+}
+
+.trovesia-checkout-assurance {
+  display: grid;
+  margin: 0 0 20px;
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-white);
+}
+
+.trovesia-checkout-assurance>div {
+  display: grid;
+  align-items: start;
+  padding: 18px 20px;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+}
+
+.trovesia-checkout-assurance>div+div {
+  border-top: 1px solid var(--shop-line);
+}
+
+.trovesia-checkout-assurance>div>span {
+  color: var(--shop-brand);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.trovesia-checkout-assurance p,
+.trovesia-checkout-assurance small {
+  display: block;
+  margin: 0;
+}
+
+.trovesia-checkout-assurance strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.trovesia-checkout-assurance small {
+  color: var(--shop-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+  padding: 13px 14px;
+  border: 1px solid var(--shop-line);
+  border-radius: 10px;
   background: var(--shop-white);
 }
 
@@ -85,10 +941,91 @@
   .woocommerce ul.products {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .trovesia-product-layout {
+    display: block;
+  }
+
 }
 
-@media (max-width: 520px) {
+@media (min-width: 901px) {
+  .trovesia-product-gallery-column {
+    position: sticky;
+    top: 104px;
+  }
+
+  .admin-bar.woocommerce .trovesia-product-gallery-column {
+    top: 136px;
+  }
+}
+
+@media (max-width: 560px) {
   .woocommerce ul.products {
     grid-template-columns: 1fr;
+  }
+
+  .woocommerce ul.products li.product .woocommerce-loop-product__title {
+    min-height: 0;
+  }
+
+  .trovesia-assurance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trovesia-assurance-grid>div {
+    display: grid;
+    min-height: 0;
+    padding: 14px 16px;
+    grid-template-columns: 42px 1fr;
+    column-gap: 12px;
+    text-align: left;
+  }
+
+  .trovesia-assurance-grid>div>span {
+    grid-row: span 2;
+    margin: 0;
+  }
+
+  .woocommerce div.product form.cart .trovesia-quantity-stepper {
+    width: 126px;
+    min-width: 126px;
+    grid-template-columns: 38px minmax(48px, 1fr) 38px;
+  }
+
+  .woocommerce div.product form.cart .single_add_to_cart_button.button {
+    padding: 0 18px;
+  }
+
+  .trovesia-bundle-card {
+    padding: 10px;
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    gap: 9px;
+  }
+
+  .trovesia-bundle-card__visual {
+    width: 54px;
+    height: 60px;
+  }
+
+  .trovesia-bundle-card__price {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .trovesia-roller-addon {
+    padding: 10px;
+    grid-template-columns: 24px 54px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .trovesia-roller-addon__image {
+    width: 54px;
+    height: 60px;
+  }
+
+  .trovesia-roller-addon__price {
+    align-self: center;
+    grid-column: 4;
+    grid-row: 1;
   }
 }

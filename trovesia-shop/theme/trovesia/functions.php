@@ -36,6 +36,7 @@ function trovesia_setup(): void
     add_theme_support('title-tag');
     add_theme_support('wp-block-styles');
     add_theme_support('align-wide');
+    add_image_size('trovesia-product-card', 760, 880, true);
 
     add_theme_support('woocommerce');
     add_theme_support('wc-product-gallery-lightbox');
@@ -85,13 +86,14 @@ add_action('wp_enqueue_scripts', 'trovesia_enqueue_assets');
 
 function trovesia_fallback_menu(): void
 {
-    $shop_url = class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/#products');
+    $shop_url = class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/#shop');
     ?>
     <ul class="menu">
         <li><a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Home', 'trovesia'); ?></a></li>
-        <li><a href="<?php echo esc_url($shop_url); ?>"><?php esc_html_e('Shop', 'trovesia'); ?></a></li>
-        <li><a href="<?php echo esc_url(home_url('/about/')); ?>"><?php esc_html_e('About', 'trovesia'); ?></a></li>
-        <li><a href="<?php echo esc_url(home_url('/contact/')); ?>"><?php esc_html_e('Contact', 'trovesia'); ?></a></li>
+        <li><a href="<?php echo esc_url($shop_url); ?>"><?php esc_html_e('Shop all', 'trovesia'); ?></a></li>
+        <li><a href="<?php echo esc_url(home_url('/#ritual')); ?>"><?php esc_html_e('The ritual', 'trovesia'); ?></a></li>
+        <li><a href="<?php echo esc_url(home_url('/track-order/')); ?>"><?php esc_html_e('Track order', 'trovesia'); ?></a></li>
+        <li><a href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Contact', 'trovesia'); ?></a></li>
     </ul>
     <?php
 }
@@ -120,15 +122,80 @@ add_filter('woocommerce_add_to_cart_fragments', 'trovesia_cart_fragments');
 add_action('wp', static function (): void {
     if (class_exists('WooCommerce')) {
         remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
+        remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40);
     }
 });
 
-add_filter('loop_shop_columns', static fn (): int => 4);
+/**
+ * Keep the gallery and summary inside one bounded layout so the sticky gallery
+ * stops before the product tabs and related products.
+ */
+function trovesia_product_layout_open(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        echo '<div class="trovesia-product-layout">';
+    }
+}
+add_action('woocommerce_before_single_product_summary', 'trovesia_product_layout_open', 1);
+
+function trovesia_product_gallery_column_open(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        echo '<div class="trovesia-product-gallery-column">';
+    }
+}
+add_action('woocommerce_before_single_product_summary', 'trovesia_product_gallery_column_open', 5);
+
+function trovesia_product_gallery_column_close(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        echo '</div>';
+    }
+}
+add_action('woocommerce_before_single_product_summary', 'trovesia_product_gallery_column_close', 25);
+
+function trovesia_product_layout_close(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        echo '</div>';
+    }
+}
+add_action('woocommerce_after_single_product_summary', 'trovesia_product_layout_close', 1);
+
+function trovesia_quantity_minus_button(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        printf(
+            '<button type="button" class="trovesia-qty-button trovesia-qty-button--minus" data-trovesia-qty-change="-1" aria-label="%s">&minus;</button>',
+            esc_attr__('Decrease quantity', 'trovesia')
+        );
+    }
+}
+add_action('woocommerce_before_quantity_input_field', 'trovesia_quantity_minus_button');
+
+function trovesia_quantity_plus_button(): void
+{
+    if (function_exists('is_product') && is_product()) {
+        printf(
+            '<button type="button" class="trovesia-qty-button trovesia-qty-button--plus" data-trovesia-qty-change="1" aria-label="%s">&plus;</button>',
+            esc_attr__('Increase quantity', 'trovesia')
+        );
+    }
+}
+add_action('woocommerce_after_quantity_input_field', 'trovesia_quantity_plus_button');
+
+add_filter('loop_shop_columns', static fn (): int => 3);
 add_filter('loop_shop_per_page', static fn (): int => 12);
 
 add_filter('woocommerce_output_related_products_args', static function (array $args): array {
-    $args['posts_per_page'] = 4;
-    $args['columns'] = 4;
+    $args['posts_per_page'] = 3;
+    $args['columns'] = 3;
 
     return $args;
+});
+
+add_filter('body_class', static function (array $classes): array {
+    $classes[] = 'trovesia-storefront';
+
+    return $classes;
 });
