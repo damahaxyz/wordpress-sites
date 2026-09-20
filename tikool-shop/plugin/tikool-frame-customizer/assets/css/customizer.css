@@ -1,0 +1,497 @@
+.tikool-fc-step-one {
+  clear: both;
+  margin-top: 24px;
+}
+
+.tikool-fc-next,
+.tikool-fc-purchase .single_add_to_cart_button {
+  align-items: center;
+  background: var(--shop-accent, #b64d36) !important;
+  border: 0 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 18px 34px rgba(120, 58, 39, 0.16);
+  color: #fff !important;
+  cursor: pointer;
+  display: flex !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  min-height: 72px;
+  padding: 18px 30px !important;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.tikool-fc-next::after {
+  content: "→";
+  font-size: 25px;
+  margin-left: 15px;
+}
+
+.tikool-fc-step-one__error,
+.tikool-fc-error {
+  color: #a52828;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 10px 0 0;
+  min-height: 1.4em;
+}
+
+.tikool-fc-modal[hidden] {
+  display: none !important;
+}
+
+body.tikool-fc-open {
+  overflow: hidden;
+}
+
+.tikool-fc-modal {
+  inset: 0;
+  position: fixed;
+  z-index: 100000;
+}
+
+.tikool-fc-modal__backdrop {
+  background: rgba(43, 29, 25, 0.48);
+  inset: 0;
+  position: absolute;
+}
+
+.tikool-fc-modal__dialog {
+  background: #fffaf6;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: min(94vh, 1020px);
+  inset: 3vh 2.5vw;
+  overflow: hidden;
+  position: absolute;
+  width: 95vw;
+}
+
+.tikool-fc-modal__header {
+  align-items: flex-start;
+  border-bottom: 1px solid #ead8cf;
+  display: flex;
+  justify-content: space-between;
+  padding: 28px 36px 24px;
+}
+
+.tikool-fc-modal__header h2 {
+  color: #2f201c;
+  font-family: var(--shop-serif, Georgia, serif);
+  font-size: clamp(32px, 4vw, 62px);
+  line-height: 0.98;
+  margin: 4px 0 0;
+}
+
+.tikool-fc-modal__step,
+.tikool-fc-preview__badge {
+  color: var(--shop-accent, #b64d36);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.tikool-fc-modal__close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid #dfc9be;
+  border-radius: 50%;
+  color: #2f201c;
+  cursor: pointer;
+  display: flex;
+  font-size: 34px;
+  height: 64px;
+  justify-content: center;
+  line-height: 1;
+  width: 64px;
+}
+
+.tikool-fc-modal__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(380px, 0.95fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tikool-fc-preview {
+  align-items: center;
+  background: #f1dfd5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  overflow: auto;
+  padding: 26px;
+  position: relative;
+}
+
+.tikool-fc-preview__badge {
+  background: rgba(255, 250, 246, 0.9);
+  border-radius: 999px;
+  color: #5a3a4f;
+  left: 24px;
+  padding: 12px 16px;
+  position: absolute;
+  top: 24px;
+  z-index: 2;
+}
+
+.tikool-fc-canvas-wrap {
+  aspect-ratio: var(--tikool-fc-aspect, 0.8);
+  cursor: grab;
+  max-height: calc(100% - 48px);
+  max-width: min(90%, 760px);
+  outline: 0;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  width: min(78%, 680px);
+}
+
+.tikool-fc-canvas-wrap:active {
+  cursor: grabbing;
+}
+
+.tikool-fc-canvas-wrap:focus-visible {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 5px;
+}
+
+.tikool-fc-canvas-wrap canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.tikool-fc-placeholder {
+  align-items: center;
+  color: #6e5d55;
+  display: flex;
+  flex-direction: column;
+  inset: 34% 20%;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+}
+
+.tikool-fc-placeholder[hidden] {
+  display: none;
+}
+
+.tikool-fc-placeholder span {
+  font-size: 42px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.tikool-fc-placeholder strong {
+  color: #40312b;
+  display: block;
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+.tikool-fc-placeholder small {
+  display: block;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.tikool-fc-preview__hint {
+  color: #75635a;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+.tikool-fc-controls {
+  overflow: auto;
+  padding: 42px clamp(28px, 4vw, 64px);
+}
+
+.tikool-fc-summary {
+  border: 1px solid #e3cec3;
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 34px;
+  overflow: hidden;
+}
+
+.tikool-fc-summary div {
+  min-height: 92px;
+  padding: 22px 26px;
+}
+
+.tikool-fc-summary div:nth-child(odd) {
+  border-right: 1px solid #e3cec3;
+}
+
+.tikool-fc-summary div:nth-child(n + 3) {
+  border-top: 1px solid #e3cec3;
+}
+
+.tikool-fc-summary span,
+.tikool-fc-upload__label,
+.tikool-fc-controls label > span,
+.tikool-fc-controls .form-row > label {
+  color: #6e5d55;
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 9px;
+  text-transform: uppercase;
+}
+
+.tikool-fc-summary strong {
+  color: #32231f;
+  display: block;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.tikool-fc-controls input[type="text"] {
+  background: #fff;
+  border: 1px solid #dec8bd;
+  border-radius: 18px;
+  box-sizing: border-box;
+  font-size: 18px;
+  min-height: 62px;
+  padding: 12px 18px;
+  width: 100%;
+}
+
+.tikool-fc-upload {
+  margin-top: 26px;
+}
+
+.tikool-fc-upload__input {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.tikool-fc-upload__button {
+  border: 2px solid #5a3a4f;
+  border-radius: 15px;
+  color: #37262f;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 750;
+  justify-content: center;
+  padding: 14px 22px;
+}
+
+.tikool-fc-upload__filename {
+  color: #78675f;
+  display: inline-block;
+  font-size: 14px;
+  margin-left: 14px;
+  max-width: 52%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.tikool-fc-upload small {
+  color: #806e65;
+  display: block;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-top: 10px;
+}
+
+.tikool-fc-zoom {
+  display: block;
+  margin-top: 28px;
+}
+
+.tikool-fc-zoom input {
+  accent-color: var(--shop-accent, #b64d36);
+  width: 100%;
+}
+
+.tikool-fc-quality {
+  color: #597054;
+  font-size: 13px;
+  font-weight: 650;
+  margin: 8px 0 0;
+}
+
+.tikool-fc-quality.is-low {
+  color: #a52828;
+}
+
+.tikool-fc-modal__footer {
+  align-items: center;
+  background: #fffaf6;
+  border-top: 1px solid #ead8cf;
+  display: flex;
+  justify-content: space-between;
+  min-height: 116px;
+  padding: 18px 34px;
+}
+
+.tikool-fc-back {
+  background: transparent;
+  border: 1px solid #dfc9be;
+  border-radius: 18px;
+  color: #34251f;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 750;
+  min-height: 58px;
+  padding: 12px 24px;
+  text-transform: uppercase;
+}
+
+.tikool-fc-purchase {
+  align-items: stretch;
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.tikool-fc-purchase .quantity {
+  align-items: center;
+  border: 1px solid #dfc9be;
+  border-radius: 18px;
+  display: flex;
+  justify-content: center;
+  min-width: 170px;
+}
+
+.tikool-fc-purchase .single_add_to_cart_button {
+  border-radius: 18px !important;
+  min-height: 68px;
+  min-width: 290px;
+}
+
+.tikool-fc-modal.is-preparing .tikool-fc-modal__dialog {
+  cursor: progress;
+}
+
+@media (max-width: 900px) {
+  .tikool-fc-modal__dialog {
+    height: 100%;
+    inset: 0;
+    width: 100%;
+  }
+
+  .tikool-fc-modal__header {
+    padding: 20px;
+  }
+
+  .tikool-fc-modal__header h2 {
+    font-size: 34px;
+  }
+
+  .tikool-fc-modal__close {
+    height: 48px;
+    width: 48px;
+  }
+
+  .tikool-fc-modal__content {
+    display: block;
+    overflow: auto;
+  }
+
+  .tikool-fc-preview {
+    min-height: 490px;
+    padding: 56px 16px 20px;
+  }
+
+  .tikool-fc-canvas-wrap {
+    max-height: none;
+    width: min(78%, 420px);
+  }
+
+  .tikool-fc-controls {
+    overflow: visible;
+    padding: 30px 20px 150px;
+  }
+
+  .tikool-fc-modal__footer {
+    bottom: 0;
+    gap: 10px;
+    left: 0;
+    min-height: 88px;
+    padding: 10px 14px;
+    position: absolute;
+    right: 0;
+    z-index: 4;
+  }
+
+  .tikool-fc-purchase {
+    flex: 1;
+  }
+
+  .tikool-fc-purchase .quantity {
+    min-width: 110px;
+  }
+
+  .tikool-fc-purchase .single_add_to_cart_button {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .tikool-fc-preview {
+    min-height: 410px;
+  }
+
+  .tikool-fc-preview__badge {
+    left: 14px;
+    top: 14px;
+  }
+
+  .tikool-fc-canvas-wrap {
+    width: min(84%, 340px);
+  }
+
+  .tikool-fc-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tikool-fc-summary div {
+    min-height: 78px;
+    padding: 16px;
+  }
+
+  .tikool-fc-summary strong {
+    font-size: 15px;
+  }
+
+  .tikool-fc-back {
+    font-size: 0;
+    min-width: 52px;
+    padding: 10px;
+  }
+
+  .tikool-fc-back::before {
+    content: "←";
+    font-size: 22px;
+  }
+
+  .tikool-fc-purchase {
+    gap: 8px;
+  }
+
+  .tikool-fc-purchase .quantity {
+    min-width: 88px;
+  }
+
+  .tikool-fc-purchase .single_add_to_cart_button {
+    font-size: 12px !important;
+    padding: 12px !important;
+  }
+}

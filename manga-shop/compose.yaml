@@ -1,0 +1,172 @@
+name: ${COMPOSE_PROJECT_NAME:-manga-shop}
+
+services:
+  db:
+    image: ${MARIADB_IMAGE:-mariadb:11.8}
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:${MARIADB_HOST_PORT:-3310}:3306"
+    networks:
+      - backend
+      - management
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:7.4-alpine}
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - ${REDIS_MAXMEMORY:-256mb}
+      - --maxmemory-policy
+      - allkeys-lru
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  wordpress:
+    image: ${WORDPRESS_IMAGE:-wordpress:7.0-php8.3-fpm}
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
+      WORDPRESS_DB_USER: ${MARIADB_USER}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
+      WORDPRESS_REDIS_HOST: redis
+      WORDPRESS_REDIS_PORT: 6379
+      WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
+      WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-manga-shop}:"
+      MANGA_SHOP_PAGE_CACHE_GENERATION_FILE: /var/run/manga-shop-page-cache/generation.conf
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.mangaproduct.com}
+      WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.mangaproduct.com}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('DISALLOW_FILE_EDIT', true);
+        define('WP_MEMORY_LIMIT', '500M');
+        define('WP_MAX_MEMORY_LIMIT', '500M');
+        define('WP_HOME', getenv('WORDPRESS_HOME') ?: 'https://www.mangaproduct.com');
+        define('WP_SITEURL', getenv('WORDPRESS_SITEURL') ?: 'https://www.mangaproduct.com');
+        if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && strpos($$_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
+            $$_SERVER['HTTPS'] = 'on';
+        }
+        define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'redis');
+        define('WP_REDIS_PORT', (int) (getenv('WORDPRESS_REDIS_PORT') ?: 6379));
+        define('WP_REDIS_DATABASE', (int) (getenv('WORDPRESS_REDIS_DATABASE') ?: 0));
+        define('WP_REDIS_PREFIX', getenv('WORDPRESS_REDIS_PREFIX') ?: 'manga-shop:');
+        define('WP_REDIS_TIMEOUT', 1);
+        define('WP_REDIS_READ_TIMEOUT', 1);
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./theme/manga-shop:/var/www/html/wp-content/themes/manga-shop
+      - ./plugin/manga-shop-plugin:/var/www/html/wp-content/plugins/manga-shop-plugin
+      - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./runtime/page-cache:/var/run/manga-shop-page-cache
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  nginx:
+    image: ${NGINX_IMAGE:-nginx:1.28-alpine}
+    restart: unless-stopped
+    command: ["/bin/sh", "/etc/nginx/cache-watch.sh"]
+    ports:
+      - "${HTTP_BIND_IP:-127.0.0.1}:${HTTP_PORT:-8084}:80"
+    volumes:
+      - wordpress_data:/var/www/html:ro
+      - ./theme/manga-shop:/var/www/html/wp-content/themes/manga-shop:ro
+      - ./plugin/manga-shop-plugin:/var/www/html/wp-content/plugins/manga-shop-plugin:ro
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/cache-watch.sh:/etc/nginx/cache-watch.sh:ro
+      - ./runtime/page-cache:/var/run/manga-shop-page-cache
+      - page_cache:/var/cache/nginx/manga-shop
+    networks:
+      - frontend
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  wpcli:
+    image: ${WPCLI_IMAGE:-wordpress:cli-php8.3}
+    profiles:
+      - tools
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
+      WORDPRESS_DB_USER: ${MARIADB_USER}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
+      WORDPRESS_REDIS_HOST: redis
+      WORDPRESS_REDIS_PORT: 6379
+      WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
+      WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-manga-shop}:"
+      MANGA_SHOP_PAGE_CACHE_GENERATION_FILE: /var/run/manga-shop-page-cache/generation.conf
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'redis');
+        define('WP_REDIS_PORT', (int) (getenv('WORDPRESS_REDIS_PORT') ?: 6379));
+        define('WP_REDIS_DATABASE', (int) (getenv('WORDPRESS_REDIS_DATABASE') ?: 0));
+        define('WP_REDIS_PREFIX', getenv('WORDPRESS_REDIS_PREFIX') ?: 'manga-shop:');
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./theme/manga-shop:/var/www/html/wp-content/themes/manga-shop
+      - ./plugin/manga-shop-plugin:/var/www/html/wp-content/plugins/manga-shop-plugin
+      - ./runtime/page-cache:/var/run/manga-shop-page-cache
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  page_cache:
+  wordpress_data:
+
+networks:
+  frontend:
+  backend:
+    internal: true
+  management:

@@ -11,6 +11,9 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+require_once get_template_directory() . '/homepage-banner.php';
+require_once get_template_directory() . '/homepage-products.php';
+
 function trovesia_setup(): void
 {
     load_theme_textdomain('trovesia', get_template_directory() . '/languages');
@@ -73,13 +76,24 @@ function trovesia_enqueue_assets(): void
     }
 
     if (is_file($script_path)) {
+        $script_dependencies = [];
+        if (class_exists('WooCommerce') && wp_script_is('wc-cart-fragments', 'registered')) {
+            wp_enqueue_script('wc-cart-fragments');
+            $script_dependencies = ['jquery', 'wc-cart-fragments'];
+        }
+
         wp_enqueue_script(
             'trovesia-theme',
             get_template_directory_uri() . '/assets/js/theme.js',
-            [],
+            $script_dependencies,
             (string) filemtime($script_path),
             true
         );
+        wp_localize_script('trovesia-theme', 'trovesiaCart', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce'   => wp_create_nonce('trovesia_cart_quantity'),
+            'error'   => __('The cart could not be updated. Please try again.', 'trovesia'),
+        ]);
     }
 }
 add_action('wp_enqueue_scripts', 'trovesia_enqueue_assets');
@@ -107,13 +121,39 @@ function trovesia_cart_count(): int
     return WC()->cart->get_cart_contents_count();
 }
 
+function trovesia_render_cart_count_badge(): void
+{
+    $count = trovesia_cart_count();
+    ?>
+    <span class="header-cart__count" aria-hidden="true"<?php echo $count < 1 ? ' hidden' : ''; ?>><?php echo esc_html((string) $count); ?></span>
+    <?php
+}
+
+function trovesia_render_cart_drawer_content(): void
+{
+    $is_empty = ! WC()->cart || WC()->cart->is_empty();
+    ?>
+    <div class="trovesia-mini-cart__content">
+        <div class="trovesia-mini-cart__body">
+            <?php woocommerce_mini_cart(); ?>
+        </div>
+        <div class="trovesia-mini-cart__actions">
+            <a class="shop-button shop-button--dark<?php echo $is_empty ? ' is-disabled' : ''; ?>" href="<?php echo esc_url(wc_get_checkout_url()); ?>"<?php echo $is_empty ? ' aria-disabled="true" tabindex="-1"' : ''; ?>><?php esc_html_e('Checkout', 'trovesia'); ?></a>
+            <a class="shop-button trovesia-mini-cart__view-cart" href="<?php echo esc_url(wc_get_cart_url()); ?>"><?php esc_html_e('View cart', 'trovesia'); ?></a>
+        </div>
+    </div>
+    <?php
+}
+
 function trovesia_cart_fragments(array $fragments): array
 {
     ob_start();
-    ?>
-    <span class="header-cart__count"><?php echo esc_html((string) trovesia_cart_count()); ?></span>
-    <?php
+    trovesia_render_cart_count_badge();
     $fragments['.header-cart__count'] = (string) ob_get_clean();
+
+    ob_start();
+    trovesia_render_cart_drawer_content();
+    $fragments['.trovesia-mini-cart__content'] = (string) ob_get_clean();
 
     return $fragments;
 }

@@ -76,6 +76,21 @@ docker compose --profile tools run --rm wpcli trovesia migrate-reviews
 Compose 会将自定义代码挂载进容器，修改 PHP、CSS 或 JavaScript 后
 无需重新构建镜像。
 
+## FastCGI 页面缓存
+
+Docker Nginx 会缓存匿名访客的公开 HTML 页面十分钟。购物车、结账、账户、
+后台、API、查询参数、登录用户与 WooCommerce 会话全部绕过缓存。响应头
+`X-Trovesia-Cache` 显示 `MISS`、`HIT`、`BYPASS` 或 `STALE`。
+
+后台更新公开内容、商品、变体、库存、分类、菜单、主题或软件后，Trovesia
+插件会更新共享的缓存代次文件。Nginx 监控进程验证配置并热重载，因此旧代次
+立即停止命中，并在闲置一小时后由缓存管理器回收。
+
+```bash
+docker compose --profile tools run --rm wpcli trovesia page-cache status
+docker compose --profile tools run --rm wpcli trovesia page-cache purge
+```
+
 ## 一键部署
 
 脚本默认部署到 `root@site:/root/wordpress-sites/trovesia-shop`，并检查

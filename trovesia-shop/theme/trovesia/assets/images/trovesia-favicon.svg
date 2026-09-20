@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Trovesia T</title>
+  <rect width="512" height="512" rx="118" fill="#102c25"/>
+  <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#c6965c" stroke-width="10"/>
+  <text x="256" y="382" fill="#fffefb" font-family="Baskerville, 'Iowan Old Style', Georgia, serif" font-size="360" font-weight="500" text-anchor="middle">T</text>
+  <path d="M218 431h76" fill="none" stroke="#c6965c" stroke-width="6" stroke-linecap="round"/>
+  <rect x="252" y="427" width="8" height="8" fill="#c6965c" transform="rotate(45 256 431)"/>
+</svg>

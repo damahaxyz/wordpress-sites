@@ -27,7 +27,21 @@ wordpress-sites/
 │   ├── nginx/
 │   ├── php/
 │   └── scripts/
-└── trovesia-shop/
+├── trovesia-shop/
+│   ├── compose.yaml
+│   ├── theme/
+│   ├── plugin/
+│   ├── nginx/
+│   ├── php/
+│   └── scripts/
+├── manga-shop/
+    ├── compose.yaml
+    ├── theme/
+    ├── plugin/
+    ├── nginx/
+    ├── php/
+    └── scripts/
+└── tikool-shop/
     ├── compose.yaml
     ├── theme/
     ├── plugin/
@@ -50,6 +64,14 @@ Compose 项目名继续使用 `wordpress`。
 `trovesia-shop` 是第四个独立 WordPress 商店，包含 Trovesia 专属主题与插件。
 默认监听 `127.0.0.1:8083`，MariaDB 通过 `127.0.0.1:3309` 供 SSH Tunnel
 使用；正式域名为 `https://www.trovesia.com`。
+
+`manga-shop` 是用于迁移 `www.mangaproduct.com` 的第五个独立 WordPress 商店，
+使用不依赖 Elementor 的自定义主题和独立业务插件。默认监听
+`127.0.0.1:8084`，MariaDB 通过 `127.0.0.1:3310` 供 SSH Tunnel 使用。
+
+`tikool-shop` 是用于宠物定制产品的独立 WordPress 商店，包含专属主题、插件和
+订单级宠物照片上传。默认监听 `127.0.0.1:8085`，MariaDB 通过
+`127.0.0.1:3311` 供 SSH Tunnel 使用。
 
 ## 13799 Shop
 
@@ -105,3 +127,27 @@ docker compose up -d --wait
 ```
 
 详细说明见 [trovesia-shop/README.md](trovesia-shop/README.md)。
+
+## Manga Shop
+
+```bash
+cd manga-shop
+cp .env.example .env
+# 替换 .env 中的两个数据库密码
+docker compose config --quiet
+docker compose up -d --wait
+```
+
+详细说明见 [manga-shop/README.md](manga-shop/README.md)。
+
+## Tikool Shop
+
+```bash
+cd tikool-shop
+cp .env.example .env
+# 替换 .env 中的两个数据库密码
+docker compose config --quiet
+docker compose up -d --wait
+```
+
+详细说明见 [tikool-shop/README.md](tikool-shop/README.md)。

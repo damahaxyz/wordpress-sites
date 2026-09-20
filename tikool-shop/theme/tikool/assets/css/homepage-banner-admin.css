@@ -1,0 +1,95 @@
+.tikool-banner-settings {
+  padding: 4px 2px 12px;
+}
+
+.tikool-banner-intro {
+  max-width: 920px;
+  color: #50575e;
+}
+
+.tikool-banner-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.tikool-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tikool-banner-grid--style {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tikool-banner-field {
+  margin: 0 0 16px;
+}
+
+.tikool-banner-field > label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.tikool-banner-field input[type="text"],
+.tikool-banner-field input[type="url"],
+.tikool-banner-field input[type="number"],
+.tikool-banner-field select,
+.tikool-banner-field textarea {
+  width: 100%;
+}
+
+.tikool-banner-image-field {
+  padding: 16px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.tikool-banner-image-preview {
+  display: flex;
+  min-height: 120px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f0f0f1;
+}
+
+.tikool-banner-image-preview img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.tikool-banner-image-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.tikool-products-grid {
+  grid-template-columns: minmax(0, 3fr) minmax(140px, 1fr);
+}
+
+.tikool-products-settings .select2-container,
+.tikool-products-settings .selectWoo-container {
+  width: 100% !important;
+}
+
+.tikool-products-settings .description {
+  display: block;
+  margin-top: 6px;
+}
+
+@media (max-width: 782px) {
+  .tikool-banner-grid,
+  .tikool-banner-grid--style {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "palette": [
+        {
+          "color": "#2c211e",
+          "name": "Ink",
+          "slug": "ink"
+        },
+        {
+          "color": "#4b2e46",
+          "name": "Warm plum",
+          "slug": "warm-plum"
+        },
+        {
+          "color": "#3a2235",
+          "name": "Deep plum",
+          "slug": "deep-plum"
+        },
+        {
+          "color": "#d86f4c",
+          "name": "Terracotta",
+          "slug": "terracotta"
+        },
+        {
+          "color": "#f3dfd5",
+          "name": "Soft blush",
+          "slug": "soft-blush"
+        },
+        {
+          "color": "#fbf5ed",
+          "name": "Warm paper",
+          "slug": "warm-paper"
+        },
+        {
+          "color": "#fffaf4",
+          "name": "Ivory",
+          "slug": "ivory"
+        }
+      ]
+    },
+    "layout": {
+      "contentSize": "820px",
+      "wideSize": "1240px"
+    },
+    "spacing": {
+      "units": ["px", "rem", "%", "vw", "vh"]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "Manrope, ui-sans-serif, system-ui, sans-serif",
+          "name": "Tikool Sans",
+          "slug": "tikool-sans"
+        },
+        {
+          "fontFamily": "Fraunces, \"Iowan Old Style\", Georgia, serif",
+          "name": "Tikool Serif",
+          "slug": "tikool-serif"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#fbf5ed",
+      "text": "#2c211e"
+    },
+    "typography": {
+      "fontFamily": "Manrope, ui-sans-serif, system-ui, sans-serif",
+      "lineHeight": "1.65"
+    }
+  }
+}

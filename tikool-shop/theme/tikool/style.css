@@ -1,0 +1,1631 @@
+/*
+Theme Name: Tikool Shop
+Description: A refined WooCommerce theme for Tikool custom pet portraits, gifts, and memorial keepsakes.
+Version: 2.6.0
+Requires at least: 6.8
+Requires PHP: 8.3
+Text Domain: tikool
+*/
+
+:root {
+  --shop-ink: #2c211e;
+  --shop-muted: #776965;
+  --shop-line: #e4d3ca;
+  --shop-soft: #f3dfd5;
+  --shop-paper: #fbf5ed;
+  --shop-white: #fffaf4;
+  --shop-brand: #4b2e46;
+  --shop-brand-dark: #3a2235;
+  --shop-brand-deep: #2b1826;
+  --shop-accent: #d86f4c;
+  --shop-accent-dark: #b65339;
+  --shop-accent-deep: #9f432f;
+  --shop-accent-soft: #edb9a6;
+  --shop-danger: #a83e3a;
+  --shop-success: #58678f;
+  --shop-max: 1240px;
+  --shop-narrow: 820px;
+  --shop-radius: 24px;
+  --shop-radius-small: 14px;
+  --shop-shadow: 0 28px 80px rgba(75, 46, 70, 0.12);
+  --shop-transition: 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  color: var(--shop-ink);
+  background: var(--shop-paper);
+  font-family: Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  transition: color var(--shop-transition), background-color var(--shop-transition), border-color var(--shop-transition), box-shadow var(--shop-transition), transform var(--shop-transition);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 0.65em;
+  color: var(--shop-ink);
+  font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+p {
+  margin: 0 0 1.25rem;
+}
+
+::selection {
+  color: var(--shop-white);
+  background: var(--shop-brand);
+}
+
+.shop-container {
+  width: min(calc(100% - 64px), var(--shop-max));
+  margin-inline: auto;
+}
+
+.screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.screen-reader-text:focus {
+  z-index: 10000;
+  top: 10px;
+  left: 10px;
+  width: auto;
+  height: auto;
+  padding: 12px 18px;
+  clip: auto;
+  color: var(--shop-white);
+  background: var(--shop-brand-dark);
+}
+
+.announcement-bar {
+  overflow: hidden;
+  color: #f8e8df;
+  background: var(--shop-brand-deep);
+}
+
+.announcement-bar__track {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 24px;
+  text-align: center;
+}
+
+.announcement-bar__message {
+  display: inline-flex;
+  margin: 0;
+  align-items: center;
+  gap: 9px;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.announcement-bar a.announcement-bar__message:hover,
+.announcement-bar a.announcement-bar__message:focus-visible {
+  color: var(--shop-white);
+}
+
+.announcement-bar a.announcement-bar__message:hover {
+  transform: translateY(-1px);
+}
+
+.announcement-bar__message i {
+  color: var(--shop-accent);
+  font-style: normal;
+}
+
+.site-header {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+  border-bottom: 1px solid rgba(228, 211, 202, 0.88);
+  background: rgba(255, 250, 244, 0.95);
+  backdrop-filter: blur(18px);
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 10px 34px rgba(75, 46, 70, 0.08);
+}
+
+.site-header__inner {
+  display: grid;
+  min-height: 84px;
+  align-items: center;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 32px;
+}
+
+.site-branding {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+}
+
+.site-branding__logo,
+.site-branding__logo .custom-logo {
+  display: block;
+}
+
+.site-branding__logo .custom-logo {
+  width: auto;
+  height: 44px;
+  object-fit: contain;
+}
+
+.tikool-wordmark {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tikool-wordmark__text {
+  color: var(--shop-brand-deep);
+  font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+  font-size: 29px;
+  font-weight: 500;
+  letter-spacing: 0.255em;
+  line-height: 0.95;
+  text-indent: 0.255em;
+  text-rendering: geometricPrecision;
+}
+
+.tikool-wordmark__accent {
+  position: relative;
+  display: block;
+  width: 72%;
+  height: 1px;
+  margin-top: 10px;
+  background: linear-gradient(90deg, transparent, var(--shop-accent) 18%, var(--shop-accent) 82%, transparent);
+}
+
+.tikool-wordmark__accent::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: var(--shop-accent);
+  content: "";
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.primary-navigation ul {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.primary-navigation a {
+  position: relative;
+  display: block;
+  padding: 30px 0;
+  color: #4e3d38;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.primary-navigation a::after {
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  left: 0;
+  height: 1px;
+  background: var(--shop-brand);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--shop-transition);
+}
+
+.primary-navigation a:hover,
+.primary-navigation .current-menu-item > a {
+  color: var(--shop-brand);
+}
+
+.primary-navigation a:hover::after,
+.primary-navigation .current-menu-item > a::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 4px;
+}
+
+.header-icon {
+  position: relative;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  background: transparent;
+}
+
+.header-icon:hover {
+  background: var(--shop-soft);
+}
+
+.header-icon svg {
+  width: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.header-cart__count {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  display: grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 4px;
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-brand);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.header-cart__count[hidden] {
+  display: none;
+}
+
+.menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 11px 9px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.menu-toggle > span:not(.screen-reader-text) {
+  display: block;
+  width: 22px;
+  height: 1px;
+  margin: 5px 0;
+  background: currentColor;
+  transition: transform var(--shop-transition), opacity var(--shop-transition);
+}
+
+.menu-open .menu-toggle > span:first-child {
+  transform: translateY(3px) rotate(45deg);
+}
+
+.menu-open .menu-toggle > span:nth-child(2) {
+  transform: translateY(-3px) rotate(-45deg);
+}
+
+.tikool-cart-backdrop {
+  position: fixed;
+  z-index: 1199;
+  inset: 0;
+  visibility: hidden;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  background: rgba(43, 24, 38, 0.58);
+  backdrop-filter: blur(3px);
+  transition: opacity var(--shop-transition), visibility var(--shop-transition);
+}
+
+.tikool-cart-drawer {
+  position: fixed;
+  z-index: 1200;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: min(92vw, 440px);
+  min-width: 0;
+  visibility: hidden;
+  flex-direction: column;
+  color: var(--shop-ink);
+  background: var(--shop-white);
+  box-shadow: -24px 0 70px rgba(75, 46, 70, 0.2);
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1), visibility 320ms;
+}
+
+.cart-drawer-open .tikool-cart-backdrop {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cart-drawer-open .tikool-cart-drawer {
+  visibility: visible;
+  transform: translateX(0);
+}
+
+body.menu-open,
+body.cart-drawer-open {
+  overflow: hidden;
+}
+
+.tikool-cart-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 28px 22px;
+  border-bottom: 1px solid var(--shop-line);
+  gap: 20px;
+}
+
+.tikool-cart-drawer__header p {
+  margin: 0 0 5px;
+  color: var(--shop-accent);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tikool-cart-drawer__header h2 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.tikool-cart-drawer__close {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--shop-line);
+  border-radius: 50%;
+  color: var(--shop-ink);
+  background: transparent;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.tikool-mini-cart__content {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.tikool-cart-drawer.is-updating .tikool-mini-cart__content {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.tikool-mini-cart__body {
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px 28px 24px;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item {
+  position: relative;
+  display: block;
+  padding: 18px 28px 18px 0;
+  border-bottom: 1px solid var(--shop-line);
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item > a:not(.remove) {
+  display: grid;
+  align-items: center;
+  color: var(--shop-ink);
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  padding-right: 28px;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item img {
+  width: 74px !important;
+  height: 82px !important;
+  margin: 0 !important;
+  border-radius: 11px;
+  object-fit: cover;
+  float: none !important;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item .remove {
+  position: absolute;
+  z-index: 1;
+  top: 18px;
+  right: 0;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--shop-line);
+  border-radius: 50%;
+  color: var(--shop-muted) !important;
+  background: transparent;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item .quantity {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  margin: 8px 0 0 88px;
+  color: var(--shop-muted);
+  font-size: 12px;
+  gap: 6px;
+}
+
+.tikool-mini-cart__quantity button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--shop-line);
+  border-radius: 50%;
+  color: var(--shop-brand);
+  background: var(--shop-white);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.tikool-mini-cart__quantity button:hover:not(:disabled) {
+  color: var(--shop-white);
+  border-color: var(--shop-brand);
+  background: var(--shop-brand);
+}
+
+.tikool-mini-cart__quantity button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.tikool-mini-cart__quantity-value {
+  min-width: 18px;
+  color: var(--shop-ink);
+  font-weight: 800;
+  text-align: center;
+}
+
+.tikool-mini-cart__unit-price {
+  margin-left: 2px;
+  white-space: nowrap;
+}
+
+.tikool-mini-cart__quantity.is-linked {
+  min-height: 28px;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item dl.variation {
+  display: grid;
+  padding: 0;
+  margin: 7px 0 0 88px;
+  border: 0;
+  color: var(--shop-muted);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px 5px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item dl.variation dt,
+.tikool-mini-cart__body .woocommerce-mini-cart-item dl.variation dd {
+  display: block;
+  width: auto !important;
+  clear: none !important;
+  float: none !important;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item dl.variation dt {
+  color: var(--shop-ink);
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart-item dl.variation dd p {
+  margin: 0;
+  color: var(--shop-muted);
+  font-size: inherit;
+  line-height: inherit;
+  overflow-wrap: anywhere;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart__total {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart__buttons {
+  display: none;
+}
+
+.tikool-mini-cart__body .woocommerce-mini-cart__empty-message {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+  margin: 0;
+  color: var(--shop-muted);
+  text-align: center;
+}
+
+.tikool-mini-cart__actions {
+  display: grid;
+  padding: 20px 28px 28px;
+  border-top: 1px solid var(--shop-line);
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: var(--shop-paper);
+}
+
+.tikool-mini-cart__actions .shop-button {
+  min-width: 0;
+  padding: 0 14px;
+}
+
+.tikool-mini-cart__actions .is-disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.tikool-mini-cart__view-cart {
+  color: var(--shop-brand);
+  background: transparent;
+}
+
+.home-hero {
+  position: relative;
+  min-height: min(760px, calc(100vh - 118px));
+  overflow: hidden;
+  background: #ead5cc;
+}
+
+.home-hero__media,
+.home-hero__veil {
+  position: absolute;
+  inset: 0;
+}
+
+.home-hero__media {
+  background-image: var(--tikool-hero-desktop, url("assets/images/tikool-product-hero-v2.webp"));
+  background-position: var(--tikool-hero-desktop-position, center center);
+  background-size: cover;
+  transform: scale(1.015);
+}
+
+.home-hero__veil {
+  background: linear-gradient(90deg, var(--tikool-hero-overlay, rgba(75, 46, 70, 0.82)) 0%, var(--tikool-hero-overlay-soft, rgba(75, 46, 70, 0.58)) 37%, transparent 69%);
+}
+
+.home-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: inherit;
+  align-items: center;
+}
+
+.home-hero__copy {
+  width: min(630px, 54%);
+  padding: 96px 0 110px;
+}
+
+.home-hero h1 {
+  color: var(--tikool-hero-text, var(--shop-white));
+  font-size: clamp(52px, 6.2vw, 88px);
+  letter-spacing: -0.055em;
+}
+
+.home-hero__lead {
+  max-width: 590px;
+  color: var(--tikool-hero-text-muted, rgba(255, 254, 251, 0.82));
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.65;
+}
+
+.section-kicker {
+  margin-bottom: 18px;
+  color: var(--shop-brand);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.section-kicker--light {
+  color: var(--shop-accent-soft);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.shop-button,
+.tikool-form-card button,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 25px;
+  border: 1px solid var(--shop-accent-dark);
+  border-radius: 999px;
+  color: var(--shop-white);
+  background: var(--shop-accent-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.shop-button:hover,
+.tikool-form-card button:hover {
+  border-color: var(--shop-accent-deep);
+  background: var(--shop-accent-deep);
+  transform: translateY(-2px);
+}
+
+.shop-button--ghost {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--shop-white);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.shop-button--ghost:hover {
+  border-color: var(--shop-white);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.shop-button--dark {
+  border-color: var(--shop-brand-dark);
+  background: var(--shop-brand-dark);
+}
+
+.home-hero__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 0 0;
+  color: var(--tikool-hero-text-note, rgba(255, 254, 251, 0.72));
+  font-size: 12px;
+}
+
+.home-hero__note span {
+  color: var(--shop-accent);
+}
+
+.home-hero--copy-center .home-hero__copy {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.home-hero--copy-center .home-hero__lead {
+  margin-inline: auto;
+}
+
+.home-hero--copy-center .button-row,
+.home-hero--copy-center .home-hero__note {
+  justify-content: center;
+}
+
+.home-hero--copy-center .home-hero__veil {
+  background: var(--tikool-hero-overlay-soft, rgba(75, 46, 70, 0.58));
+}
+
+.home-hero--copy-right .home-hero__copy {
+  margin-left: auto;
+  text-align: right;
+}
+
+.home-hero--copy-right .home-hero__lead {
+  margin-left: auto;
+}
+
+.home-hero--copy-right .button-row,
+.home-hero--copy-right .home-hero__note {
+  justify-content: flex-end;
+}
+
+.home-hero--copy-right .home-hero__veil {
+  background: linear-gradient(270deg, var(--tikool-hero-overlay, rgba(75, 46, 70, 0.82)) 0%, var(--tikool-hero-overlay-soft, rgba(75, 46, 70, 0.58)) 37%, transparent 69%);
+}
+
+.trust-ribbon {
+  border-bottom: 1px solid var(--shop-line);
+  background: var(--shop-white);
+}
+
+.trust-ribbon__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.trust-ribbon__inner > div {
+  display: grid;
+  padding: 26px clamp(20px, 3vw, 46px);
+  border-right: 1px solid var(--shop-line);
+  grid-template-columns: auto 1fr;
+  column-gap: 16px;
+}
+
+.trust-ribbon__inner > div:last-child {
+  border-right: 0;
+}
+
+.trust-ribbon__inner > div > span {
+  grid-row: span 2;
+  color: var(--shop-accent);
+  font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+  font-size: 20px;
+}
+
+.trust-ribbon strong {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.trust-ribbon small {
+  color: var(--shop-muted);
+  font-size: 11px;
+}
+
+.home-section {
+  padding-top: clamp(80px, 10vw, 140px);
+  padding-bottom: clamp(80px, 10vw, 140px);
+}
+
+.home-editor-content {
+  max-width: var(--shop-narrow);
+  font-size: 18px;
+}
+
+.section-heading {
+  display: grid;
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 430px);
+  gap: 70px;
+  margin-bottom: 54px;
+}
+
+.section-heading h2,
+.ritual-intro h2,
+.care-story h2,
+.tracking-section h2 {
+  margin: 0;
+  font-size: clamp(40px, 5vw, 68px);
+}
+
+.section-heading > p {
+  margin: 0;
+  color: var(--shop-muted);
+  font-size: 17px;
+}
+
+.section-heading--center {
+  display: block;
+  max-width: 760px;
+  margin: 0 auto 58px;
+  text-align: center;
+}
+
+.section-heading--center > p:last-child {
+  max-width: 620px;
+  margin: 20px auto 0;
+}
+
+.product-showcase {
+  background: var(--shop-paper);
+}
+
+.ritual-section {
+  border-top: 1px solid var(--shop-line);
+  border-bottom: 1px solid var(--shop-line);
+  background: var(--shop-white);
+}
+
+.ritual-section .shop-container {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(60px, 9vw, 130px);
+}
+
+.ritual-intro {
+  position: sticky;
+  top: 150px;
+  align-self: start;
+}
+
+.ritual-intro p:last-child {
+  max-width: 540px;
+  color: var(--shop-muted);
+}
+
+.ritual-steps {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ritual-steps li {
+  display: grid;
+  padding: 34px 0;
+  border-top: 1px solid var(--shop-line);
+  grid-template-columns: 64px 1fr;
+  gap: 24px;
+}
+
+.ritual-steps li:last-child {
+  border-bottom: 1px solid var(--shop-line);
+}
+
+.ritual-steps > li > span {
+  color: var(--shop-accent);
+  font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+  font-size: 24px;
+}
+
+.ritual-steps h3 {
+  margin-bottom: 10px;
+  font-size: 32px;
+}
+
+.ritual-steps p {
+  max-width: 520px;
+  margin: 0;
+  color: var(--shop-muted);
+}
+
+.ingredient-section {
+  background: var(--shop-soft);
+}
+
+.ingredient-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.ingredient-grid article {
+  min-height: 320px;
+  padding: 30px;
+  border: 1px solid rgba(75, 46, 70, 0.15);
+  border-radius: var(--shop-radius);
+  background: rgba(255, 250, 244, 0.7);
+}
+
+.ingredient-grid article > span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 72px;
+  place-items: center;
+  border: 1px solid var(--shop-accent);
+  border-radius: 50%;
+  color: var(--shop-accent);
+  font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+  font-size: 21px;
+}
+
+.ingredient-grid h3 {
+  font-size: 30px;
+}
+
+.ingredient-grid p {
+  margin: 0;
+  color: var(--shop-muted);
+  font-size: 14px;
+}
+
+.care-story {
+  color: var(--shop-white);
+  background: var(--shop-brand-dark);
+}
+
+.care-story__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: clamp(60px, 10vw, 150px);
+}
+
+.care-story h2 {
+  color: var(--shop-white);
+}
+
+.care-story__inner > div:last-child {
+  padding-top: 42px;
+}
+
+.care-story__inner > div:last-child p {
+  color: rgba(255, 254, 251, 0.72);
+  font-size: 18px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  color: var(--shop-brand);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-link:hover span {
+  transform: translate(2px, -2px);
+}
+
+.text-link--light {
+  color: var(--shop-accent-soft);
+}
+
+.tracking-section {
+  background: #ead5cc;
+}
+
+.tracking-section__inner {
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(0, 0.8fr) minmax(420px, 1.2fr);
+  gap: clamp(50px, 9vw, 120px);
+}
+
+.tracking-section__inner > div:first-child > p:last-child {
+  max-width: 480px;
+  color: var(--shop-muted);
+}
+
+.tikool-form-card {
+  padding: clamp(30px, 4vw, 54px);
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+  box-shadow: var(--shop-shadow);
+}
+
+.tikool-form-card h2 {
+  margin-bottom: 16px;
+  font-size: clamp(34px, 4vw, 50px);
+}
+
+.tikool-form-card > p:not(.tikool-form-card__eyebrow, .tikool-form-notice) {
+  color: var(--shop-muted);
+}
+
+.tikool-form-card__eyebrow {
+  margin-bottom: 10px;
+  color: var(--shop-brand);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tikool-inline-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.tikool-inline-form input,
+.tikool-contact-form input,
+.tikool-contact-form textarea {
+  width: 100%;
+  padding: 14px 17px;
+  border: 1px solid #d8c6bd;
+  border-radius: var(--shop-radius-small);
+  outline: none;
+  color: var(--shop-ink);
+  background: var(--shop-white);
+}
+
+.tikool-inline-form input:focus,
+.tikool-contact-form input:focus,
+.tikool-contact-form textarea:focus {
+  border-color: var(--shop-brand);
+  box-shadow: 0 0 0 3px rgba(75, 46, 70, 0.12);
+}
+
+.tikool-contact-form {
+  margin-top: 32px;
+}
+
+.tikool-contact-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tikool-contact-form p {
+  margin-bottom: 18px;
+}
+
+.tikool-contact-form label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tikool-contact-form textarea {
+  resize: vertical;
+}
+
+.tikool-contact-form__website {
+  position: absolute;
+  left: -9999px;
+}
+
+.tikool-form-notice {
+  padding: 12px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.tikool-form-notice--success {
+  color: var(--shop-success);
+  background: #ece9f3;
+}
+
+.tikool-form-notice--error {
+  color: var(--shop-danger);
+  background: #f8e5e1;
+}
+
+.site-main:not(.site-main--wide) {
+  min-height: 65vh;
+  padding-top: clamp(56px, 8vw, 100px);
+  padding-bottom: clamp(72px, 10vw, 130px);
+}
+
+.shop-main {
+  width: min(calc(100% - 64px), var(--shop-max));
+}
+
+.archive-header {
+  margin-bottom: 38px;
+}
+
+.entry-title {
+  font-size: clamp(40px, 5vw, 66px);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.content-card {
+  overflow: hidden;
+  padding: 30px;
+  border: 1px solid var(--shop-line);
+  border-radius: var(--shop-radius);
+  background: var(--shop-white);
+  box-shadow: var(--shop-shadow);
+}
+
+.content-card--page {
+  max-width: 980px;
+  padding: clamp(32px, 6vw, 76px);
+  margin-inline: auto;
+}
+
+.page-template-default .content-card--page .entry-title {
+  max-width: 760px;
+}
+
+.content-card__image {
+  display: block;
+  margin: -30px -30px 26px;
+}
+
+.content-grid .entry-title {
+  font-size: 28px;
+}
+
+.entry-content > *:last-child,
+.entry-summary > *:last-child {
+  margin-bottom: 0;
+}
+
+.entry-content a {
+  color: var(--shop-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.content-card--page .entry-content > h2 {
+  margin: 2.15em 0 0.7em;
+  font-size: clamp(25px, 3vw, 34px);
+}
+
+.content-card--page .entry-content > h2:first-child {
+  margin-top: 0;
+}
+
+.content-card--page .entry-content > ul,
+.content-card--page .entry-content > ol {
+  padding-left: 1.35em;
+  margin: 0 0 1.5rem;
+}
+
+.content-card--page .entry-content > ul li,
+.content-card--page .entry-content > ol li {
+  padding-left: 0.25em;
+  margin-bottom: 0.65rem;
+}
+
+.entry-hero {
+  margin: 30px 0;
+}
+
+.empty-state {
+  padding: 54px;
+  border: 1px dashed #cdbab1;
+  border-radius: var(--shop-radius);
+  text-align: center;
+}
+
+.site-footer {
+  color: rgba(255, 254, 251, 0.68);
+  background: var(--shop-brand-deep);
+}
+
+.site-footer__main {
+  display: grid;
+  padding-top: 82px;
+  padding-bottom: 70px;
+  grid-template-columns: minmax(280px, 1.5fr) repeat(3, minmax(150px, 0.75fr));
+  gap: clamp(36px, 6vw, 82px);
+}
+
+.site-footer__wordmark {
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.site-footer__wordmark .tikool-wordmark__text {
+  color: var(--shop-white);
+  font-size: 28px;
+}
+
+.site-footer__wordmark .tikool-wordmark__accent {
+  width: 64%;
+}
+
+.site-footer__brand > p:not(.site-footer__wordmark),
+.site-footer__promise p {
+  max-width: 390px;
+  font-size: 14px;
+}
+
+.site-footer h2 {
+  margin: 5px 0 22px;
+  color: var(--shop-white);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-footer ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.site-footer li {
+  margin-bottom: 10px;
+}
+
+.site-footer a {
+  font-size: 13px;
+}
+
+.site-footer a:hover {
+  color: var(--shop-white);
+}
+
+.site-footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1020px) {
+  .site-header__inner {
+    grid-template-columns: 1fr auto;
+  }
+
+  .primary-navigation {
+    position: absolute;
+    z-index: 1001;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: block;
+    height: 0;
+    max-height: var(--tikool-menu-height, calc(100dvh - 84px));
+    overflow: hidden auto;
+    padding: 28px 32px;
+    border-top: 1px solid var(--shop-line);
+    opacity: 0;
+    visibility: hidden;
+    background: var(--shop-white);
+    box-shadow: 0 24px 50px rgba(75, 46, 70, 0.14);
+    transform: translateY(-10px);
+    transition: opacity var(--shop-transition), transform var(--shop-transition), visibility var(--shop-transition);
+  }
+
+  .primary-navigation.is-open {
+    height: var(--tikool-menu-height, calc(100dvh - 84px));
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .primary-navigation ul {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .primary-navigation a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 19px 0;
+    border-bottom: 1px solid var(--shop-line);
+    font-family: Fraunces, "Iowan Old Style", Georgia, serif;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+
+  .primary-navigation a::before {
+    color: var(--shop-accent);
+    content: "↗";
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    order: 2;
+  }
+
+  .primary-navigation a::after {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .home-hero__copy {
+    width: min(650px, 67%);
+  }
+
+  .ingredient-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .site-footer__main {
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+
+  .site-footer__promise {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .shop-container,
+  .shop-main {
+    width: min(calc(100% - 36px), var(--shop-max));
+  }
+
+  .announcement-bar__track {
+    justify-content: center;
+    padding: 8px 18px;
+  }
+
+  .announcement-bar__message {
+    justify-content: center;
+    font-size: 9px;
+    line-height: 1.5;
+    white-space: normal;
+  }
+
+  .site-header__inner {
+    min-height: 72px;
+    gap: 12px;
+  }
+
+  .primary-navigation {
+    top: 100%;
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .tikool-wordmark--header .tikool-wordmark__text {
+    font-size: 20px;
+    letter-spacing: 0.21em;
+    text-indent: 0.21em;
+  }
+
+  .tikool-wordmark--header .tikool-wordmark__accent {
+    margin-top: 8px;
+  }
+
+  .header-icon,
+  .menu-toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home-hero {
+    min-height: clamp(740px, 190vw, 790px);
+  }
+
+  .home-hero__media {
+    background-image: var(--tikool-hero-mobile, var(--tikool-hero-desktop, url("assets/images/tikool-product-hero-v2.webp")));
+    background-position: var(--tikool-hero-mobile-position, 61% center);
+  }
+
+  .home-hero__veil {
+    background: linear-gradient(180deg, transparent 0%, transparent 30%, var(--tikool-hero-overlay-soft, rgba(75, 46, 70, 0.58)) 54%, var(--tikool-hero-overlay, rgba(75, 46, 70, 0.82)) 100%);
+  }
+
+  .home-hero__inner {
+    align-items: flex-end;
+  }
+
+  .home-hero__copy {
+    width: 100%;
+    padding: 320px 0 34px;
+  }
+
+  .home-hero h1 {
+    margin-bottom: 0.45em;
+    font-size: clamp(38px, 10vw, 46px);
+  }
+
+  .home-hero__lead {
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .home-hero .section-kicker {
+    margin-bottom: 12px;
+    font-size: 9px;
+    line-height: 1.55;
+    letter-spacing: 0.14em;
+  }
+
+  .home-hero .button-row {
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .button-row .shop-button {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .home-hero__note {
+    margin-top: 18px;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .trust-ribbon__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-ribbon__inner > div {
+    padding: 18px 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--shop-line);
+  }
+
+  .trust-ribbon__inner > div:last-child {
+    border-bottom: 0;
+  }
+
+  .section-heading,
+  .ritual-section .shop-container,
+  .care-story__inner,
+  .tracking-section__inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .section-heading h2,
+  .ritual-intro h2,
+  .care-story h2,
+  .tracking-section h2 {
+    font-size: clamp(38px, 11vw, 54px);
+  }
+
+  .ritual-intro {
+    position: static;
+  }
+
+  .ingredient-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-grid article {
+    min-height: auto;
+  }
+
+  .ingredient-grid article > span {
+    margin-bottom: 42px;
+  }
+
+  .care-story__inner > div:last-child {
+    padding-top: 0;
+  }
+
+  .tracking-section__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tikool-inline-form,
+  .tikool-contact-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tikool-inline-form button {
+    width: 100%;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-card--page {
+    padding: 30px 22px;
+  }
+
+  .site-footer__main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .site-footer__brand,
+  .site-footer__promise {
+    grid-column: 1 / -1;
+  }
+
+  .site-footer__promise {
+    grid-row: auto;
+  }
+
+  .site-footer__bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

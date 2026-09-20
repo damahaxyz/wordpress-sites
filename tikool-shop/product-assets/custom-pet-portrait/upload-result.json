@@ -1,0 +1,21 @@
+{
+  "product_id": 31,
+  "name": "Custom Framed Pet Portrait",
+  "status": "publish",
+  "permalink": "https://www.tikool.com/?product=custom-framed-pet-portrait",
+  "display_price": "79.00",
+  "variations": 18,
+  "category_id": 17,
+  "media": {
+    "main": 19,
+    "mat_comparison": 20,
+    "colors": 21,
+    "lifestyle": 22,
+    "natural_white_mat": 23,
+    "natural_no_mat": 24,
+    "walnut_no_mat": 25,
+    "walnut_white_mat": 26,
+    "black_no_mat": 29,
+    "black_white_mat": 30
+  }
+}

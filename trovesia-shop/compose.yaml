@@ -60,6 +60,7 @@ services:
       WORDPRESS_REDIS_PORT: 6379
       WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
       WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-trovesia-shop}:"
+      TROVESIA_PAGE_CACHE_GENERATION_FILE: /var/run/trovesia-page-cache/generation.conf
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
       WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.trovesia.com}
       WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.trovesia.com}
@@ -83,6 +84,7 @@ services:
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
       - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./runtime/page-cache:/var/run/trovesia-page-cache
     networks:
       - frontend
       - backend
@@ -101,6 +103,7 @@ services:
   nginx:
     image: ${NGINX_IMAGE:-nginx:1.28-alpine}
     restart: unless-stopped
+    command: ["/bin/sh", "/etc/nginx/cache-watch.sh"]
     ports:
       - "${HTTP_BIND_IP:-127.0.0.1}:${HTTP_PORT:-8083}:80"
     volumes:
@@ -109,6 +112,9 @@ services:
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
       - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/cache-watch.sh:/etc/nginx/cache-watch.sh:ro
+      - ./runtime/page-cache:/var/run/trovesia-page-cache
+      - page_cache:/var/cache/nginx/trovesia
     networks:
       - frontend
     depends_on:
@@ -137,6 +143,7 @@ services:
       WORDPRESS_REDIS_PORT: 6379
       WORDPRESS_REDIS_DATABASE: ${WORDPRESS_REDIS_DATABASE:-0}
       WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-trovesia-shop}:"
+      TROVESIA_PAGE_CACHE_GENERATION_FILE: /var/run/trovesia-page-cache/generation.conf
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'redis');
         define('WP_REDIS_PORT', (int) (getenv('WORDPRESS_REDIS_PORT') ?: 6379));
@@ -146,6 +153,7 @@ services:
       - wordpress_data:/var/www/html
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
       - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
+      - ./runtime/page-cache:/var/run/trovesia-page-cache
     networks:
       - frontend
       - backend
@@ -157,6 +165,7 @@ services:
 
 volumes:
   db_data:
+  page_cache:
   wordpress_data:
 
 networks:

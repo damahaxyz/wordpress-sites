@@ -8,25 +8,61 @@
 get_header();
 
 $woocommerce_ready = class_exists('WooCommerce');
-$shop_url = $woocommerce_ready ? wc_get_page_permalink('shop') : home_url('/#shop');
+$home_banner = trovesia_get_home_banner_data(get_queried_object_id());
+$home_products = trovesia_get_home_products_data(get_queried_object_id());
+$overlay_rgb = trovesia_home_banner_hex_to_rgb((string) $home_banner['overlay_color']);
+$text_rgb    = trovesia_home_banner_hex_to_rgb((string) $home_banner['text_color']);
+$overlay     = min(0.95, max(0, ((int) $home_banner['overlay_opacity']) / 100));
+$hero_style  = sprintf(
+    '--trovesia-hero-desktop:url("%1$s");--trovesia-hero-mobile:url("%2$s");--trovesia-hero-desktop-position:%3$s;--trovesia-hero-mobile-position:%4$s;--trovesia-hero-overlay:rgba(%5$d,%6$d,%7$d,%8$s);--trovesia-hero-overlay-soft:rgba(%5$d,%6$d,%7$d,%9$s);--trovesia-hero-text:%10$s;--trovesia-hero-text-muted:rgba(%11$d,%12$d,%13$d,.82);--trovesia-hero-text-note:rgba(%11$d,%12$d,%13$d,.72);',
+    esc_url_raw((string) $home_banner['desktop_image_url']),
+    esc_url_raw((string) $home_banner['mobile_image_url']),
+    (string) $home_banner['desktop_position'],
+    (string) $home_banner['mobile_position'],
+    $overlay_rgb[0],
+    $overlay_rgb[1],
+    $overlay_rgb[2],
+    number_format($overlay, 2, '.', ''),
+    number_format($overlay * 0.7, 2, '.', ''),
+    (string) $home_banner['text_color'],
+    $text_rgb[0],
+    $text_rgb[1],
+    $text_rgb[2]
+);
 ?>
 <main id="primary" class="site-main site-main--wide">
-    <section class="home-hero">
+    <?php if ($home_banner['enabled']) : ?>
+    <section class="home-hero home-hero--copy-<?php echo esc_attr((string) $home_banner['text_alignment']); ?>" style="<?php echo esc_attr($hero_style); ?>">
         <div class="home-hero__media" aria-hidden="true"></div>
         <div class="home-hero__veil" aria-hidden="true"></div>
         <div class="home-hero__inner shop-container">
             <div class="home-hero__copy">
-                <p class="section-kicker section-kicker--light"><?php esc_html_e('Botanical hair care, thoughtfully chosen', 'trovesia'); ?></p>
-                <h1><?php esc_html_e('Rooted in ritual. Made for real life.', 'trovesia'); ?></h1>
-                <p class="home-hero__lead"><?php esc_html_e('Discover uncomplicated scalp and hair care built around nourishing botanicals, honest guidance and a routine you will actually enjoy.', 'trovesia'); ?></p>
+                <?php if ((string) $home_banner['kicker'] !== '') : ?>
+                    <p class="section-kicker section-kicker--light"><?php echo esc_html((string) $home_banner['kicker']); ?></p>
+                <?php endif; ?>
+                <?php if ((string) $home_banner['heading'] !== '') : ?>
+                    <h1><?php echo esc_html((string) $home_banner['heading']); ?></h1>
+                <?php endif; ?>
+                <?php if ((string) $home_banner['lead'] !== '') : ?>
+                    <p class="home-hero__lead"><?php echo esc_html((string) $home_banner['lead']); ?></p>
+                <?php endif; ?>
+                <?php if (((string) $home_banner['primary_label'] !== '' && (string) $home_banner['primary_url'] !== '') || ((string) $home_banner['secondary_label'] !== '' && (string) $home_banner['secondary_url'] !== '')) : ?>
                 <div class="button-row">
-                    <a class="shop-button" href="<?php echo esc_url($shop_url); ?>"><?php esc_html_e('Explore the collection', 'trovesia'); ?></a>
-                    <a class="shop-button shop-button--ghost" href="#ritual"><?php esc_html_e('Find your ritual', 'trovesia'); ?></a>
+                    <?php if ((string) $home_banner['primary_label'] !== '' && (string) $home_banner['primary_url'] !== '') : ?>
+                        <a class="shop-button" href="<?php echo esc_url((string) $home_banner['primary_url']); ?>"><?php echo esc_html((string) $home_banner['primary_label']); ?></a>
+                    <?php endif; ?>
+                    <?php if ((string) $home_banner['secondary_label'] !== '' && (string) $home_banner['secondary_url'] !== '') : ?>
+                        <a class="shop-button shop-button--ghost" href="<?php echo esc_url((string) $home_banner['secondary_url']); ?>"><?php echo esc_html((string) $home_banner['secondary_label']); ?></a>
+                    <?php endif; ?>
                 </div>
-                <p class="home-hero__note"><span aria-hidden="true">✦</span><?php esc_html_e('No complicated routines. No pressure-led promises.', 'trovesia'); ?></p>
+                <?php endif; ?>
+                <?php if ((string) $home_banner['note'] !== '') : ?>
+                    <p class="home-hero__note"><span aria-hidden="true">✦</span><?php echo esc_html((string) $home_banner['note']); ?></p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <section class="trust-ribbon" aria-label="<?php esc_attr_e('Why shop with Trovesia', 'trovesia'); ?>">
         <div class="trust-ribbon__inner shop-container">
@@ -47,15 +83,30 @@ $shop_url = $woocommerce_ready ? wc_get_page_permalink('shop') : home_url('/#sho
         <?php endwhile; ?>
     <?php endif; ?>
 
+    <?php if ($home_products['enabled']) : ?>
     <section id="shop" class="home-section product-showcase">
         <div class="shop-container">
             <div class="section-heading section-heading--center">
-                <p class="section-kicker"><?php esc_html_e('The essential edit', 'trovesia'); ?></p>
-                <h2><?php esc_html_e('A smaller shelf. Better choices.', 'trovesia'); ?></h2>
-                <p><?php esc_html_e('Three complementary essentials for cleansing, conditioning and a more intentional scalp-care routine.', 'trovesia'); ?></p>
+                <?php if ((string) $home_products['kicker'] !== '') : ?>
+                    <p class="section-kicker"><?php echo esc_html((string) $home_products['kicker']); ?></p>
+                <?php endif; ?>
+                <?php if ((string) $home_products['heading'] !== '') : ?>
+                    <h2><?php echo esc_html((string) $home_products['heading']); ?></h2>
+                <?php endif; ?>
+                <?php if ((string) $home_products['description'] !== '') : ?>
+                    <p><?php echo esc_html((string) $home_products['description']); ?></p>
+                <?php endif; ?>
             </div>
             <?php if ($woocommerce_ready) : ?>
-                <?php echo do_shortcode('[products limit="3" columns="3" orderby="menu_order date" order="ASC"]'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                <?php
+                $product_ids = $home_products['product_ids'] ?: trovesia_home_products_default_ids();
+                $shortcode   = sprintf(
+                    '[products ids="%s" columns="%d" orderby="post__in" order="ASC"]',
+                    implode(',', array_map('absint', $product_ids)),
+                    (int) $home_products['columns']
+                );
+                echo do_shortcode($shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                ?>
             <?php else : ?>
                 <div class="empty-state">
                     <h3><?php esc_html_e('The collection is being prepared.', 'trovesia'); ?></h3>
@@ -64,6 +115,7 @@ $shop_url = $woocommerce_ready ? wc_get_page_permalink('shop') : home_url('/#sho
             <?php endif; ?>
         </div>
     </section>
+    <?php endif; ?>
 
     <section id="ritual" class="home-section ritual-section">
         <div class="shop-container">

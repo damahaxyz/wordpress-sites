@@ -5,14 +5,16 @@
  * @package TrovesiaShop
  */
 
-$privacy_url = get_privacy_policy_url();
 ?>
 <footer class="site-footer">
     <div class="site-footer__main shop-container">
         <div class="site-footer__brand">
-            <p class="site-footer__wordmark">TROVESIA</p>
+            <p class="site-footer__wordmark trovesia-wordmark trovesia-wordmark--footer" aria-label="Trovesia">
+                <span class="trovesia-wordmark__text">TROVESIA</span>
+                <span class="trovesia-wordmark__accent" aria-hidden="true"></span>
+            </p>
             <p><?php esc_html_e('A quieter, more considered approach to botanical hair care—selected for everyday rituals that feel good to keep.', 'trovesia'); ?></p>
-            <a href="mailto:hello@trovesia.com">hello@trovesia.com</a>
+            <a href="mailto:service@trovesia.com">service@trovesia.com</a>
         </div>
         <div>
             <h2><?php esc_html_e('Explore', 'trovesia'); ?></h2>
@@ -27,9 +29,10 @@ $privacy_url = get_privacy_policy_url();
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/track-order/')); ?>"><?php esc_html_e('Track order', 'trovesia'); ?></a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Contact us', 'trovesia'); ?></a></li>
-                <?php if ($privacy_url) : ?>
-                    <li><a href="<?php echo esc_url($privacy_url); ?>"><?php esc_html_e('Privacy policy', 'trovesia'); ?></a></li>
-                <?php endif; ?>
+                <li><a href="<?php echo esc_url(home_url('/refund-policy/')); ?>"><?php esc_html_e('Refund policy', 'trovesia'); ?></a></li>
+                <li><a href="<?php echo esc_url(home_url('/privacy-policy/')); ?>"><?php esc_html_e('Privacy policy', 'trovesia'); ?></a></li>
+                <li><a href="<?php echo esc_url(home_url('/terms-of-service/')); ?>"><?php esc_html_e('Terms of service', 'trovesia'); ?></a></li>
+                <li><a href="<?php echo esc_url(home_url('/shipping-policy/')); ?>"><?php esc_html_e('Shipping policy', 'trovesia'); ?></a></li>
                 <?php if (class_exists('WooCommerce')) : ?>
                     <li><a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>"><?php esc_html_e('My account', 'trovesia'); ?></a></li>
                 <?php endif; ?>

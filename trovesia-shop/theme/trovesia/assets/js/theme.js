@@ -2,6 +2,9 @@
   const toggle = document.querySelector(".menu-toggle");
   const navigation = document.querySelector(".primary-navigation");
   const header = document.querySelector(".site-header");
+  const cartTrigger = document.querySelector(".header-cart");
+  const cartDrawer = document.querySelector(".trovesia-cart-drawer");
+  const cartClosers = document.querySelectorAll("[data-cart-drawer-close]");
 
   const setHeaderState = () => {
     if (header) {
@@ -11,6 +14,15 @@
 
   setHeaderState();
   window.addEventListener("scroll", setHeaderState, { passive: true });
+
+  const syncMenuHeight = () => {
+    if (!header || !navigation) {
+      return;
+    }
+
+    const available = Math.max(0, window.innerHeight - header.getBoundingClientRect().bottom);
+    navigation.style.setProperty("--trovesia-menu-height", `${available}px`);
+  };
 
   const closeMenu = (restoreFocus = false) => {
     if (!toggle || !navigation) {
@@ -27,9 +39,40 @@
     }
   };
 
+  const closeCart = (restoreFocus = false) => {
+    if (!cartTrigger || !cartDrawer) {
+      return;
+    }
+
+    const wasOpen = document.body.classList.contains("cart-drawer-open");
+    document.body.classList.remove("cart-drawer-open");
+    cartTrigger.setAttribute("aria-expanded", "false");
+    cartDrawer.setAttribute("aria-hidden", "true");
+
+    if (restoreFocus && wasOpen) {
+      cartTrigger.focus();
+    }
+  };
+
+  const openCart = () => {
+    if (!cartTrigger || !cartDrawer) {
+      return;
+    }
+
+    closeMenu();
+    document.body.classList.add("cart-drawer-open");
+    cartTrigger.setAttribute("aria-expanded", "true");
+    cartDrawer.setAttribute("aria-hidden", "false");
+    cartDrawer.querySelector("[data-cart-drawer-close]")?.focus();
+  };
+
   if (toggle && navigation) {
     toggle.addEventListener("click", () => {
       const willOpen = !navigation.classList.contains("is-open");
+      if (willOpen) {
+        closeCart();
+        syncMenuHeight();
+      }
       navigation.classList.toggle("is-open", willOpen);
       toggle.setAttribute("aria-expanded", String(willOpen));
       document.body.classList.toggle("menu-open", willOpen);
@@ -42,13 +85,69 @@
     });
   }
 
+  cartTrigger?.addEventListener("click", openCart);
+  cartClosers.forEach((closer) => closer.addEventListener("click", () => closeCart(true)));
+
+  if (window.jQuery) {
+    window.jQuery(document.body).on("added_to_cart", openCart);
+  }
+
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-mini-cart-quantity-change]");
+    if (!button || button.disabled) {
+      return;
+    }
+
+    const control = button.closest("[data-cart-item-key]");
+    const config = window.trovesiaCart || {};
+    const current = Number.parseInt(control?.dataset.quantity || "1", 10);
+    const direction = Number.parseInt(button.dataset.miniCartQuantityChange || "0", 10);
+    const quantity = Math.max(1, current + direction);
+    if (!control || !config.ajaxUrl || !config.nonce || quantity === current) {
+      return;
+    }
+
+    cartDrawer?.classList.add("is-updating");
+    control.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+
+    try {
+      const body = new URLSearchParams({
+        action: "trovesia_update_cart_quantity",
+        nonce: config.nonce,
+        cart_item_key: control.dataset.cartItemKey,
+        quantity: String(quantity),
+      });
+      const response = await fetch(config.ajaxUrl, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+        body: body.toString(),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.fragments) {
+        throw new Error(payload?.data?.message || config.error);
+      }
+
+      Object.entries(payload.fragments).forEach(([selector, html]) => {
+        document.querySelectorAll(selector).forEach((node) => { node.outerHTML = html; });
+      });
+      window.jQuery?.(document.body).trigger("wc_fragments_refreshed");
+    } catch (error) {
+      window.alert(error.message || config.error);
+    } finally {
+      cartDrawer?.classList.remove("is-updating");
+    }
+  });
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeMenu(true);
+      closeCart(true);
     }
   });
 
   window.addEventListener("resize", () => {
+    syncMenuHeight();
     if (window.innerWidth > 1020) {
       closeMenu();
     }

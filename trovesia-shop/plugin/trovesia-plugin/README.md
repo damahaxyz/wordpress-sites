@@ -1,5 +1,16 @@
 # Trovesia Shop Plugin
 
+## Branded WooCommerce emails
+
+All WooCommerce HTML messages share the Trovesia storefront palette, typography,
+order cards, call-to-action buttons, reassurance strip and useful footer links.
+The implementation extends WooCommerce's supported email CSS and content hooks,
+so individual templates do not become stale when WooCommerce is upgraded.
+
+The base colors and font are initially seeded into **WooCommerce > Settings >
+Emails** and remain editable there. The Trovesia layout is applied to customer,
+account, order, refund, stock and administrator emails.
+
 The site plugin owns persistent storefront behavior that must survive a theme
 change. Version 3 adds:
 
@@ -29,6 +40,27 @@ change. Version 3 adds:
   editor, plus featured and paginated storefront review cards;
 - a photo-enabled modal review form with image validation and normal WordPress
   moderation behavior.
+- Nginx FastCGI page-cache invalidation after public content, catalogue, stock,
+  navigation, theme, or software changes, plus an administrator toolbar action,
+  a Tools status screen, and WP-CLI management commands.
+
+## Nginx page cache
+
+The Docker Nginx service caches successful public HTML responses for ten
+minutes. Requests from logged-in users, WooCommerce sessions, carts, checkout,
+accounts, APIs, authenticated clients, non-GET methods, and URLs with query
+strings bypass the cache.
+
+WordPress writes a new cache generation after public content or catalogue
+changes. The Nginx watcher validates and hot-reloads the configuration, making
+all older cache entries unreachable without granting PHP access to Nginx cache
+files. Administrators can inspect or clear the cache under **Tools > Trovesia
+Page Cache** or from the admin toolbar.
+
+```bash
+docker compose --profile tools run --rm wpcli trovesia page-cache status
+docker compose --profile tools run --rm wpcli trovesia page-cache purge
+```
 
 Run the catalogue migration after WooCommerce is active:
 

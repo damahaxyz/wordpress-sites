@@ -36,6 +36,8 @@ final class Plugin
     {
         update_option('trovesia_plugin_version', TROVESIA_PLUGIN_VERSION);
         Site_Experience::activate();
+        Email_Experience::activate();
+        Page_Cache::activate();
     }
 
     public function boot(): void
@@ -50,6 +52,9 @@ final class Plugin
         add_shortcode('trovesia_year', [$this, 'year_shortcode']);
 
         Site_Experience::instance()->boot();
+        Account_Experience::instance()->boot();
+        Email_Experience::instance()->boot();
+        Page_Cache::instance()->boot();
         Review_Experience::instance()->boot();
         Addon_Pricing::instance()->boot();
         Catalog_Migrator::register();

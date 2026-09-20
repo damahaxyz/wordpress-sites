@@ -52,8 +52,11 @@ final class Addon_Pricing
         add_action('woocommerce_after_cart_item_quantity_update', [$this, 'sync_addon_quantities'], 20, 3);
         add_action('woocommerce_remove_cart_item', [$this, 'remove_child_addons'], 20, 2);
         add_filter('woocommerce_get_item_data', [$this, 'display_cart_item_data'], 20, 2);
+        add_filter('woocommerce_widget_cart_item_quantity', [$this, 'display_mini_cart_quantity'], 20, 3);
         add_action('woocommerce_checkout_create_order_line_item', [$this, 'add_order_item_data'], 20, 4);
         add_filter('woocommerce_hidden_order_itemmeta', [$this, 'hide_internal_order_meta']);
+        add_action('wp_ajax_nopriv_trovesia_update_cart_quantity', [$this, 'update_cart_quantity']);
+        add_action('wp_ajax_trovesia_update_cart_quantity', [$this, 'update_cart_quantity']);
     }
 
     public function add_meta_box(): void
@@ -468,6 +471,98 @@ final class Addon_Pricing
         }
 
         return $item_data;
+    }
+
+    /**
+     * Keep the drawer's add-on unit price aligned with the configured rule price.
+     *
+     * @param string              $html          Default quantity and price markup.
+     * @param array<string,mixed> $cart_item     Cart line data.
+     * @param string              $cart_item_key Cart line key.
+     */
+    public function display_mini_cart_quantity(string $html, array $cart_item, string $cart_item_key): string
+    {
+        if (
+            empty($cart_item['data'])
+            || ! $cart_item['data'] instanceof \WC_Product
+            || ! function_exists('WC')
+            || ! WC()->cart
+        ) {
+            return $html;
+        }
+
+        $product = clone $cart_item['data'];
+        $is_addon = ! empty($cart_item['_trovesia_addon_rule_id']) && ! empty($cart_item['_trovesia_addon_parent_product_id']);
+        if ($is_addon) {
+            $rule = self::get_rule(
+                (int) $cart_item['_trovesia_addon_parent_product_id'],
+                (string) $cart_item['_trovesia_addon_rule_id']
+            );
+            $price = $rule === null
+                ? max(0, (float) ($cart_item['_trovesia_addon_price_snapshot'] ?? 0))
+                : self::calculate_rule_price($rule);
+            $product->set_price($price);
+        }
+
+        $display_price = WC()->cart->get_product_price($product);
+        $quantity = max(1, (int) ($cart_item['quantity'] ?? 1));
+
+        if ($is_addon) {
+            return sprintf(
+                '<span class="quantity trovesia-mini-cart__quantity is-linked"><span>%1$s &times; %2$s</span></span>',
+                esc_html((string) $quantity),
+                wp_kses_post($display_price)
+            );
+        }
+
+        $max = $product->get_max_purchase_quantity();
+        $increase_disabled = $max > 0 && $quantity >= $max;
+
+        return sprintf(
+            '<span class="quantity trovesia-mini-cart__quantity" data-cart-item-key="%1$s" data-quantity="%2$d"><button type="button" data-mini-cart-quantity-change="-1" aria-label="%3$s"%4$s>&minus;</button><span class="trovesia-mini-cart__quantity-value" aria-live="polite">%2$d</span><button type="button" data-mini-cart-quantity-change="1" aria-label="%5$s"%6$s>+</button><span class="trovesia-mini-cart__unit-price">&times; %7$s</span></span>',
+            esc_attr($cart_item_key),
+            $quantity,
+            esc_attr__('Decrease quantity', 'trovesia-plugin'),
+            $quantity <= 1 ? ' disabled' : '',
+            esc_attr__('Increase quantity', 'trovesia-plugin'),
+            $increase_disabled ? ' disabled' : '',
+            wp_kses_post($display_price)
+        );
+    }
+
+    public function update_cart_quantity(): void
+    {
+        if (! check_ajax_referer('trovesia_cart_quantity', 'nonce', false)) {
+            wp_send_json_error(['message' => __('The cart request expired. Please refresh the page.', 'trovesia-plugin')], 403);
+        }
+
+        if (! function_exists('WC')) {
+            wp_send_json_error(['message' => __('The cart is unavailable.', 'trovesia-plugin')], 400);
+        }
+        if (! WC()->cart && function_exists('wc_load_cart')) {
+            wc_load_cart();
+        }
+
+        $cart_item_key = wc_clean(wp_unslash((string) ($_POST['cart_item_key'] ?? '')));
+        $quantity = max(1, absint($_POST['quantity'] ?? 1));
+        $cart_item = WC()->cart ? WC()->cart->get_cart_item($cart_item_key) : [];
+        if ($cart_item === [] || ! empty($cart_item['_trovesia_addon_parent_key'])) {
+            wp_send_json_error(['message' => __('This cart item cannot be updated directly.', 'trovesia-plugin')], 400);
+        }
+
+        $product = $cart_item['data'] ?? null;
+        if (! $product instanceof \WC_Product) {
+            wp_send_json_error(['message' => __('This product is unavailable.', 'trovesia-plugin')], 400);
+        }
+
+        $max = $product->get_max_purchase_quantity();
+        if ($max > 0) {
+            $quantity = min($quantity, $max);
+        }
+
+        WC()->cart->set_quantity($cart_item_key, $quantity, true);
+        WC()->cart->set_session();
+        \WC_AJAX::get_refreshed_fragments();
     }
 
     /**

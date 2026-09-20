@@ -15,6 +15,22 @@ if (! defined('ABSPATH')) {
 
 final class Site_Experience
 {
+    private const ANNOUNCEMENT_TEXT_OPTION = 'trovesia_site_announcement_text';
+
+    private const ANNOUNCEMENT_URL_OPTION = 'trovesia_site_announcement_url';
+
+    private const ANNOUNCEMENT_MIGRATION_OPTION = 'trovesia_site_announcement_migration_version';
+
+    private const ANNOUNCEMENT_MIGRATION_VERSION = '1.0.0';
+
+    private const CHECKOUT_DELIVERY_TITLE_OPTION = 'trovesia_checkout_delivery_title';
+
+    private const CHECKOUT_DELIVERY_DESCRIPTION_OPTION = 'trovesia_checkout_delivery_description';
+
+    private const POLICY_PAGES_VERSION_OPTION = 'trovesia_policy_pages_version';
+
+    private const POLICY_PAGES_VERSION = '1.0.0';
+
     private static ?self $instance = null;
 
     private bool $booted = false;
@@ -57,12 +73,17 @@ final class Site_Experience
         add_shortcode('trovesia_tracking_form', [$this, 'tracking_form']);
         add_shortcode('trovesia_contact_form', [$this, 'contact_form']);
         add_action('init', [$this, 'register_inquiry_type']);
+        add_action('init', [$this, 'install_policy_pages'], 20);
+        add_action('init', [$this, 'install_default_announcement'], 21);
         add_action('template_redirect', [$this, 'redirect_legacy_shopify_paths']);
 
         add_action('admin_post_nopriv_trovesia_track_order', [$this, 'handle_tracking']);
         add_action('admin_post_trovesia_track_order', [$this, 'handle_tracking']);
         add_action('admin_post_nopriv_trovesia_contact', [$this, 'handle_contact']);
         add_action('admin_post_trovesia_contact', [$this, 'handle_contact']);
+
+        add_action('admin_menu', [$this, 'add_checkout_settings_page']);
+        add_action('admin_init', [$this, 'register_checkout_settings']);
 
         add_action('add_meta_boxes_product', [$this, 'add_product_meta_box']);
         add_action('save_post_product', [$this, 'save_product_meta']);
@@ -85,6 +106,264 @@ final class Site_Experience
         add_action('admin_head', [$this, 'render_admin_review_media_styles']);
 
         add_action('admin_notices', [$this, 'woocommerce_notice']);
+    }
+
+    public function install_policy_pages(): void
+    {
+        if ((string) get_option(self::POLICY_PAGES_VERSION_OPTION, '') === self::POLICY_PAGES_VERSION) {
+            return;
+        }
+
+        $policies = require TROVESIA_PLUGIN_DIR . 'data/policies.php';
+        if (! is_array($policies)) {
+            return;
+        }
+
+        $privacy_page_id = 0;
+        $installed = 0;
+        $replacements = [
+            '{{site_url}}'     => home_url('/'),
+            '{{support_email}}' => 'service@trovesia.com',
+        ];
+
+        foreach ($policies as $slug => $policy) {
+            if (! is_array($policy) || empty($policy['title']) || empty($policy['content'])) {
+                continue;
+            }
+
+            $existing = get_page_by_path((string) $slug, OBJECT, 'page');
+            $post_data = [
+                'post_content' => wp_slash(strtr((string) $policy['content'], $replacements)),
+                'post_name'    => sanitize_title((string) $slug),
+                'post_status'  => 'publish',
+                'post_title'   => sanitize_text_field((string) $policy['title']),
+                'post_type'    => 'page',
+            ];
+
+            if ($existing instanceof \WP_Post) {
+                $post_data['ID'] = $existing->ID;
+                $page_id = wp_update_post($post_data, true);
+            } else {
+                $page_id = wp_insert_post($post_data, true);
+            }
+
+            if (is_wp_error($page_id) || (int) $page_id < 1) {
+                continue;
+            }
+
+            ++$installed;
+            if ($slug === 'privacy-policy') {
+                $privacy_page_id = (int) $page_id;
+            }
+        }
+
+        if ($privacy_page_id > 0) {
+            update_option('wp_page_for_privacy_policy', $privacy_page_id);
+        }
+
+        if ($installed === count($policies)) {
+            update_option(self::POLICY_PAGES_VERSION_OPTION, self::POLICY_PAGES_VERSION, false);
+        }
+    }
+
+    public function add_checkout_settings_page(): void
+    {
+        add_submenu_page(
+            'woocommerce',
+            __('Trovesia checkout settings', 'trovesia-plugin'),
+            __('Trovesia settings', 'trovesia-plugin'),
+            'manage_woocommerce',
+            'trovesia-settings',
+            [$this, 'render_checkout_settings_page']
+        );
+    }
+
+    public function register_checkout_settings(): void
+    {
+        register_setting('trovesia_checkout_settings', self::ANNOUNCEMENT_TEXT_OPTION, [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => '',
+        ]);
+        register_setting('trovesia_checkout_settings', self::ANNOUNCEMENT_URL_OPTION, [
+            'type'              => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+            'default'           => '',
+        ]);
+        register_setting('trovesia_checkout_settings', self::CHECKOUT_DELIVERY_TITLE_OPTION, [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => self::default_checkout_delivery_title(),
+        ]);
+        register_setting('trovesia_checkout_settings', self::CHECKOUT_DELIVERY_DESCRIPTION_OPTION, [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'default'           => self::default_checkout_delivery_description(),
+        ]);
+
+        add_settings_section(
+            'trovesia_site_announcement',
+            __('Site announcement', 'trovesia-plugin'),
+            [$this, 'render_announcement_settings_intro'],
+            'trovesia-checkout-settings'
+        );
+        add_settings_field(
+            self::ANNOUNCEMENT_TEXT_OPTION,
+            __('Announcement text', 'trovesia-plugin'),
+            [$this, 'render_announcement_text_field'],
+            'trovesia-checkout-settings',
+            'trovesia_site_announcement'
+        );
+        add_settings_field(
+            self::ANNOUNCEMENT_URL_OPTION,
+            __('Announcement link', 'trovesia-plugin'),
+            [$this, 'render_announcement_url_field'],
+            'trovesia-checkout-settings',
+            'trovesia_site_announcement'
+        );
+
+        add_settings_section(
+            'trovesia_checkout_delivery',
+            __('Checkout delivery message', 'trovesia-plugin'),
+            [$this, 'render_checkout_delivery_settings_intro'],
+            'trovesia-checkout-settings'
+        );
+        add_settings_field(
+            self::CHECKOUT_DELIVERY_TITLE_OPTION,
+            __('Delivery title', 'trovesia-plugin'),
+            [$this, 'render_checkout_delivery_title_field'],
+            'trovesia-checkout-settings',
+            'trovesia_checkout_delivery'
+        );
+        add_settings_field(
+            self::CHECKOUT_DELIVERY_DESCRIPTION_OPTION,
+            __('Delivery description', 'trovesia-plugin'),
+            [$this, 'render_checkout_delivery_description_field'],
+            'trovesia-checkout-settings',
+            'trovesia_checkout_delivery'
+        );
+    }
+
+    public function render_checkout_settings_page(): void
+    {
+        if (! current_user_can('manage_woocommerce')) {
+            return;
+        }
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('Trovesia settings', 'trovesia-plugin'); ?></h1>
+            <form action="options.php" method="post">
+                <?php
+                settings_fields('trovesia_checkout_settings');
+                do_settings_sections('trovesia-checkout-settings');
+                submit_button();
+                ?>
+            </form>
+        </div>
+        <?php
+    }
+
+    public function render_announcement_settings_intro(): void
+    {
+        echo '<p>' . esc_html__('Shown in the slim bar above the site header. Leave the announcement text empty to hide the entire bar.', 'trovesia-plugin') . '</p>';
+    }
+
+    public function render_announcement_text_field(): void
+    {
+        printf(
+            '<input class="large-text" name="%1$s" type="text" value="%2$s" placeholder="%3$s">',
+            esc_attr(self::ANNOUNCEMENT_TEXT_OPTION),
+            esc_attr(self::announcement_text()),
+            esc_attr__('Complimentary shipping · 30-day returns · Secure checkout', 'trovesia-plugin')
+        );
+    }
+
+    public function render_announcement_url_field(): void
+    {
+        printf(
+            '<input class="large-text code" name="%1$s" type="url" value="%2$s" placeholder="%3$s"><p class="description">%4$s</p>',
+            esc_attr(self::ANNOUNCEMENT_URL_OPTION),
+            esc_attr(self::announcement_url()),
+            esc_attr(home_url('/shop/')),
+            esc_html__('Optional. When provided, clicking the announcement opens this URL.', 'trovesia-plugin')
+        );
+    }
+
+    /**
+     * Preserve the information that was previously hard-coded in the theme.
+     * Clearing the saved field later keeps the announcement hidden.
+     */
+    public function install_default_announcement(): void
+    {
+        if ((string) get_option(self::ANNOUNCEMENT_MIGRATION_OPTION, '') === self::ANNOUNCEMENT_MIGRATION_VERSION) {
+            return;
+        }
+
+        if (false === get_option(self::ANNOUNCEMENT_TEXT_OPTION, false)) {
+            update_option(
+                self::ANNOUNCEMENT_TEXT_OPTION,
+                __('Complimentary shipping · 30-day returns · Secure checkout', 'trovesia-plugin')
+            );
+        }
+
+        update_option(self::ANNOUNCEMENT_MIGRATION_OPTION, self::ANNOUNCEMENT_MIGRATION_VERSION, false);
+    }
+
+    public static function announcement_text(): string
+    {
+        return trim((string) get_option(self::ANNOUNCEMENT_TEXT_OPTION, ''));
+    }
+
+    public static function announcement_url(): string
+    {
+        return trim((string) get_option(self::ANNOUNCEMENT_URL_OPTION, ''));
+    }
+
+    public function render_checkout_delivery_settings_intro(): void
+    {
+        echo '<p>' . esc_html__('These two lines appear in the assurance panel above the checkout form.', 'trovesia-plugin') . '</p>';
+    }
+
+    public function render_checkout_delivery_title_field(): void
+    {
+        printf(
+            '<input class="regular-text" name="%1$s" type="text" value="%2$s">',
+            esc_attr(self::CHECKOUT_DELIVERY_TITLE_OPTION),
+            esc_attr(self::checkout_delivery_title())
+        );
+    }
+
+    public function render_checkout_delivery_description_field(): void
+    {
+        printf(
+            '<textarea class="large-text" name="%1$s" rows="4">%2$s</textarea>',
+            esc_attr(self::CHECKOUT_DELIVERY_DESCRIPTION_OPTION),
+            esc_textarea(self::checkout_delivery_description())
+        );
+    }
+
+    private static function default_checkout_delivery_title(): string
+    {
+        return __('Tracked delivery in 7–12 days', 'trovesia-plugin');
+    }
+
+    private static function default_checkout_delivery_description(): string
+    {
+        return __('Orders are processed within 24–72 hours. Tracking is emailed when your parcel ships.', 'trovesia-plugin');
+    }
+
+    private static function checkout_delivery_title(): string
+    {
+        $value = trim((string) get_option(self::CHECKOUT_DELIVERY_TITLE_OPTION, ''));
+
+        return $value !== '' ? $value : self::default_checkout_delivery_title();
+    }
+
+    private static function checkout_delivery_description(): string
+    {
+        $value = trim((string) get_option(self::CHECKOUT_DELIVERY_DESCRIPTION_OPTION, ''));
+
+        return $value !== '' ? $value : self::default_checkout_delivery_description();
     }
 
     /**
@@ -318,6 +597,7 @@ final class Site_Experience
         $benefits = (string) get_post_meta($post->ID, '_trovesia_benefits', true);
         $guarantee = (string) get_post_meta($post->ID, '_trovesia_guarantee', true);
         $shipping = (string) get_post_meta($post->ID, '_trovesia_shipping', true);
+        $order_activity = (string) get_post_meta($post->ID, '_trovesia_order_activity', true);
         ?>
         <p>
             <label for="trovesia-eyebrow"><strong><?php esc_html_e('Eyebrow', 'trovesia-plugin'); ?></strong></label><br>
@@ -335,6 +615,11 @@ final class Site_Experience
         <p>
             <label for="trovesia-shipping"><strong><?php esc_html_e('Shipping note', 'trovesia-plugin'); ?></strong></label><br>
             <textarea class="widefat" id="trovesia-shipping" name="trovesia_shipping" rows="3"><?php echo esc_textarea($shipping); ?></textarea>
+        </p>
+        <p>
+            <label for="trovesia-order-activity"><strong><?php esc_html_e('Order activity notice', 'trovesia-plugin'); ?></strong></label><br>
+            <input class="widefat" id="trovesia-order-activity" name="trovesia_order_activity" type="text" value="<?php echo esc_attr($order_activity); ?>" placeholder="<?php esc_attr_e('Orders are processed daily', 'trovesia-plugin'); ?>">
+            <span class="description"><?php esc_html_e('Optional. When filled, this text replaces the automatic past-24-hours order message on the product page. Leave blank to keep the automatic count and its default fallback.', 'trovesia-plugin'); ?></span>
         </p>
         <?php
     }
@@ -355,6 +640,7 @@ final class Site_Experience
             'trovesia_benefits'  => '_trovesia_benefits',
             'trovesia_guarantee' => '_trovesia_guarantee',
             'trovesia_shipping'  => '_trovesia_shipping',
+            'trovesia_order_activity' => '_trovesia_order_activity',
         ];
 
         foreach ($fields as $field => $meta_key) {
@@ -414,12 +700,15 @@ final class Site_Experience
         $end = wp_date('M j', strtotime('+12 days'));
         $guarantee = (string) get_post_meta($product->get_id(), '_trovesia_guarantee', true);
         $shipping = (string) get_post_meta($product->get_id(), '_trovesia_shipping', true);
+        $order_activity = trim((string) get_post_meta($product->get_id(), '_trovesia_order_activity', true));
         $order_count = $this->orders_last_24_hours();
         ?>
         <div class="trovesia-order-activity">
             <span aria-hidden="true">▣</span>
             <strong>
-                <?php if ($order_count > 0) : ?>
+                <?php if ($order_activity !== '') : ?>
+                    <?php echo esc_html($order_activity); ?>
+                <?php elseif ($order_count > 0) : ?>
                     <?php printf(esc_html__('%d orders placed in the past 24 hours', 'trovesia-plugin'), esc_html($order_count)); ?>
                 <?php else : ?>
                     <?php esc_html_e('Orders are processed daily', 'trovesia-plugin'); ?>
@@ -491,12 +780,24 @@ final class Site_Experience
                     $display_price = (float) $variation['display_price'];
                     $regular_price = (float) $variation['display_regular_price'];
                     $saving = $regular_price > $display_price ? (int) round((($regular_price - $display_price) / $regular_price) * 100) : 0;
+                    $variation_product = wc_get_product((int) ($variation['variation_id'] ?? 0));
+                    $variation_description = $variation_product instanceof \WC_Product_Variation
+                        ? trim(wp_strip_all_tags($variation_product->get_description()))
+                        : '';
+
+                    if ($variation_description === '') {
+                        preg_match_all('/\d+/', $bundle, $bundle_quantities);
+                        $bottle_count = array_sum(array_map('intval', $bundle_quantities[0] ?? []));
+                        $variation_description = $bottle_count > 0
+                            ? sprintf(_n('%d bottle bundle', '%d bottle bundle', $bottle_count, 'trovesia-plugin'), $bottle_count)
+                            : __('Bundle option', 'trovesia-plugin');
+                    }
                     ?>
                     <button class="trovesia-bundle-card" type="button" data-attribute-name="attribute_bundle" data-attribute-value="<?php echo esc_attr($bundle); ?>" aria-pressed="false">
                         <span class="trovesia-bundle-card__visual"><?php echo wp_get_attachment_image($product->get_image_id(), 'woocommerce_thumbnail', false, ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
                         <span class="trovesia-bundle-card__copy">
                             <strong><?php echo esc_html($bundle); ?></strong>
-                            <small><?php printf(esc_html__('%d bottle bundle', 'trovesia-plugin'), (int) preg_replace('/[^0-9]/', '', $bundle)); ?></small>
+                            <small><?php echo esc_html($variation_description); ?></small>
                         </span>
                         <span class="trovesia-bundle-card__price">
                             <?php if ($saving > 0) : ?><span class="trovesia-bundle-card__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
@@ -591,10 +892,12 @@ final class Site_Experience
 
     public function render_checkout_assurance(): void
     {
+        $delivery_title = self::checkout_delivery_title();
+        $delivery_description = self::checkout_delivery_description();
         ?>
         <aside class="trovesia-checkout-assurance" aria-label="<?php esc_attr_e('Returns and delivery', 'trovesia-plugin'); ?>">
             <div><span aria-hidden="true">♡</span><p><strong><?php esc_html_e('30-day satisfaction guarantee', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Contact us within 30 days for return instructions and a full refund. Return shipping is covered.', 'trovesia-plugin'); ?></small></p></div>
-            <div><span aria-hidden="true">▱</span><p><strong><?php esc_html_e('Tracked delivery in 7–12 days', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Orders are processed within 24–72 hours. Tracking is emailed when your parcel ships.', 'trovesia-plugin'); ?></small></p></div>
+            <div><span aria-hidden="true">▱</span><p><strong><?php echo esc_html($delivery_title); ?></strong><small><?php echo nl2br(esc_html($delivery_description)); ?></small></p></div>
         </aside>
         <?php
     }
