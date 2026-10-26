@@ -1,0 +1,20 @@
+[Unit]
+Description=Tikool Memory Page Git publisher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/bin/python3 /root/wordpress-sites/tikool-shop/scripts/memory-page-publisher.py --repo /root/wordpress-sites/tikool-memory-pages --tasks /root/wordpress-sites/tikool-shop/runtime/memory-page-tasks --socket /root/wordpress-sites/tikool-shop/runtime/memory-page-publisher/publisher.sock --group 33
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/wordpress-sites/tikool-memory-pages /root/wordpress-sites/tikool-shop/runtime/memory-page-publisher /root/wordpress-sites/tikool-shop/runtime/memory-page-tasks
+
+[Install]
+WantedBy=multi-user.target

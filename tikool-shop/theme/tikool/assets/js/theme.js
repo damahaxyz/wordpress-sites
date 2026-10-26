@@ -360,4 +360,21 @@
       syncAddons();
     }
   });
+
+  // WooCommerce replaces the first gallery slide with the selected variation image.
+  // Restore the product's original featured image when a shopper explicitly picks
+  // the first thumbnail, even if FlexSlider considers that thumbnail active.
+  const framedPortrait = document.querySelector(".single-product .product.post-31");
+  const portraitVariations = framedPortrait?.querySelector("form.variations_form");
+  framedPortrait?.addEventListener("click", (event) => {
+    const thumbnail = event.target.closest(".flex-control-thumbs li:first-child img");
+    if (!thumbnail || !portraitVariations || !window.jQuery) return;
+
+    window.setTimeout(() => {
+      const $form = window.jQuery(portraitVariations);
+      if (typeof $form.wc_variations_image_reset !== "function") return;
+      $form.wc_variations_image_reset();
+      window.jQuery(framedPortrait).find(".woocommerce-product-gallery").trigger("woocommerce_gallery_init_zoom");
+    }, 0);
+  });
 })();

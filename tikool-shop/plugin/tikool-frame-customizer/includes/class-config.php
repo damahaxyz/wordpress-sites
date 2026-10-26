@@ -13,7 +13,7 @@ if (! defined('ABSPATH')) {
 
 final class Config
 {
-    public const SCHEMA_VERSION = 1;
+    public const SCHEMA_VERSION = 9;
     public const META_ENABLED = '_tikool_fc_enabled';
     public const META_TEMPLATE = '_tikool_fc_template';
     public const META_NAME_LABEL = '_tikool_fc_name_label';
@@ -23,19 +23,21 @@ final class Config
     public const META_FRAME_ATTRIBUTE = '_tikool_fc_frame_attribute';
     public const META_MAT_ATTRIBUTE = '_tikool_fc_mat_attribute';
     public const META_ORIENTATION_ATTRIBUTE = '_tikool_fc_orientation_attribute';
+    public const META_WOOD_ATTRIBUTE = '_tikool_fc_wood_attribute';
     public const PRODUCT_FIELD_PREFIX = '_tikool_fc_default_';
     public const VARIATION_FIELD_PREFIX = '_tikool_fc_';
     public const LEGACY_ENABLED_META = '_tikool_requires_pet_photo';
 
     /**
-     * @return array<string, array{label: string, description: string, stand: bool, defaults: array<string, float|string>}>
+     * @return array<string, array{label: string, description: string, renderer: string, stand: bool, defaults: array<string, float|string>}>
      */
     public static function templates(): array
     {
         $templates = [
             'wall-frame' => [
-                'label' => __('Wall frame', 'tikool-frame-customizer'),
-                'description' => __('Front-facing wall frame with optional mat board.', 'tikool-frame-customizer'),
+                'label' => __('墙挂相框', 'tikool-frame-customizer'),
+                'description' => __('正面展示的墙挂相框，可选择是否使用卡纸。', 'tikool-frame-customizer'),
+                'renderer' => 'frame',
                 'stand' => false,
                 'defaults' => [
                     'outer_width_mm' => 228.6,
@@ -46,24 +48,24 @@ final class Config
                     'artwork_height_mm' => 254.0,
                     'print_width_mm' => 203.2,
                     'print_height_mm' => 254.0,
-                    'frame_face_mm' => 12.7,
                     'mat_top_mm' => 0.0,
                     'mat_right_mm' => 0.0,
                     'mat_bottom_mm' => 0.0,
                     'mat_left_mm' => 0.0,
                     'mat_thickness_mm' => 1.0,
-                    'bleed_mm' => 3.0,
                     'min_dpi' => 180.0,
-                    'production_dpi' => 300.0,
                     'frame_color' => '#c89552',
                     'mat_color' => '#f7f3eb',
                     'frame_texture_url' => '',
                     'overlay_url' => '',
+                    'blanket_color' => '#eee7df',
+                    'blanket_texture_url' => '',
                 ],
             ],
             'desktop-frame' => [
-                'label' => __('Desktop frame', 'tikool-frame-customizer'),
-                'description' => __('Desktop frame with an optional mat and a stand shown in the preview.', 'tikool-frame-customizer'),
+                'label' => __('桌面相框', 'tikool-frame-customizer'),
+                'description' => __('带桌面支架的相框，可选择是否使用卡纸，预览中会显示支架效果。', 'tikool-frame-customizer'),
+                'renderer' => 'frame',
                 'stand' => true,
                 'defaults' => [
                     'outer_width_mm' => 177.8,
@@ -74,19 +76,84 @@ final class Config
                     'artwork_height_mm' => 203.2,
                     'print_width_mm' => 152.4,
                     'print_height_mm' => 203.2,
-                    'frame_face_mm' => 12.7,
                     'mat_top_mm' => 0.0,
                     'mat_right_mm' => 0.0,
                     'mat_bottom_mm' => 0.0,
                     'mat_left_mm' => 0.0,
                     'mat_thickness_mm' => 1.0,
-                    'bleed_mm' => 3.0,
                     'min_dpi' => 180.0,
-                    'production_dpi' => 300.0,
                     'frame_color' => '#c89552',
                     'mat_color' => '#f7f3eb',
                     'frame_texture_url' => '',
                     'overlay_url' => '',
+                    'blanket_color' => '#eee7df',
+                    'blanket_texture_url' => '',
+                ],
+            ],
+            'blanket' => [
+                'label' => __('定制毛毯', 'tikool-frame-customizer'),
+                'description' => __('正面毛毯效果预览，支持 50 × 60 英寸和 60 × 80 英寸。', 'tikool-frame-customizer'),
+                'renderer' => 'blanket',
+                'stand' => false,
+                'defaults' => [
+                    'outer_width_mm' => 1270.0,
+                    'outer_height_mm' => 1524.0,
+                    'inner_width_mm' => 1270.0,
+                    'inner_height_mm' => 1524.0,
+                    'artwork_width_mm' => 1270.0,
+                    'artwork_height_mm' => 1524.0,
+                    'print_width_mm' => 1270.0,
+                    'print_height_mm' => 1524.0,
+                    'mat_top_mm' => 0.0,
+                    'mat_right_mm' => 0.0,
+                    'mat_bottom_mm' => 0.0,
+                    'mat_left_mm' => 0.0,
+                    'mat_thickness_mm' => 0.0,
+                    'min_dpi' => 100.0,
+                    'frame_color' => '#eee7df',
+                    'mat_color' => '#eee7df',
+                    'frame_texture_url' => '',
+                    'overlay_url' => '',
+                    'blanket_color' => '#eee7df',
+                    'blanket_texture_url' => '',
+                ],
+            ],
+            'keepsake-box' => [
+                'label' => __('宠物纪念收藏盒', 'tikool-frame-customizer'),
+                'description' => __('盒盖内侧使用正方形照片，盒盖正面固定雕刻宠物脚印与宠物名称。', 'tikool-frame-customizer'),
+                'renderer' => 'keepsake',
+                'stand' => false,
+                'supports_ai' => false,
+                'supports_name_overlay' => false,
+                'requires_engraving' => true,
+                'name_max_length' => 15,
+                'defaults' => [
+                    'outer_width_mm' => 50.0,
+                    'outer_height_mm' => 50.0,
+                    'inner_width_mm' => 40.0,
+                    'inner_height_mm' => 40.0,
+                    'artwork_width_mm' => 40.0,
+                    'artwork_height_mm' => 40.0,
+                    'print_width_mm' => 40.0,
+                    'print_height_mm' => 40.0,
+                    'box_height_mm' => 35.0,
+                    'vial_count' => 2.0,
+                    'engraving_width_mm' => 36.0,
+                    'engraving_height_mm' => 36.0,
+                    'mat_top_mm' => 0.0,
+                    'mat_right_mm' => 0.0,
+                    'mat_bottom_mm' => 0.0,
+                    'mat_left_mm' => 0.0,
+                    'mat_thickness_mm' => 0.0,
+                    'min_dpi' => 300.0,
+                    'frame_color' => '#6b3f25',
+                    'mat_color' => '#ead8bd',
+                    'frame_texture_url' => '',
+                    'overlay_url' => '',
+                    'blanket_color' => '#eee7df',
+                    'blanket_texture_url' => '',
+                    'wood_color' => '#6b3f25',
+                    'wood_texture_url' => '',
                 ],
             ],
         ];
@@ -105,27 +172,32 @@ final class Config
     public static function geometry_fields(): array
     {
         return [
-            'outer_width_mm' => ['label' => __('Outer frame width (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'outer_height_mm' => ['label' => __('Outer frame height (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'inner_width_mm' => ['label' => __('Inner opening width (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'inner_height_mm' => ['label' => __('Inner opening height (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'artwork_width_mm' => ['label' => __('Visible artwork width (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'artwork_height_mm' => ['label' => __('Visible artwork height (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'print_width_mm' => ['label' => __('Print width (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'print_height_mm' => ['label' => __('Print height (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
-            'frame_face_mm' => ['label' => __('Frame face width (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'mat_top_mm' => ['label' => __('Mat top border (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'mat_right_mm' => ['label' => __('Mat right border (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'mat_bottom_mm' => ['label' => __('Mat bottom border (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'mat_left_mm' => ['label' => __('Mat left border (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'mat_thickness_mm' => ['label' => __('Mat thickness (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'bleed_mm' => ['label' => __('Print bleed / overlap (mm)', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
-            'min_dpi' => ['label' => __('Minimum recommended DPI', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '1', 'min' => '72'],
-            'production_dpi' => ['label' => __('Production DPI', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '1', 'min' => '72'],
-            'frame_color' => ['label' => __('Frame preview color', 'tikool-frame-customizer'), 'type' => 'color'],
-            'mat_color' => ['label' => __('Mat preview color', 'tikool-frame-customizer'), 'type' => 'color'],
-            'frame_texture_url' => ['label' => __('Frame texture image URL', 'tikool-frame-customizer'), 'type' => 'url', 'description' => __('Optional seamless texture or transparent frame asset.', 'tikool-frame-customizer')],
-            'overlay_url' => ['label' => __('Preview overlay image URL', 'tikool-frame-customizer'), 'type' => 'url', 'description' => __('Optional transparent product overlay, such as a desktop stand.', 'tikool-frame-customizer')],
+            'outer_width_mm' => ['label' => __('产品预览宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'outer_height_mm' => ['label' => __('产品预览高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'inner_width_mm' => ['label' => __('内容区域宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'inner_height_mm' => ['label' => __('内容区域高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'artwork_width_mm' => ['label' => __('画面可视宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'artwork_height_mm' => ['label' => __('画面可视高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'print_width_mm' => ['label' => __('打印照片宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'print_height_mm' => ['label' => __('打印照片高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1'],
+            'mat_top_mm' => ['label' => __('卡纸上边宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
+            'mat_right_mm' => ['label' => __('卡纸右边宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
+            'mat_bottom_mm' => ['label' => __('卡纸下边宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
+            'mat_left_mm' => ['label' => __('卡纸左边宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
+            'mat_thickness_mm' => ['label' => __('卡纸厚度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '0'],
+            'min_dpi' => ['label' => __('最低建议 DPI', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '1', 'min' => '72'],
+            'frame_color' => ['label' => __('相框预览颜色', 'tikool-frame-customizer'), 'type' => 'color', 'renderer' => 'frame'],
+            'mat_color' => ['label' => __('卡纸预览颜色', 'tikool-frame-customizer'), 'type' => 'color', 'renderer' => 'frame'],
+            'frame_texture_url' => ['label' => __('相框纹理图片 URL', 'tikool-frame-customizer'), 'type' => 'url', 'renderer' => 'frame', 'description' => __('可选：无缝纹理图或透明相框素材。', 'tikool-frame-customizer')],
+            'overlay_url' => ['label' => __('预览叠加图片 URL', 'tikool-frame-customizer'), 'type' => 'url', 'description' => __('可选：透明产品叠加图，例如桌面支架。', 'tikool-frame-customizer')],
+            'blanket_color' => ['label' => __('毛毯底色', 'tikool-frame-customizer'), 'type' => 'color', 'renderer' => 'blanket'],
+            'blanket_texture_url' => ['label' => __('毛毯纹理图片 URL', 'tikool-frame-customizer'), 'type' => 'url', 'renderer' => 'blanket', 'description' => __('可选：用于覆盖在画面上的透明布料纹理。', 'tikool-frame-customizer')],
+            'box_height_mm' => ['label' => __('盒子高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1', 'renderer' => 'keepsake'],
+            'vial_count' => ['label' => __('玻璃瓶数量', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '1', 'min' => '1', 'renderer' => 'keepsake'],
+            'engraving_width_mm' => ['label' => __('雕刻安全区宽度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1', 'renderer' => 'keepsake'],
+            'engraving_height_mm' => ['label' => __('雕刻安全区高度（mm）', 'tikool-frame-customizer'), 'type' => 'number', 'step' => '0.1', 'min' => '1', 'renderer' => 'keepsake'],
+            'wood_color' => ['label' => __('木材预览颜色', 'tikool-frame-customizer'), 'type' => 'color', 'renderer' => 'keepsake'],
+            'wood_texture_url' => ['label' => __('木材纹理图片 URL', 'tikool-frame-customizer'), 'type' => 'url', 'renderer' => 'keepsake', 'description' => __('可选：用于收藏盒预览的无缝木纹图片。', 'tikool-frame-customizer')],
         ];
     }
 
@@ -148,18 +220,26 @@ final class Config
             $template = 'wall-frame';
         }
 
+        $template_config = (array) ($templates[$template] ?? []);
+
         return [
             'template' => $template,
             'template_label' => (string) ($templates[$template]['label'] ?? $template),
+            'renderer' => sanitize_key((string) ($templates[$template]['renderer'] ?? 'frame')) ?: 'frame',
             'stand' => ! empty($templates[$template]['stand']),
+            'supports_ai' => ! array_key_exists('supports_ai', $template_config) || ! empty($template_config['supports_ai']),
+            'supports_name_overlay' => ! array_key_exists('supports_name_overlay', $template_config) || ! empty($template_config['supports_name_overlay']),
+            'requires_engraving' => ! empty($template_config['requires_engraving']),
+            'name_max_length' => max(1, (int) ($template_config['name_max_length'] ?? 100)),
             'name_label' => sanitize_text_field((string) get_post_meta($product_id, self::META_NAME_LABEL, true)) ?: __('Pet\'s name', 'tikool-frame-customizer'),
-            'name_required' => get_post_meta($product_id, self::META_NAME_REQUIRED, true) !== 'no',
+            'name_required' => true,
             'photo_label' => sanitize_text_field((string) get_post_meta($product_id, self::META_PHOTO_LABEL, true)) ?: __('Pet photo', 'tikool-frame-customizer'),
             'attribute_map' => [
                 'size' => self::attribute_setting($product_id, self::META_SIZE_ATTRIBUTE, 'size'),
                 'frame' => self::attribute_setting($product_id, self::META_FRAME_ATTRIBUTE, 'frame-color'),
                 'mat' => self::attribute_setting($product_id, self::META_MAT_ATTRIBUTE, 'mat-style'),
                 'orientation' => self::attribute_setting($product_id, self::META_ORIENTATION_ATTRIBUTE, 'orientation'),
+                'wood' => self::attribute_setting($product_id, self::META_WOOD_ATTRIBUTE, 'wood'),
             ],
         ];
     }
@@ -202,7 +282,23 @@ final class Config
         }
         $display_attributes = self::display_attributes($attributes);
 
-        $has_mat = self::has_mat($role_values['mat'] ?? '', $geometry);
+        $renderer = sanitize_key((string) ($settings['renderer'] ?? 'frame')) ?: 'frame';
+        if ($renderer === 'blanket' && ! self::has_explicit_dimensions($product_id, $variation_id)) {
+            $geometry = self::blanket_geometry(
+                (string) ($role_values['size'] ?? ''),
+                (string) ($role_values['orientation'] ?? ''),
+                $geometry
+            );
+        }
+        if ($renderer === 'keepsake' && ! self::has_explicit_dimensions($product_id, $variation_id)) {
+            $geometry = self::keepsake_geometry(
+                (string) ($role_values['size'] ?? ''),
+                (string) ($role_values['wood'] ?? ''),
+                $geometry
+            );
+        }
+
+        $has_mat = $renderer === 'frame' && self::has_mat($role_values['mat'] ?? '', $geometry);
         if (! $has_mat) {
             $geometry['mat_top_mm'] = 0.0;
             $geometry['mat_right_mm'] = 0.0;
@@ -218,7 +314,12 @@ final class Config
             'variationId' => $variation_id,
             'template' => $settings['template'],
             'templateLabel' => $settings['template_label'],
+            'renderer' => $renderer,
             'stand' => (bool) $settings['stand'],
+            'supportsAI' => (bool) ($settings['supports_ai'] ?? true),
+            'supportsNameOverlay' => (bool) ($settings['supports_name_overlay'] ?? true),
+            'requiresEngraving' => (bool) ($settings['requires_engraving'] ?? false),
+            'nameMaxLength' => (int) ($settings['name_max_length'] ?? 100),
             'nameLabel' => $settings['name_label'],
             'nameRequired' => (bool) $settings['name_required'],
             'photoLabel' => $settings['photo_label'],
@@ -227,6 +328,88 @@ final class Config
             'hasMat' => $has_mat,
             'geometry' => $geometry,
         ];
+    }
+
+    /**
+     * Resolve the two supported blanket sizes from the mapped WooCommerce size attribute.
+     * Explicit product or variation dimensions always take precedence.
+     *
+     * @param array<string, float|string> $base
+     * @return array<string, float|string>
+     */
+    private static function blanket_geometry(string $size, string $orientation, array $base): array
+    {
+        $matches = [];
+        preg_match('/(50|60)\s*(?:x|×|by)\s*(60|80)/iu', $size, $matches);
+        $width_inches = isset($matches[1]) ? (float) $matches[1] : 50.0;
+        $height_inches = isset($matches[2]) ? (float) $matches[2] : 60.0;
+        $pair = sprintf('%gx%g', $width_inches, $height_inches);
+        if (! in_array($pair, ['50x60', '60x80'], true)) {
+            $width_inches = 50.0;
+            $height_inches = 60.0;
+        }
+        $orientation = strtolower($orientation);
+        if (str_contains($orientation, 'landscape') || str_contains($orientation, 'horizontal') || str_contains($orientation, '横')) {
+            [$width_inches, $height_inches] = [$height_inches, $width_inches];
+        }
+        $width = $width_inches * 25.4;
+        $height = $height_inches * 25.4;
+        return array_merge($base, [
+            'outer_width_mm' => $width,
+            'outer_height_mm' => $height,
+            'inner_width_mm' => $width,
+            'inner_height_mm' => $height,
+            'artwork_width_mm' => $width,
+            'artwork_height_mm' => $height,
+            'print_width_mm' => $width,
+            'print_height_mm' => $height,
+            'mat_top_mm' => 0.0,
+            'mat_right_mm' => 0.0,
+            'mat_bottom_mm' => 0.0,
+            'mat_left_mm' => 0.0,
+            'mat_thickness_mm' => 0.0,
+            'min_dpi' => max(100.0, (float) ($base['min_dpi'] ?? 100.0)),
+        ]);
+    }
+
+    /**
+     * Resolve the supplier's two keepsake-box profiles and preview wood tone.
+     * Explicit product or variation dimensions always take precedence.
+     *
+     * @param array<string, float|string> $base
+     * @return array<string, float|string>
+     */
+    private static function keepsake_geometry(string $size, string $wood, array $base): array
+    {
+        $size_key = strtolower($size);
+        $large = str_contains($size_key, 'large')
+            || str_contains($size_key, '大')
+            || preg_match('/(^|\D)6(?:\.0)?\s*(?:cm|厘米|公分)?/iu', $size_key) === 1;
+        $box_size = $large ? 60.0 : 50.0;
+        $photo_size = $large ? 50.0 : 40.0;
+        $box_height = $large ? 40.0 : 35.0;
+        $vial_count = $large ? 3.0 : 2.0;
+        $wood_key = strtolower($wood);
+        $is_beech = str_contains($wood_key, 'beech') || str_contains($wood_key, '榉') || str_contains($wood_key, '櫸');
+
+        return array_merge($base, [
+            'outer_width_mm' => $box_size,
+            'outer_height_mm' => $box_size,
+            'inner_width_mm' => $photo_size,
+            'inner_height_mm' => $photo_size,
+            'artwork_width_mm' => $photo_size,
+            'artwork_height_mm' => $photo_size,
+            'print_width_mm' => $photo_size,
+            'print_height_mm' => $photo_size,
+            'box_height_mm' => $box_height,
+            'vial_count' => $vial_count,
+            'engraving_width_mm' => $large ? 44.0 : 36.0,
+            'engraving_height_mm' => $large ? 44.0 : 36.0,
+            'wood_color' => $is_beech ? '#c9975b' : '#6b3f25',
+            'frame_color' => $is_beech ? '#c9975b' : '#6b3f25',
+            'mat_color' => $is_beech ? '#ead8bd' : '#b98758',
+            'min_dpi' => max(300.0, (float) ($base['min_dpi'] ?? 300.0)),
+        ]);
     }
 
     /**
@@ -259,7 +442,7 @@ final class Config
             }
         }
 
-        if ($variation && ! self::has_explicit_dimensions($product_id, $variation->get_id())) {
+        if ($variation && ($settings['renderer'] ?? 'frame') === 'frame' && ! self::has_explicit_dimensions($product_id, $variation->get_id())) {
             $geometry = array_merge($geometry, self::legacy_geometry($variation, $settings, $geometry));
         }
 
@@ -289,14 +472,29 @@ final class Config
             return $base;
         }
 
-        $bleed = (float) ($base['bleed_mm'] ?? 3.0);
+        $mat_overlap = 5.0;
         $size_key = sprintf('%gx%g', (float) $matches[1], (float) $matches[2]);
         $supplier_profiles = [
             // Supplier dimensions are the real photo sizes, not theoretical inch conversions.
-            // Mat openings overlap the printed photo by the configured bleed on every edge.
-            '8x10' => ['inner' => [203.0, 253.0], 'mat_print' => [127.0, 178.0]],
-            '12x16' => ['inner' => [303.0, 405.0], 'mat_print' => [203.0, 303.0]],
-            '16x20' => ['inner' => [404.0, 506.0], 'mat_print' => [303.0, 405.0]],
+            // This product's real mat opening overlaps the printed photo by 5 mm on every edge.
+            '8x10' => [
+                'outer' => [223.0, 273.0],
+                'inner' => [198.0, 248.0],
+                'no_mat_print' => [203.0, 253.0],
+                'mat_print' => [152.0, 203.0],
+            ],
+            '12x16' => [
+                'outer' => [323.0, 425.0],
+                'inner' => [298.0, 400.0],
+                'no_mat_print' => [303.0, 405.0],
+                'mat_print' => [240.0, 340.0],
+            ],
+            '16x20' => [
+                'outer' => [424.0, 526.0],
+                'inner' => [399.0, 501.0],
+                'no_mat_print' => [404.0, 506.0],
+                'mat_print' => [330.0, 430.0],
+            ],
         ];
         $profile = $supplier_profiles[$size_key] ?? null;
         $inner_width = $profile ? $profile['inner'][0] : (float) $matches[1] * 25.4;
@@ -308,25 +506,26 @@ final class Config
         $has_mat = self::mat_label_is_enabled($mat);
         $fallback_print = [$inner_width * 0.72, $inner_height * 0.72];
         $mat_print = $profile['mat_print'] ?? $fallback_print;
-        $print_width = $has_mat ? (float) $mat_print[0] : $inner_width;
-        $print_height = $has_mat ? (float) $mat_print[1] : $inner_height;
-        $artwork_width = $has_mat ? max(1.0, $print_width - (2 * $bleed)) : $inner_width;
-        $artwork_height = $has_mat ? max(1.0, $print_height - (2 * $bleed)) : $inner_height;
+        $no_mat_print = $profile['no_mat_print'] ?? [$inner_width, $inner_height];
+        $print_width = $has_mat ? (float) $mat_print[0] : (float) $no_mat_print[0];
+        $print_height = $has_mat ? (float) $mat_print[1] : (float) $no_mat_print[1];
+        $artwork_width = $has_mat ? max(1.0, $print_width - (2 * $mat_overlap)) : $inner_width;
+        $artwork_height = $has_mat ? max(1.0, $print_height - (2 * $mat_overlap)) : $inner_height;
         $horizontal_mat = max(0.0, ($inner_width - $artwork_width) / 2);
         $vertical_mat = max(0.0, ($inner_height - $artwork_height) / 2);
-
+        $outer_width = $profile ? (float) $profile['outer'][0] : $inner_width + 25.4;
+        $outer_height = $profile ? (float) $profile['outer'][1] : $inner_height + 25.4;
         $frame_color = self::frame_color_from_label($frame, (string) ($base['frame_color'] ?? '#c89552'));
 
         return [
-            'outer_width_mm' => $inner_width + 25.4,
-            'outer_height_mm' => $inner_height + 25.4,
+            'outer_width_mm' => $outer_width,
+            'outer_height_mm' => $outer_height,
             'inner_width_mm' => $inner_width,
             'inner_height_mm' => $inner_height,
             'artwork_width_mm' => $artwork_width,
             'artwork_height_mm' => $artwork_height,
             'print_width_mm' => $print_width,
             'print_height_mm' => $print_height,
-            'frame_face_mm' => 12.7,
             'mat_top_mm' => $has_mat ? $vertical_mat : 0.0,
             'mat_right_mm' => $has_mat ? $horizontal_mat : 0.0,
             'mat_bottom_mm' => $has_mat ? $vertical_mat : 0.0,
@@ -360,8 +559,11 @@ final class Config
         $geometry['print_width_mm'] = max((float) $geometry['artwork_width_mm'], (float) ($geometry['print_width_mm'] ?? $geometry['artwork_width_mm']));
         $geometry['print_height_mm'] = max((float) $geometry['artwork_height_mm'], (float) ($geometry['print_height_mm'] ?? $geometry['artwork_height_mm']));
         $geometry['min_dpi'] = max(72.0, (float) ($geometry['min_dpi'] ?? 180));
-        $geometry['production_dpi'] = max(72.0, (float) ($geometry['production_dpi'] ?? 300));
         $geometry['mat_thickness_mm'] = max(0.0, (float) ($geometry['mat_thickness_mm'] ?? 1));
+        $geometry['box_height_mm'] = max(1.0, (float) ($geometry['box_height_mm'] ?? 35));
+        $geometry['vial_count'] = max(1.0, round((float) ($geometry['vial_count'] ?? 2)));
+        $geometry['engraving_width_mm'] = min((float) $geometry['outer_width_mm'], max(1.0, (float) ($geometry['engraving_width_mm'] ?? 36)));
+        $geometry['engraving_height_mm'] = min((float) $geometry['outer_height_mm'], max(1.0, (float) ($geometry['engraving_height_mm'] ?? 36)));
 
         return $geometry;
     }
@@ -493,7 +695,8 @@ final class Config
     public static function sanitize_field_value(string $field, $value, string $type)
     {
         if ($type === 'color') {
-            return sanitize_hex_color((string) $value) ?: ($field === 'mat_color' ? '#f7f3eb' : '#c89552');
+            $fallback = $field === 'mat_color' ? '#f7f3eb' : ($field === 'blanket_color' ? '#eee7df' : ($field === 'wood_color' ? '#6b3f25' : '#c89552'));
+            return sanitize_hex_color((string) $value) ?: $fallback;
         }
         if ($type === 'url') {
             return esc_url_raw((string) $value);

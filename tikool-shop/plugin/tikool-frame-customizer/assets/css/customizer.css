@@ -1,3 +1,43 @@
+@font-face {
+  font-family: "Tikool Oswald";
+  src: url("../fonts/Oswald-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tikool Playfair Display";
+  src: url("../fonts/PlayfairDisplay-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tikool Cormorant Garamond";
+  src: url("../fonts/CormorantGaramond-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tikool Great Vibes";
+  src: url("../fonts/GreatVibes-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tikool Montserrat";
+  src: url("../fonts/Montserrat-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 .tikool-fc-step-one {
   clear: both;
   margin-top: 24px;
@@ -73,22 +113,27 @@ body.tikool-fc-open {
   align-items: flex-start;
   border-bottom: 1px solid #ead8cf;
   display: flex;
+  gap: 14px;
   justify-content: space-between;
-  padding: 28px 36px 24px;
+  padding: 16px 28px 15px;
+}
+
+.tikool-fc-modal__header > div {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .tikool-fc-modal__header h2 {
   color: #2f201c;
   font-family: var(--shop-serif, Georgia, serif);
-  font-size: clamp(32px, 4vw, 62px);
-  line-height: 0.98;
-  margin: 4px 0 0;
+  font-size: clamp(28px, 2.8vw, 44px);
+  line-height: 1;
+  margin: 3px 0 0;
 }
 
-.tikool-fc-modal__step,
-.tikool-fc-preview__badge {
+.tikool-fc-modal__step {
   color: var(--shop-accent, #b64d36);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.13em;
   margin: 0;
@@ -103,11 +148,12 @@ body.tikool-fc-open {
   color: #2f201c;
   cursor: pointer;
   display: flex;
-  font-size: 34px;
-  height: 64px;
+  font-size: 28px;
+  height: 48px;
   justify-content: center;
   line-height: 1;
-  width: 64px;
+  flex: 0 0 auto;
+  width: 48px;
 }
 
 .tikool-fc-modal__content {
@@ -129,21 +175,10 @@ body.tikool-fc-open {
   position: relative;
 }
 
-.tikool-fc-preview__badge {
-  background: rgba(255, 250, 246, 0.9);
-  border-radius: 999px;
-  color: #5a3a4f;
-  left: 24px;
-  padding: 12px 16px;
-  position: absolute;
-  top: 24px;
-  z-index: 2;
-}
-
 .tikool-fc-canvas-wrap {
   aspect-ratio: var(--tikool-fc-aspect, 0.8);
   cursor: grab;
-  max-height: calc(100% - 48px);
+  max-height: calc(100% - 142px);
   max-width: min(90%, 760px);
   outline: 0;
   overflow: hidden;
@@ -152,8 +187,23 @@ body.tikool-fc-open {
   width: min(78%, 680px);
 }
 
+.tikool-fc-preview.has-variants .tikool-fc-canvas-wrap,
+.tikool-fc-preview.has-variants .tikool-fc-preview__hint,
+.tikool-fc-preview.has-variants .tikool-fc-preview__zoom {
+  transform: translateX(clamp(-52px, -4vw, -28px));
+  transition: transform 180ms ease;
+}
+
 .tikool-fc-canvas-wrap:active {
   cursor: grabbing;
+}
+
+.tikool-fc-canvas-wrap.is-name-target {
+  cursor: move;
+}
+
+.tikool-fc-canvas-wrap.is-engraving-view {
+  cursor: default;
 }
 
 .tikool-fc-canvas-wrap:focus-visible {
@@ -169,14 +219,28 @@ body.tikool-fc-open {
 
 .tikool-fc-placeholder {
   align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
   color: #6e5d55;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   inset: 34% 20%;
   justify-content: center;
-  pointer-events: none;
   position: absolute;
   text-align: center;
+}
+
+.tikool-fc-placeholder:hover strong,
+.tikool-fc-placeholder:focus-visible strong {
+  color: var(--shop-accent, #b64d36);
+}
+
+.tikool-fc-placeholder:focus-visible {
+  border-radius: 12px;
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 4px;
 }
 
 .tikool-fc-placeholder[hidden] {
@@ -206,6 +270,390 @@ body.tikool-fc-open {
   color: #75635a;
   font-size: 13px;
   margin: 10px 0 0;
+  padding: 0;
+  z-index: 2;
+}
+
+.tikool-fc-keepsake-views {
+  align-items: center;
+  background: rgba(255, 250, 246, 0.88);
+  border: 1px solid rgba(151, 104, 72, 0.28);
+  border-radius: 999px;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  margin: 0 0 10px;
+  padding: 3px;
+  position: relative;
+  z-index: 2;
+}
+
+.tikool-fc-keepsake-views button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: #6a4b3c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 9px 14px;
+}
+
+.tikool-fc-keepsake-views button.is-active {
+  background: #694128;
+  box-shadow: 0 2px 8px rgba(63, 33, 18, .18);
+  color: #fffaf4;
+}
+
+.tikool-fc-keepsake-views button:focus-visible {
+  outline: 2px solid var(--shop-accent, #b64d36);
+  outline-offset: 2px;
+}
+
+.tikool-fc-styles[hidden],
+.tikool-fc-name-overlay[hidden],
+.tikool-fc-preview__zoom[hidden] {
+  display: none !important;
+}
+
+.tikool-fc-modal--keepsake .tikool-fc-canvas-wrap {
+  max-height: calc(100% - 184px);
+  width: min(86%, 720px);
+}
+
+.tikool-fc-modal--keepsake .tikool-fc-placeholder {
+  background: rgba(255, 250, 246, .9);
+  border: 1px solid rgba(78, 44, 26, .22);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(54, 30, 17, .13);
+  inset: 13% auto auto 42%;
+  min-height: 64px;
+  padding: 6px 8px;
+  transform: translateX(-50%);
+  width: 104px;
+}
+
+.tikool-fc-modal--keepsake .tikool-fc-placeholder span {
+  font-size: 24px;
+}
+
+.tikool-fc-modal--keepsake .tikool-fc-placeholder strong {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.tikool-fc-modal--keepsake .tikool-fc-placeholder small {
+  display: none;
+}
+
+.tikool-fc-preview__actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+  width: min(90%, 760px);
+  z-index: 2;
+}
+
+.tikool-fc-preview__zoom {
+  align-items: center;
+  background: rgba(255, 250, 246, 0.84);
+  border: 1px solid rgba(216, 191, 179, 0.82);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  width: min(78%, 680px);
+  z-index: 2;
+}
+
+.tikool-fc-preview__zoom > span {
+  color: #6e5d55;
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.tikool-fc-view-large,
+.tikool-fc-view-source {
+  align-items: center;
+  background: rgba(255, 250, 246, 0.92);
+  border: 1px solid #d8bfb3;
+  border-radius: 999px;
+  color: #432f2a;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 750;
+  gap: 8px;
+  margin: 0;
+  min-height: 42px;
+  padding: 9px 17px;
+  text-decoration: none;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.tikool-fc-view-large span,
+.tikool-fc-view-source span {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.tikool-fc-view-large:hover:not(:disabled),
+.tikool-fc-view-large:focus-visible,
+.tikool-fc-view-source:hover,
+.tikool-fc-view-source:focus-visible {
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(74, 43, 34, 0.14);
+  color: #432f2a;
+  transform: translateY(-1px);
+}
+
+.tikool-fc-view-large:focus-visible,
+.tikool-fc-view-source:focus-visible {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 3px;
+}
+
+.tikool-fc-view-source[hidden] {
+  display: none;
+}
+
+.tikool-fc-view-large:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.tikool-fc-ai-loading[hidden],
+.tikool-fc-lightbox[hidden] {
+  display: none !important;
+}
+
+.tikool-fc-ai-loading {
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.98), rgba(255, 250, 246, 0.88) 45%, rgba(241, 223, 213, 0.9)),
+    rgba(255, 250, 246, 0.92);
+  backdrop-filter: blur(8px) saturate(0.8);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(28px, 5vw, 64px);
+  position: absolute;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100%;
+  z-index: 5;
+}
+
+.tikool-fc-ai-loading::before,
+.tikool-fc-ai-loading::after {
+  border-radius: 50%;
+  content: "";
+  filter: blur(1px);
+  height: 210px;
+  opacity: 0.28;
+  pointer-events: none;
+  position: absolute;
+  width: 210px;
+}
+
+.tikool-fc-ai-loading::before {
+  animation: tikool-fc-float 7s ease-in-out infinite;
+  background: #d98a69;
+  left: -82px;
+  top: 12%;
+}
+
+.tikool-fc-ai-loading::after {
+  animation: tikool-fc-float 8s ease-in-out -3s infinite reverse;
+  background: #879f91;
+  bottom: 8%;
+  right: -96px;
+}
+
+.tikool-fc-ai-loading__visual {
+  align-items: center;
+  display: flex;
+  height: 112px;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  width: 112px;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__ring {
+  animation: tikool-fc-spin 2.4s linear infinite;
+  border: 2px solid rgba(90, 58, 79, 0.14);
+  border-radius: 50%;
+  border-right-color: #db7250;
+  border-top-color: #5a3a4f;
+  inset: 0;
+  position: absolute;
+}
+
+.tikool-fc-ai-loading__ring--inner {
+  animation-direction: reverse;
+  animation-duration: 1.65s;
+  border-bottom-color: #6d8874;
+  border-left-color: #d29a58;
+  inset: 12px;
+}
+
+.tikool-fc-ai-loading__mark {
+  align-items: center;
+  background: #fffaf6;
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(74, 43, 34, 0.13);
+  color: #5a3a4f;
+  display: flex;
+  font-family: var(--shop-serif, Georgia, serif);
+  font-size: 24px;
+  font-weight: 700;
+  height: 68px;
+  justify-content: center;
+  letter-spacing: -0.03em;
+  width: 68px;
+}
+
+.tikool-fc-ai-loading__eyebrow {
+  color: var(--shop-accent, #b64d36);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  margin: 0 0 10px;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__title {
+  color: #2f201c;
+  font-family: var(--shop-serif, Georgia, serif);
+  font-size: clamp(27px, 3.2vw, 44px);
+  line-height: 1.08;
+  max-width: 620px;
+  overflow-wrap: anywhere;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__estimate {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(182, 77, 54, 0.2);
+  border-radius: 999px;
+  color: #5a3a4f;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 14px 0 0;
+  padding: 7px 13px;
+  position: relative;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__message {
+  color: #66534b;
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 16px 0 18px;
+  min-height: 1.55em;
+  max-width: 100%;
+  position: relative;
+  transition: opacity 240ms ease, transform 240ms ease;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__message.is-changing {
+  animation: tikool-fc-message-in 420ms ease both;
+}
+
+.tikool-fc-ai-loading__progress {
+  background: rgba(90, 58, 79, 0.12);
+  border-radius: 999px;
+  display: block;
+  height: 5px;
+  max-width: 320px;
+  overflow: hidden;
+  position: relative;
+  width: 70%;
+  z-index: 1;
+}
+
+.tikool-fc-ai-loading__progress i {
+  animation: tikool-fc-progress 2.1s ease-in-out infinite;
+  background: linear-gradient(90deg, #d76e4c, #5a3a4f, #6f8b76);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  width: 42%;
+}
+
+.tikool-fc-ai-loading small {
+  color: #806e65;
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 16px;
+  max-width: 390px;
+  position: relative;
+  z-index: 1;
+}
+
+.tikool-fc-modal.is-generating .tikool-fc-canvas-wrap canvas {
+  filter: blur(5px) saturate(0.65);
+  transform: scale(0.985);
+  transition: filter 300ms ease, transform 300ms ease;
+}
+
+.tikool-fc-modal.is-generating .tikool-fc-preview {
+  overflow: hidden;
+}
+
+.tikool-fc-modal.is-generating .tikool-fc-styles,
+.tikool-fc-modal.is-generating .tikool-fc-upload {
+  pointer-events: none;
+}
+
+.tikool-fc-modal.is-generating .tikool-fc-styles__grid,
+.tikool-fc-modal.is-generating .tikool-fc-upload__button {
+  opacity: 0.58;
+}
+
+@keyframes tikool-fc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes tikool-fc-progress {
+  0% { transform: translateX(-110%); }
+  50% { transform: translateX(90%); }
+  100% { transform: translateX(245%); }
+}
+
+@keyframes tikool-fc-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(18px, -12px, 0) scale(1.08); }
+}
+
+@keyframes tikool-fc-message-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .tikool-fc-controls {
@@ -214,25 +662,24 @@ body.tikool-fc-open {
 }
 
 .tikool-fc-summary {
-  border: 1px solid #e3cec3;
-  border-radius: 24px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 34px;
+  align-items: center;
+  background: rgba(241, 223, 213, 0.42);
+  border: 1px solid rgba(216, 191, 179, 0.8);
+  border-radius: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
   overflow: hidden;
+  padding: 8px 10px;
 }
 
 .tikool-fc-summary div {
-  min-height: 92px;
-  padding: 22px 26px;
-}
-
-.tikool-fc-summary div:nth-child(odd) {
-  border-right: 1px solid #e3cec3;
-}
-
-.tikool-fc-summary div:nth-child(n + 3) {
-  border-top: 1px solid #e3cec3;
+  align-items: baseline;
+  display: flex;
+  flex: 1 1 130px;
+  gap: 7px;
+  min-height: 0;
+  padding: 6px 12px;
 }
 
 .tikool-fc-summary span,
@@ -248,11 +695,90 @@ body.tikool-fc-open {
   text-transform: uppercase;
 }
 
+.tikool-fc-summary span {
+  flex: 0 0 auto;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
 .tikool-fc-summary strong {
   color: #32231f;
-  display: block;
-  font-size: 18px;
+  display: inline;
+  font-size: 14px;
   line-height: 1.25;
+  white-space: nowrap;
+}
+
+.tikool-fc-nfc-notice {
+  align-items: flex-start;
+  background: linear-gradient(135deg, rgba(236, 244, 255, 0.94), rgba(248, 251, 255, 0.98));
+  border: 1px solid #b9d1ee;
+  border-radius: 16px;
+  color: #26384c;
+  display: flex;
+  gap: 14px;
+  margin: 18px 0 4px;
+  padding: 16px 18px;
+}
+
+.tikool-fc-nfc-notice__badge {
+  background: #315f9a;
+  border-radius: 9px;
+  color: #fff;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 9px 8px;
+}
+
+.tikool-fc-nfc-notice strong {
+  color: #20344d;
+  display: block;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.tikool-fc-nfc-notice p {
+  color: #53687f;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 5px 0 0;
+}
+
+.woocommerce div.product form.cart .tikool-fc-nfc-notice--product {
+  box-sizing: border-box;
+  margin: 18px 0;
+  text-align: left;
+  width: 100%;
+}
+
+.woocommerce div.product form.cart .single_variation > .tikool-fc-nfc-notice--product {
+  margin-bottom: 18px;
+}
+
+.tikool-fc-pet-name {
+  margin-top: 18px;
+}
+
+.tikool-fc-pet-name__label {
+  color: #6e5d55;
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 9px;
+  text-transform: uppercase;
+}
+
+.tikool-fc-pet-name small {
+  color: #806e65;
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 7px;
 }
 
 .tikool-fc-controls input[type="text"] {
@@ -267,7 +793,21 @@ body.tikool-fc-open {
 }
 
 .tikool-fc-upload {
-  margin-top: 26px;
+  align-items: center;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin-top: 18px;
+  min-width: 0;
+}
+
+.tikool-fc-upload__label,
+.tikool-fc-upload small {
+  grid-column: 1 / -1;
+}
+
+.tikool-fc-upload__label {
+  margin-bottom: 0;
 }
 
 .tikool-fc-upload__input {
@@ -280,22 +820,24 @@ body.tikool-fc-open {
 
 .tikool-fc-upload__button {
   border: 2px solid #5a3a4f;
-  border-radius: 15px;
+  border-radius: 12px;
   color: #37262f;
   cursor: pointer;
   display: inline-flex;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 750;
   justify-content: center;
-  padding: 14px 22px;
+  padding: 9px 15px;
+  white-space: nowrap;
 }
 
 .tikool-fc-upload__filename {
   color: #78675f;
-  display: inline-block;
-  font-size: 14px;
-  margin-left: 14px;
-  max-width: 52%;
+  display: block;
+  font-size: 13px;
+  margin: 0;
+  max-width: 100%;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
@@ -306,16 +848,528 @@ body.tikool-fc-open {
   color: #806e65;
   display: block;
   font-size: 13px;
-  line-height: 1.55;
-  margin-top: 10px;
+  line-height: 1.5;
+  margin-top: 1px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.tikool-fc-styles {
+  border: 0;
+  margin: 22px 0 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.tikool-fc-styles legend {
+  color: #6e5d55;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0 0 7px;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.tikool-fc-styles__help {
+  color: #806e65;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.tikool-fc-styles__grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tikool-fc-style {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e3cec3;
+  border-radius: 16px;
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 54px minmax(0, 1fr) 24px;
+  min-height: 88px;
+  padding: 12px;
+  position: relative;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.tikool-fc-style:hover {
+  border-color: #b99382;
+  transform: translateY(-1px);
+}
+
+.tikool-fc-style:has(input:checked) {
+  border-color: #5a3a4f;
+  box-shadow: 0 0 0 2px rgba(90, 58, 79, 0.12);
+}
+
+.tikool-fc-style:has(input:focus-visible) {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 2px;
+}
+
+.tikool-fc-style:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.tikool-fc-style input {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.tikool-fc-style__art {
+  background: linear-gradient(145deg, #ded0c4, #f7f1ea);
+  border: 1px solid rgba(74, 53, 45, 0.12);
+  border-radius: 12px;
+  display: block;
+  height: 58px;
+  overflow: hidden;
+  overflow: hidden;
+  position: relative;
+  width: 54px;
+}
+
+.tikool-fc-style__art.has-image::before,
+.tikool-fc-style__art.has-image::after {
+  display: none;
+}
+
+.tikool-fc-style__image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.tikool-fc-style__art::before,
+.tikool-fc-style__art::after {
+  content: "";
+  position: absolute;
+}
+
+.tikool-fc-style__art::before {
+  background: #5d4a42;
+  border-radius: 48% 48% 44% 44%;
+  bottom: 7px;
+  height: 31px;
+  left: 14px;
+  width: 26px;
+}
+
+.tikool-fc-style__art::after {
+  border-bottom: 11px solid #5d4a42;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  height: 0;
+  left: 20px;
+  top: 7px;
+  width: 0;
+}
+
+.tikool-fc-style--minimalist .tikool-fc-style__art {
+  background: linear-gradient(145deg, #fffdfa, #e9e3dc);
+}
+
+.tikool-fc-style--watercolor .tikool-fc-style__art {
+  background:
+    radial-gradient(circle at 22% 25%, rgba(220, 125, 123, 0.45) 0 12%, transparent 13%),
+    radial-gradient(circle at 78% 62%, rgba(105, 151, 175, 0.45) 0 16%, transparent 17%),
+    linear-gradient(145deg, #faf2e9, #d8e5df);
+}
+
+.tikool-fc-style--watercolor .tikool-fc-style__art::before,
+.tikool-fc-style--watercolor .tikool-fc-style__art::after {
+  filter: blur(0.6px);
+  opacity: 0.82;
+}
+
+.tikool-fc-style--classic-oil .tikool-fc-style__art {
+  background: linear-gradient(145deg, #24362e, #8b6545 58%, #d1aa69);
+  box-shadow: inset 0 0 0 4px rgba(221, 181, 108, 0.35);
+}
+
+.tikool-fc-style--classic-oil .tikool-fc-style__art::before,
+.tikool-fc-style--classic-oil .tikool-fc-style__art::after {
+  background-color: #c49a73;
+  border-bottom-color: #c49a73;
+}
+
+.tikool-fc-style__copy {
+  min-width: 0;
+}
+
+.tikool-fc-style__copy strong,
+.tikool-fc-style__copy small {
+  display: block;
+}
+
+.tikool-fc-style__copy strong {
+  color: #34251f;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.tikool-fc-style__copy small {
+  color: #806e65;
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.tikool-fc-style__check {
+  align-items: center;
+  background: #5a3a4f;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(90, 58, 79, 0.28);
+  box-sizing: border-box;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.75);
+  transition: opacity 160ms ease, transform 160ms ease;
+  width: 24px;
+}
+
+.tikool-fc-style__check::after {
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  content: "";
+  height: 9px;
+  margin-top: -2px;
+  transform: rotate(45deg);
+  width: 5px;
+}
+
+.tikool-fc-style:has(input:checked) .tikool-fc-style__check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tikool-fc-variants {
+  margin: 0;
+  max-width: none;
+  position: absolute;
+  right: clamp(8px, 2.5vw, 24px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+  z-index: 4;
+}
+
+.tikool-fc-variants[hidden] {
+  display: none;
+}
+
+.tikool-fc-variants__title {
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.tikool-fc-variants__grid {
+  display: grid;
+  gap: 11px;
+  grid-template-columns: 1fr;
+}
+
+.tikool-fc-variant {
+  --tikool-fc-variant-color: #eee7df;
+  align-items: center;
+  background: #fff;
+  border: 2px solid rgba(156, 126, 113, 0.48);
+  border-radius: 999px;
+  box-shadow: 0 5px 14px rgba(74, 43, 34, 0.12);
+  color: #5f4c44;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  height: 58px;
+  justify-content: center;
+  overflow: visible;
+  padding: 5px;
+  position: relative;
+  text-align: center;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  width: 58px;
+}
+
+.tikool-fc-variant[data-variant-key="warm_ivory"] { --tikool-fc-variant-color: #eee7d8; }
+.tikool-fc-variant[data-variant-key="warm_cream"] { --tikool-fc-variant-color: #eadfc8; }
+.tikool-fc-variant[data-variant-key="mist_blue"] { --tikool-fc-variant-color: #cbd8df; }
+.tikool-fc-variant[data-variant-key="dusty_blue"] { --tikool-fc-variant-color: #bccbd2; }
+.tikool-fc-variant[data-variant-key="dusty_blue_gray"] { --tikool-fc-variant-color: #adbcc2; }
+.tikool-fc-variant[data-variant-key="soft_sage"] { --tikool-fc-variant-color: #cad4c2; }
+.tikool-fc-variant[data-variant-key="pale_sage"] { --tikool-fc-variant-color: #d3dacb; }
+.tikool-fc-variant[data-variant-key="muted_sage"] { --tikool-fc-variant-color: #aebba5; }
+.tikool-fc-variant[data-variant-key="dusty_blush"] { --tikool-fc-variant-color: #dec8c8; }
+.tikool-fc-variant[data-variant-key="warm_taupe"] { --tikool-fc-variant-color: #b8a28e; }
+
+.tikool-fc-variant:hover:not(:disabled) {
+  border-color: #b99382;
+  box-shadow: 0 7px 18px rgba(74, 43, 34, 0.18);
+  transform: translateY(-2px);
+}
+
+.tikool-fc-variant.is-selected {
+  border-color: #5a3a4f;
+  box-shadow: 0 0 0 3px rgba(90, 58, 79, 0.16), 0 7px 18px rgba(74, 43, 34, 0.16);
+}
+
+.tikool-fc-variant.is-ready::after {
+  align-items: center;
+  background: #fff;
+  border-radius: 50%;
+  bottom: -4px;
+  box-shadow: 0 1px 4px rgba(47, 32, 28, 0.18);
+  color: #597054;
+  content: "✓";
+  display: flex;
+  font-size: 12px;
+  height: 21px;
+  justify-content: center;
+  position: absolute;
+  right: -4px;
+  width: 21px;
+}
+
+.tikool-fc-variant:focus-visible {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 2px;
+}
+
+.tikool-fc-variant:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.tikool-fc-variant__swatch {
+  background: var(--tikool-fc-variant-color);
+  border: 1px solid rgba(60, 43, 36, 0.14);
+  border-radius: 50%;
+  display: block;
+  flex: 0 0 44px;
+  height: 44px;
+  width: 44px;
+}
+
+.tikool-fc-variant__label {
+  background: #382923;
+  border-radius: 7px;
+  color: #fff;
+  opacity: 0;
+  font-size: 13px;
+  padding: 7px 10px;
+  pointer-events: none;
+  position: absolute;
+  right: calc(100% + 9px);
+  top: 50%;
+  transform: translate(4px, -50%);
+  transition: opacity 140ms ease, transform 140ms ease;
+  white-space: nowrap;
+}
+
+.tikool-fc-variant:hover .tikool-fc-variant__label,
+.tikool-fc-variant:focus-visible .tikool-fc-variant__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.tikool-fc-styles__status {
+  color: #597054;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  margin: 12px 0 0;
+  min-height: 1.45em;
+}
+
+.tikool-fc-styles__status.is-error {
+  color: #a52828;
+}
+
+.tikool-fc-style-retry {
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--shop-accent, #b64d36);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 8px;
+  padding: 7px 15px;
+}
+
+.tikool-fc-style-retry[hidden] {
+  display: none;
 }
 
 .tikool-fc-zoom {
   display: block;
-  margin-top: 28px;
 }
 
 .tikool-fc-zoom input {
+  accent-color: var(--shop-accent, #b64d36);
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.tikool-fc-name-overlay {
+  border: 1px solid #e3cec3;
+  border-radius: 18px;
+  margin-top: 26px;
+  padding: 20px;
+}
+
+.tikool-fc-name-overlay__toggle {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+}
+
+.tikool-fc-controls .tikool-fc-name-overlay__toggle > span {
+  color: #34251f;
+  font-size: 15px;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+.tikool-fc-name-overlay__toggle input {
+  accent-color: var(--shop-accent, #b64d36);
+  height: 20px;
+  margin: 0;
+  width: 20px;
+}
+
+.tikool-fc-name-overlay__help {
+  color: #806e65;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 9px 0 0 32px;
+}
+
+.tikool-fc-name-overlay__options {
+  border-top: 1px solid #ead8cf;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.tikool-fc-name-overlay__options[hidden] {
+  display: none;
+}
+
+.tikool-fc-name-overlay__options select {
+  background: #fff;
+  border: 1px solid #dec8bd;
+  border-radius: 12px;
+  color: #34251f;
+  font-size: 15px;
+  min-height: 48px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.tikool-fc-name-overlay__colors {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.tikool-fc-name-overlay__color {
+  align-items: center;
+  background: #fffaf6;
+  border: 1px solid #ead8cf;
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  min-height: 50px;
+  padding: 8px 10px;
+}
+
+.tikool-fc-name-overlay__color > span {
+  color: #34251f;
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+.tikool-fc-name-overlay__color input[type="color"] {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  height: 34px;
+  padding: 0;
+  width: 42px;
+}
+
+.tikool-fc-name-overlay__outline {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.tikool-fc-name-overlay__outline input {
+  accent-color: var(--shop-accent, #b64d36);
+  height: 18px;
+  margin: 0;
+  width: 18px;
+}
+
+.tikool-fc-name-overlay__outline > span {
+  color: #34251f;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+.tikool-fc-name-overlay__color.is-disabled {
+  opacity: 0.48;
+}
+
+.tikool-fc-name-overlay__size {
+  display: block;
+  margin-top: 18px;
+}
+
+.tikool-fc-name-overlay__size output {
+  color: #34251f;
+  font-size: 13px;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
+.tikool-fc-name-overlay__size input {
   accent-color: var(--shop-accent, #b64d36);
   width: 100%;
 }
@@ -380,54 +1434,276 @@ body.tikool-fc-open {
   cursor: progress;
 }
 
+.tikool-fc-lightbox {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 42px);
+  position: fixed;
+  z-index: 100010;
+}
+
+.tikool-fc-lightbox__backdrop {
+  appearance: none;
+  background: rgba(30, 20, 17, 0.86);
+  border: 0;
+  cursor: zoom-out;
+  inset: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.tikool-fc-lightbox__dialog {
+  background: #fffaf6;
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(18, 11, 9, 0.46);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: min(92vh, 1080px);
+  max-width: 1180px;
+  overflow: hidden;
+  position: relative;
+  width: min(92vw, 1180px);
+}
+
+.tikool-fc-lightbox__header {
+  align-items: center;
+  border-bottom: 1px solid #ead8cf;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 22px;
+}
+
+.tikool-fc-lightbox__header span {
+  color: var(--shop-accent, #b64d36);
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tikool-fc-lightbox__header h3 {
+  color: #2f201c;
+  font-family: var(--shop-serif, Georgia, serif);
+  font-size: clamp(22px, 2.5vw, 34px);
+  line-height: 1.1;
+  margin: 3px 0 0;
+}
+
+.tikool-fc-lightbox__close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid #dfc9be;
+  border-radius: 50%;
+  color: #2f201c;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 28px;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  width: 48px;
+}
+
+.tikool-fc-lightbox__close:focus-visible {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: 3px;
+}
+
+.tikool-fc-lightbox__image-wrap {
+  align-items: center;
+  background:
+    linear-gradient(45deg, rgba(241, 223, 213, 0.36) 25%, transparent 25%, transparent 75%, rgba(241, 223, 213, 0.36) 75%),
+    linear-gradient(45deg, rgba(241, 223, 213, 0.36) 25%, #fff 25%, #fff 75%, rgba(241, 223, 213, 0.36) 75%);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+  display: flex;
+  cursor: grab;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+}
+
+.tikool-fc-lightbox__image-wrap.is-dragging {
+  cursor: grabbing;
+}
+
+.tikool-fc-lightbox__image-wrap:focus-visible {
+  outline: 3px solid var(--shop-accent, #b64d36);
+  outline-offset: -3px;
+}
+
+.tikool-fc-lightbox__image-wrap img {
+  box-shadow: 0 18px 50px rgba(58, 35, 27, 0.2);
+  display: block;
+  height: auto;
+  left: 50%;
+  max-height: none;
+  max-width: none;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform-origin: center;
+  width: auto;
+  will-change: transform;
+}
+
+.tikool-fc-lightbox__toolbar {
+  align-items: center;
+  background: #fffaf6;
+  border-top: 1px solid #ead8cf;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+}
+
+.tikool-fc-lightbox__toolbar button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #dfc9be;
+  border-radius: 999px;
+  color: #34251f;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 19px;
+  font-weight: 750;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+  padding: 5px 10px;
+}
+
+.tikool-fc-lightbox__toolbar button:hover,
+.tikool-fc-lightbox__toolbar button:focus-visible {
+  border-color: var(--shop-accent, #b64d36);
+}
+
+.tikool-fc-lightbox__toolbar button:focus-visible {
+  outline: 2px solid var(--shop-accent, #b64d36);
+  outline-offset: 2px;
+}
+
+.tikool-fc-lightbox__toolbar .tikool-fc-lightbox__toolbar-text {
+  font-size: 12px;
+  min-width: auto;
+  padding-inline: 14px;
+}
+
+.tikool-fc-lightbox__toolbar output {
+  color: #5a3a4f;
+  font-size: 12px;
+  font-weight: 800;
+  min-width: 48px;
+  text-align: center;
+}
+
+.tikool-fc-lightbox__toolbar small {
+  color: #806e65;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tikool-fc-ai-loading::before,
+  .tikool-fc-ai-loading::after,
+  .tikool-fc-ai-loading__ring,
+  .tikool-fc-ai-loading__progress i,
+  .tikool-fc-ai-loading__message.is-changing {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+  }
+}
+
 @media (max-width: 900px) {
+  .tikool-fc-modal {
+    height: 100vh;
+    height: 100dvh;
+  }
+
   .tikool-fc-modal__dialog {
-    height: 100%;
+    box-sizing: border-box;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
+    height: 100dvh;
     inset: 0;
+    max-height: 100dvh;
+    position: fixed;
     width: 100%;
   }
 
   .tikool-fc-modal__header {
-    padding: 20px;
+    padding: 13px 16px;
   }
 
   .tikool-fc-modal__header h2 {
-    font-size: 34px;
+    font-size: 28px;
   }
 
   .tikool-fc-modal__close {
-    height: 48px;
-    width: 48px;
+    height: 42px;
+    width: 42px;
   }
 
   .tikool-fc-modal__content {
     display: block;
-    overflow: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tikool-fc-preview {
-    min-height: 490px;
-    padding: 56px 16px 20px;
+    min-height: 440px;
+    padding: 12px 16px 14px;
   }
 
   .tikool-fc-canvas-wrap {
     max-height: none;
-    width: min(78%, 420px);
+    width: min(68%, 336px);
+  }
+
+  .tikool-fc-variants {
+    right: 8px;
+    width: auto;
+  }
+
+  .tikool-fc-preview.has-variants .tikool-fc-canvas-wrap,
+  .tikool-fc-preview.has-variants .tikool-fc-preview__hint,
+  .tikool-fc-preview.has-variants .tikool-fc-preview__zoom {
+    transform: translateX(-24px);
+  }
+
+  .tikool-fc-preview__zoom {
+    margin-top: 6px;
+    width: min(68%, 336px);
   }
 
   .tikool-fc-controls {
     overflow: visible;
-    padding: 30px 20px 150px;
+    padding: 30px 20px;
   }
 
   .tikool-fc-modal__footer {
-    bottom: 0;
+    bottom: auto;
+    box-sizing: border-box;
+    flex: 0 0 auto;
     gap: 10px;
-    left: 0;
+    left: auto;
     min-height: 88px;
-    padding: 10px 14px;
-    position: absolute;
-    right: 0;
+    padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+    position: relative;
+    right: auto;
     z-index: 4;
   }
 
@@ -444,31 +1720,183 @@ body.tikool-fc-open {
   }
 }
 
+@media (max-width: 480px) {
+  .tikool-fc-name-overlay__colors {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 560px) {
-  .tikool-fc-preview {
-    min-height: 410px;
+  .tikool-fc-modal__header > div {
+    overflow: hidden;
   }
 
-  .tikool-fc-preview__badge {
-    left: 14px;
-    top: 14px;
+  .tikool-fc-modal__header h2 {
+    font-size: 21px;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .tikool-fc-preview {
+    min-height: 385px;
+    padding: 10px 12px 12px;
   }
 
   .tikool-fc-canvas-wrap {
-    width: min(84%, 340px);
+    width: min(76%, 288px);
+  }
+
+  .tikool-fc-preview__zoom {
+    width: min(76%, 288px);
+  }
+
+  .tikool-fc-variants {
+    right: 6px;
+    width: auto;
+  }
+
+  .tikool-fc-preview.has-variants .tikool-fc-canvas-wrap,
+  .tikool-fc-preview.has-variants .tikool-fc-preview__zoom {
+    transform: translateX(-22px);
+  }
+
+  .tikool-fc-preview__hint {
+    display: none;
+  }
+
+  .tikool-fc-preview__actions {
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+    width: 100%;
+  }
+
+  .tikool-fc-view-large,
+  .tikool-fc-view-source {
+    font-size: 11px;
+    min-height: 34px;
+    padding: 6px 11px;
+  }
+
+  .tikool-fc-preview__zoom {
+    gap: 9px;
+    padding: 6px 10px;
   }
 
   .tikool-fc-summary {
-    grid-template-columns: 1fr 1fr;
+    padding: 6px;
   }
 
   .tikool-fc-summary div {
-    min-height: 78px;
-    padding: 16px;
+    flex-basis: calc(50% - 1px);
+    padding: 6px 9px;
   }
 
   .tikool-fc-summary strong {
-    font-size: 15px;
+    font-size: 13px;
+  }
+
+  .tikool-fc-upload {
+    gap: 5px 8px;
+    margin-top: 14px;
+  }
+
+  .tikool-fc-upload__button {
+    font-size: 13px;
+    padding: 8px 13px;
+  }
+
+  .tikool-fc-upload__filename {
+    font-size: 12px;
+  }
+
+  .tikool-fc-ai-loading {
+    padding: 18px 12px;
+  }
+
+  .tikool-fc-ai-loading__visual {
+    height: 64px;
+    margin-bottom: 10px;
+    width: 64px;
+  }
+
+  .tikool-fc-ai-loading__mark {
+    font-size: 17px;
+    height: 40px;
+    width: 40px;
+  }
+
+  .tikool-fc-ai-loading__title {
+    font-size: 20px;
+  }
+
+  .tikool-fc-ai-loading__estimate {
+    font-size: 11px;
+    margin-top: 8px;
+    padding: 5px 9px;
+  }
+
+  .tikool-fc-ai-loading__message {
+    font-size: 12px;
+    margin: 9px 0 10px;
+  }
+
+  .tikool-fc-ai-loading small {
+    display: none;
+  }
+
+  .tikool-fc-lightbox {
+    padding: 10px;
+  }
+
+  .tikool-fc-lightbox__dialog {
+    border-radius: 16px;
+    height: calc(100dvh - 20px);
+    width: calc(100vw - 20px);
+  }
+
+  .tikool-fc-lightbox__header {
+    padding: 13px 14px;
+  }
+
+  .tikool-fc-lightbox__header h3 {
+    font-size: 24px;
+  }
+
+  .tikool-fc-lightbox__close {
+    height: 42px;
+    width: 42px;
+  }
+
+  .tikool-fc-lightbox__toolbar {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+
+  .tikool-fc-lightbox__toolbar small {
+    flex-basis: 100%;
+    margin: 1px 0 0;
+    text-align: center;
+  }
+
+  .tikool-fc-styles__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tikool-fc-variants__grid {
+    gap: 9px;
+    grid-template-columns: 1fr;
+  }
+
+  .tikool-fc-variant {
+    height: 52px;
+    width: 52px;
+  }
+
+  .tikool-fc-variant__swatch {
+    flex-basis: 39px;
+    height: 39px;
+    width: 39px;
   }
 
   .tikool-fc-back {

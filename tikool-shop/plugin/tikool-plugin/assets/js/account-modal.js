@@ -82,8 +82,11 @@
     }
     try {
       const url = new URL(element.href, window.location.href);
-      const configuredPath = String(config.myAccountPath || "/my-account/").replace(/\/+$/, "");
-      return url.origin === window.location.origin && url.pathname.replace(/\/+$/, "") === configuredPath;
+      const configuredUrl = new URL(config.myAccountUrl || config.myAccountPath || "/my-account/", window.location.origin);
+      const normalizePath = (path) => path.replace(/\/+$/, "") || "/";
+      return url.origin === configuredUrl.origin
+        && normalizePath(url.pathname) === normalizePath(configuredUrl.pathname)
+        && url.search === configuredUrl.search;
     } catch (error) {
       return false;
     }

@@ -205,8 +205,10 @@
 
   document.querySelectorAll("form.cart").forEach((form) => {
     const picker = form.querySelector(".trovesia-variant-picker");
-    const bundleSelect = form.querySelector('select[name="attribute_bundle"]');
-    const bundleCards = picker ? [...picker.querySelectorAll(".trovesia-bundle-card")] : [];
+    const attributeSelect = picker
+      ? [...form.querySelectorAll(".variations select")].find((select) => select.name === picker.dataset.attributeName)
+      : null;
+    const variantCards = picker ? [...picker.querySelectorAll(".trovesia-variant-card")] : [];
     const addonCards = [...form.querySelectorAll(".trovesia-product-addon")];
 
     const choose = (select, value) => {
@@ -229,9 +231,9 @@
         } catch (error) {
           allowed = [];
         }
-        const currentBundle = bundleSelect?.value || "";
-        const isAllowed = !allowed.length || !currentBundle || allowed.some(
-          (value) => String(value).toLocaleLowerCase() === currentBundle.toLocaleLowerCase(),
+        const currentValue = attributeSelect?.value || "";
+        const isAllowed = !allowed.length || !currentValue || allowed.some(
+          (value) => String(value).toLocaleLowerCase() === currentValue.toLocaleLowerCase(),
         );
         card.hidden = !isAllowed;
         if (!isAllowed && input) {
@@ -245,34 +247,34 @@
       card.querySelector(".trovesia-product-addon__input")?.addEventListener("change", syncAddons);
     });
 
-    if (picker && bundleSelect && bundleCards.length) {
-      const syncBundles = () => {
-        bundleCards.forEach((card) => {
-          const selected = card.dataset.attributeValue === bundleSelect.value;
+    if (picker && attributeSelect && variantCards.length) {
+      const syncVariants = () => {
+        variantCards.forEach((card) => {
+          const selected = card.dataset.attributeValue === attributeSelect.value;
           card.classList.toggle("is-selected", selected);
           card.setAttribute("aria-pressed", String(selected));
         });
         syncAddons();
       };
 
-      bundleCards.forEach((card) => {
+      variantCards.forEach((card) => {
         card.addEventListener("click", () => {
-          choose(bundleSelect, card.dataset.attributeValue || "");
-          syncBundles();
+          choose(attributeSelect, card.dataset.attributeValue || "");
+          syncVariants();
         });
       });
 
-      if (!bundleSelect.value) {
-        choose(bundleSelect, picker.dataset.defaultBundle || bundleCards[0].dataset.attributeValue || "");
+      if (!attributeSelect.value) {
+        choose(attributeSelect, picker.dataset.defaultValue || variantCards.find((card) => !card.disabled)?.dataset.attributeValue || "");
       }
 
-      bundleSelect.addEventListener("change", syncBundles);
+      attributeSelect.addEventListener("change", syncVariants);
 
       if (window.jQuery) {
-        window.jQuery(form).on("found_variation reset_data woocommerce_variation_has_changed", syncBundles);
+        window.jQuery(form).on("found_variation reset_data woocommerce_variation_has_changed", syncVariants);
       }
 
-      syncBundles();
+      syncVariants();
       picker.classList.add("is-ready");
     } else {
       syncAddons();

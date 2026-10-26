@@ -696,8 +696,8 @@ final class Site_Experience
             return;
         }
 
-        $start = wp_date('M j', strtotime('+7 days'));
-        $end = wp_date('M j', strtotime('+12 days'));
+        $start = wp_date('M j', strtotime('+8 days'));
+        $end = wp_date('M j', strtotime('+15 days'));
         $guarantee = (string) get_post_meta($product->get_id(), '_trovesia_guarantee', true);
         $shipping = (string) get_post_meta($product->get_id(), '_trovesia_shipping', true);
         $order_activity = trim((string) get_post_meta($product->get_id(), '_trovesia_order_activity', true));
@@ -716,7 +716,7 @@ final class Site_Experience
             </strong>
         </div>
         <div class="trovesia-assurance-grid" aria-label="<?php esc_attr_e('Purchase assurances', 'trovesia-plugin'); ?>">
-            <div><span aria-hidden="true">◇</span><strong><?php esc_html_e('Thoughtful formulas', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Ingredient-led care', 'trovesia-plugin'); ?></small></div>
+            <div><span aria-hidden="true">◇</span><strong><?php esc_html_e('Thoughtfully selected', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Clear product guidance', 'trovesia-plugin'); ?></small></div>
             <div><span aria-hidden="true">↺</span><strong><?php esc_html_e('30-day returns', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Simple support', 'trovesia-plugin'); ?></small></div>
             <div><span aria-hidden="true">⌁</span><strong><?php esc_html_e('Secure checkout', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Protected payment', 'trovesia-plugin'); ?></small></div>
         </div>
@@ -747,35 +747,52 @@ final class Site_Experience
     {
         global $product;
 
-        if (
-            ! $product instanceof \WC_Product_Variable
-            || get_post_meta($product->get_id(), '_trovesia_source_handle', true) !== 'viorine-advanced-batana-hair-regrowth-therapy'
-        ) {
+        if (! $product instanceof \WC_Product_Variable) {
             return;
         }
 
+        $variation_attributes = $product->get_variation_attributes();
+        // A card has one unambiguous variation price and image only for one attribute.
+        if (count($variation_attributes) !== 1) {
+            return;
+        }
+
+        $attribute_name = (string) array_key_first($variation_attributes);
+        $select_name = wc_variation_attribute_name($attribute_name);
+        $attribute_label = wc_attribute_label($attribute_name, $product);
+        $is_bundle = sanitize_title($attribute_name) === 'bundle';
         $variations = $product->get_available_variations();
-        $bundles = [];
+        $options = [];
 
         foreach ($variations as $variation) {
             $attributes = (array) ($variation['attributes'] ?? []);
-            $bundle = (string) ($attributes['attribute_bundle'] ?? '');
-            if ($bundle !== '') {
-                $bundles[$bundle] = $variation;
+            $value = (string) ($attributes[$select_name] ?? '');
+            if ($value !== '') {
+                $options[$value] = $variation;
             }
         }
 
-        if ($bundles === []) {
+        if ($options === []) {
             return;
         }
 
+        $default_attributes = $product->get_default_attributes();
+        $default_value = (string) ($default_attributes[sanitize_title($attribute_name)] ?? '');
+        if (! isset($options[$default_value])) {
+            $default_value = (string) array_key_first($options);
+        }
+
+        $heading = $is_bundle
+            ? __('Choose your bundle', 'trovesia-plugin')
+            : sprintf(__('Choose your %s', 'trovesia-plugin'), strtolower($attribute_label));
+
         ?>
-        <section class="trovesia-variant-picker" data-default-bundle="<?php echo esc_attr((string) array_key_first($bundles)); ?>">
+        <section class="trovesia-variant-picker" data-attribute-name="<?php echo esc_attr($select_name); ?>" data-default-value="<?php echo esc_attr($default_value); ?>">
             <div class="trovesia-variant-picker__heading">
-                <span></span><strong><?php esc_html_e('Choose your bundle', 'trovesia-plugin'); ?></strong><span></span>
+                <span></span><strong><?php echo esc_html($heading); ?></strong><span></span>
             </div>
-            <div class="trovesia-bundle-options" role="group" aria-label="<?php esc_attr_e('Bundle size', 'trovesia-plugin'); ?>">
-                <?php foreach ($bundles as $bundle => $variation) : ?>
+            <div class="trovesia-variant-options" role="group" aria-label="<?php echo esc_attr($attribute_label); ?>">
+                <?php foreach ($options as $value => $variation) : ?>
                     <?php
                     $display_price = (float) $variation['display_price'];
                     $regular_price = (float) $variation['display_regular_price'];
@@ -784,23 +801,34 @@ final class Site_Experience
                     $variation_description = $variation_product instanceof \WC_Product_Variation
                         ? trim(wp_strip_all_tags($variation_product->get_description()))
                         : '';
+                    $option_label = $value;
+                    if (taxonomy_exists($attribute_name)) {
+                        $term = get_term_by('slug', $value, $attribute_name);
+                        if ($term instanceof \WP_Term) {
+                            $option_label = $term->name;
+                        }
+                    }
 
-                    if ($variation_description === '') {
-                        preg_match_all('/\d+/', $bundle, $bundle_quantities);
+                    if ($variation_description === '' && $is_bundle) {
+                        preg_match_all('/\d+/', $value, $bundle_quantities);
                         $bottle_count = array_sum(array_map('intval', $bundle_quantities[0] ?? []));
                         $variation_description = $bottle_count > 0
                             ? sprintf(_n('%d bottle bundle', '%d bottle bundle', $bottle_count, 'trovesia-plugin'), $bottle_count)
                             : __('Bundle option', 'trovesia-plugin');
                     }
+                    $image_id = $variation_product instanceof \WC_Product_Variation && $variation_product->get_image_id()
+                        ? $variation_product->get_image_id()
+                        : $product->get_image_id();
+                    $available = ! empty($variation['is_purchasable']) && ! empty($variation['is_in_stock']);
                     ?>
-                    <button class="trovesia-bundle-card" type="button" data-attribute-name="attribute_bundle" data-attribute-value="<?php echo esc_attr($bundle); ?>" aria-pressed="false">
-                        <span class="trovesia-bundle-card__visual"><?php echo wp_get_attachment_image($product->get_image_id(), 'woocommerce_thumbnail', false, ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-                        <span class="trovesia-bundle-card__copy">
-                            <strong><?php echo esc_html($bundle); ?></strong>
-                            <small><?php echo esc_html($variation_description); ?></small>
+                    <button class="trovesia-variant-card" type="button" data-attribute-value="<?php echo esc_attr($value); ?>" aria-pressed="false" <?php disabled(! $available); ?>>
+                        <span class="trovesia-variant-card__visual"><?php echo wp_get_attachment_image($image_id, 'woocommerce_thumbnail', false, ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+                        <span class="trovesia-variant-card__copy">
+                            <strong><?php echo esc_html($option_label); ?></strong>
+                            <?php if ($variation_description !== '') : ?><small><?php echo esc_html($variation_description); ?></small><?php endif; ?>
                         </span>
-                        <span class="trovesia-bundle-card__price">
-                            <?php if ($saving > 0) : ?><span class="trovesia-bundle-card__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
+                        <span class="trovesia-variant-card__price">
+                            <?php if ($saving > 0) : ?><span class="trovesia-variant-card__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
                             <strong><?php echo wp_kses_post(wc_price($display_price)); ?></strong>
                             <?php if ($regular_price > $display_price) : ?><del><?php echo wp_kses_post(wc_price($regular_price)); ?></del><?php endif; ?>
                         </span>
@@ -816,34 +844,62 @@ final class Site_Experience
     {
         global $product;
 
-        if (! $product instanceof \WC_Product || Addon_Pricing::get_rules($product->get_id()) === []) {
+        if (! $product instanceof \WC_Product) {
             return;
         }
 
-        if (get_post_meta($product->get_id(), '_trovesia_source_handle', true) === 'viorine-advanced-batana-hair-regrowth-therapy') {
+        // A single-attribute variable product already renders its add-ons
+        // directly below the expanded variation cards.
+        if (
+            $product instanceof \WC_Product_Variable
+            && count($product->get_variation_attributes()) === 1
+            && $product->get_available_variations() !== []
+        ) {
+            return;
+        }
+
+        $available_addons = $this->get_available_addons($product);
+        if ($available_addons === []) {
             return;
         }
 
         echo '<section class="trovesia-generic-addons">';
-        $this->render_addon_options($product);
+        $this->render_addon_options($product, $available_addons);
         echo '</section>';
     }
 
-    private function render_addon_options(\WC_Product $parent_product): void
+    /**
+     * @return array<int, array{rule: array<string, mixed>, linked: \WC_Product}>
+     */
+    private function get_available_addons(\WC_Product $parent_product): array
     {
-        $rules = Addon_Pricing::get_rules($parent_product->get_id());
-        if ($rules === []) {
+        $available = [];
+        foreach (Addon_Pricing::get_rules($parent_product->get_id()) as $rule) {
+            $linked = wc_get_product((int) ($rule['product_id'] ?? 0));
+            if ($linked instanceof \WC_Product && $linked->get_status() === 'publish' && $linked->is_purchasable() && $linked->is_in_stock()) {
+                $available[] = ['rule' => $rule, 'linked' => $linked];
+            }
+        }
+
+        return $available;
+    }
+
+    /**
+     * @param array<int, array{rule: array<string, mixed>, linked: \WC_Product}>|null $available_addons
+     */
+    private function render_addon_options(\WC_Product $parent_product, ?array $available_addons = null): void
+    {
+        $available_addons ??= $this->get_available_addons($parent_product);
+        if ($available_addons === []) {
             return;
         }
         ?>
         <div class="trovesia-addon-heading"><?php esc_html_e('Complete your order', 'trovesia-plugin'); ?></div>
         <div class="trovesia-product-addons">
-            <?php foreach ($rules as $rule) : ?>
+            <?php foreach ($available_addons as $item) : ?>
                 <?php
-                $linked = wc_get_product((int) ($rule['product_id'] ?? 0));
-                if (! $linked || ! $linked->is_purchasable()) {
-                    continue;
-                }
+                $rule = $item['rule'];
+                $linked = $item['linked'];
                 $title = trim((string) ($rule['title'] ?? '')) ?: $linked->get_name();
                 $price = Addon_Pricing::calculate_rule_price($rule);
                 $regular_price = Addon_Pricing::calculate_rule_regular_price($rule);

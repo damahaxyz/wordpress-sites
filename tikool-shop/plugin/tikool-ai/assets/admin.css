@@ -1,0 +1,280 @@
+.tikool-ai-admin {
+  box-sizing: border-box;
+  max-width: 1680px;
+  padding-right: 20px;
+}
+
+.tikool-ai-card {
+  margin-top: 20px;
+  padding: 8px 24px 20px;
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+}
+
+.tikool-ai-card__heading,
+.tikool-ai-profile__meta,
+.tikool-ai-inline-fields {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tikool-ai-card__heading {
+  justify-content: space-between;
+  margin: 12px 0 16px;
+}
+
+.tikool-ai-card__heading h2 {
+  margin-bottom: 4px;
+}
+
+.tikool-ai-profile {
+  margin-top: 12px;
+  padding: 18px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+.tikool-ai-profile__meta {
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.tikool-ai-profile label span {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.tikool-ai-profile .tikool-ai-enabled {
+  padding-bottom: 6px;
+}
+
+.tikool-ai-profile .tikool-ai-enabled span {
+  display: inline;
+}
+
+.tikool-ai-profile__meta .button-link-delete {
+  margin: 0 0 7px auto;
+}
+
+.tikool-ai-prompt {
+  display: block;
+  margin-top: 14px;
+}
+
+.tikool-ai-profile__preview {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.tikool-ai-profile__preview-image {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 8px;
+  flex: 0 0 88px;
+  height: 88px;
+  overflow: hidden;
+}
+
+.tikool-ai-profile__preview-image[hidden],
+.tikool-ai-profile__preview [hidden] {
+  display: none;
+}
+
+.tikool-ai-profile__preview-image img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.tikool-ai-profile__preview strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.tikool-ai-profile__preview .description {
+  margin: 0 0 8px;
+}
+
+.tikool-ai-profile__preview .button-link-delete {
+  margin-left: 10px;
+}
+
+.tikool-ai-prompt textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 112px;
+  font-family: Consolas, Monaco, monospace;
+}
+
+.tikool-ai-clear {
+  display: block;
+  margin-top: 8px;
+}
+
+.tikool-ai-tabs {
+  margin-bottom: 18px;
+}
+
+.tikool-ai-log-filters {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 12px;
+}
+
+.tikool-ai-log-count {
+  color: #646970;
+  margin-left: auto;
+}
+
+.tikool-ai-log-table-wrap {
+  overflow-x: auto;
+}
+
+.tikool-ai-log-table {
+  min-width: 1080px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.tikool-ai-log-table th:nth-child(1) {
+  width: 12%;
+}
+
+.tikool-ai-log-table th:nth-child(2) {
+  width: 19%;
+}
+
+.tikool-ai-log-table th:nth-child(3) {
+  width: 19%;
+}
+
+.tikool-ai-log-table th:nth-child(4) {
+  width: 22%;
+}
+
+.tikool-ai-log-table th:nth-child(5) {
+  width: 28%;
+}
+
+.tikool-ai-log-table td {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  word-break: normal;
+}
+
+.tikool-ai-log-table td code {
+  background: #f0f0f1;
+  display: inline;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  padding: 1px 4px;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.tikool-ai-log-table p {
+  margin: 5px 0 0;
+}
+
+.tikool-ai-log-table details + details {
+  margin-top: 6px;
+}
+
+.tikool-ai-log-table summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tikool-ai-log-table pre {
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin: 8px 0 0;
+  max-height: 220px;
+  max-width: 100%;
+  overflow: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tikool-ai-log-table details {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.tikool-ai-log-table details[open] summary {
+  margin-bottom: 6px;
+}
+
+.tikool-ai-status {
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 5px 0;
+  padding: 2px 9px;
+}
+
+.tikool-ai-status--success {
+  background: #dff3e4;
+  color: #176b32;
+}
+
+.tikool-ai-status--requesting {
+  background: #fff1c7;
+  color: #7a4d00;
+}
+
+.tikool-ai-status--cached {
+  background: #e6edff;
+  color: #2850a7;
+}
+
+.tikool-ai-status--failed {
+  background: #fbe3e3;
+  color: #9a2020;
+}
+
+@media (max-width: 782px) {
+  .tikool-ai-admin {
+    padding-right: 10px;
+  }
+
+  .tikool-ai-card {
+    padding-inline: 16px;
+  }
+
+  .tikool-ai-card__heading {
+    align-items: flex-start;
+  }
+
+  .tikool-ai-profile__meta {
+    display: block;
+  }
+
+  .tikool-ai-profile__meta label {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .tikool-ai-profile__meta input[type='text'] {
+    width: 100%;
+  }
+
+  .tikool-ai-log-count {
+    margin-left: 0;
+    width: 100%;
+  }
+}

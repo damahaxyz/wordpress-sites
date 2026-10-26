@@ -78,6 +78,7 @@ final class Account_Experience
         wp_localize_script('tikool-account-modal', 'tikoolAccount', [
             'ajaxUrl'        => admin_url('admin-ajax.php'),
             'nonce'          => wp_create_nonce(self::NONCE_ACTION),
+            'myAccountUrl'   => wc_get_page_permalink('myaccount'),
             'myAccountPath'  => wp_parse_url(wc_get_page_permalink('myaccount'), PHP_URL_PATH),
             'workingMessage' => __('Please wait…', 'tikool-plugin'),
             'errorMessage'   => __('Something went wrong. Please try again.', 'tikool-plugin'),

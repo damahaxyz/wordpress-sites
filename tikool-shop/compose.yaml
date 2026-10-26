@@ -84,8 +84,13 @@ services:
       - ./theme/tikool:/var/www/html/wp-content/themes/tikool
       - ./plugin/tikool-plugin:/var/www/html/wp-content/plugins/tikool-plugin
       - ./plugin/tikool-frame-customizer:/var/www/html/wp-content/plugins/tikool-frame-customizer
+      - ./plugin/tikool-ai:/var/www/html/wp-content/plugins/tikool-ai
+      - ./plugin/tikool-memory-page:/var/www/html/wp-content/plugins/tikool-memory-page
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
       - ./runtime/page-cache:/var/run/tikool-page-cache
+      - ${MEMORY_PAGES_REPO_PATH:-./runtime/memory-pages-repo}:/var/lib/tikool-memory-pages:ro
+      - ./runtime/memory-page-tasks:/var/lib/tikool-memory-tasks
+      - ./runtime/memory-page-publisher:/var/run/tikool-memory-publisher
     networks:
       - frontend
       - backend
@@ -113,6 +118,8 @@ services:
       - ./theme/tikool:/var/www/html/wp-content/themes/tikool:ro
       - ./plugin/tikool-plugin:/var/www/html/wp-content/plugins/tikool-plugin:ro
       - ./plugin/tikool-frame-customizer:/var/www/html/wp-content/plugins/tikool-frame-customizer:ro
+      - ./plugin/tikool-ai:/var/www/html/wp-content/plugins/tikool-ai:ro
+      - ./plugin/tikool-memory-page:/var/www/html/wp-content/plugins/tikool-memory-page:ro
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/cache-watch.sh:/etc/nginx/cache-watch.sh:ro
       - ./runtime/page-cache:/var/run/tikool-page-cache
@@ -156,7 +163,12 @@ services:
       - ./theme/tikool:/var/www/html/wp-content/themes/tikool
       - ./plugin/tikool-plugin:/var/www/html/wp-content/plugins/tikool-plugin
       - ./plugin/tikool-frame-customizer:/var/www/html/wp-content/plugins/tikool-frame-customizer
+      - ./plugin/tikool-ai:/var/www/html/wp-content/plugins/tikool-ai
+      - ./plugin/tikool-memory-page:/var/www/html/wp-content/plugins/tikool-memory-page
       - ./runtime/page-cache:/var/run/tikool-page-cache
+      - ${MEMORY_PAGES_REPO_PATH:-./runtime/memory-pages-repo}:/var/lib/tikool-memory-pages:ro
+      - ./runtime/memory-page-tasks:/var/lib/tikool-memory-tasks
+      - ./runtime/memory-page-publisher:/var/run/tikool-memory-publisher
     networks:
       - frontend
       - backend

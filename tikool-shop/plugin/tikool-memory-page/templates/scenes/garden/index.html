@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eee9df">
+  <title>Memory Page</title>
+  <style>
+    :root{--paper:#f8f5ee;--ink:#2b2925;--muted:#716d64;--leaf:#64705a;--line:#d9d2c4}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(150deg,#e8eee2,#f8f5ee 42%,#eee4dc);color:var(--ink);font:16px/1.65 Georgia,serif;min-height:100vh}.shell{margin:auto;max-width:1040px;padding:7vw 22px}.hero{text-align:center;padding:7vw 0 4vw}.kicker{color:var(--leaf);font:600 .72rem/1.2 system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(3rem,9vw,7rem);font-weight:400;letter-spacing:-.04em;line-height:.9;margin:.3em 0}.story{color:var(--muted);font-size:clamp(1.05rem,2.2vw,1.35rem);margin:2rem auto;max-width:720px;white-space:pre-line}.gallery{display:grid;gap:14px;grid-template-columns:repeat(12,1fr);margin:4rem 0}.gallery figure{grid-column:span 4;margin:0}.gallery figure:first-child{grid-column:span 8;grid-row:span 2}.gallery img{aspect-ratio:4/5;border-radius:3px;display:block;height:100%;object-fit:cover;width:100%;box-shadow:0 20px 60px #38332a24}.gallery figure:first-child img{aspect-ratio:4/3}.section{border-top:1px solid var(--line);padding:4rem 0}.section h2{font-size:clamp(2rem,5vw,3.8rem);font-weight:400;margin:0 0 2rem}.timeline{margin-left:auto;max-width:780px}.moment{border-left:1px solid var(--leaf);display:grid;gap:1rem;grid-template-columns:120px 1fr;padding:0 0 3rem 2rem;position:relative}.moment:before{background:var(--paper);border:2px solid var(--leaf);border-radius:50%;content:"";height:11px;left:-7px;position:absolute;top:.45rem;width:11px}.moment time{color:var(--leaf);font:600 .8rem system-ui,sans-serif;letter-spacing:.07em}.moment h3{font-size:1.5rem;font-weight:400;margin:0}.moment p{color:var(--muted);margin:.5rem 0;white-space:pre-line}.media-list{display:grid;gap:1.25rem}.media-list video{background:#111;border-radius:4px;max-height:70vh;width:100%}.audio-card{align-items:center;background:#ffffff8a;border:1px solid var(--line);border-radius:6px;display:grid;gap:.7rem;padding:1rem}.audio-card span{color:var(--muted);font:600 .8rem system-ui,sans-serif}.audio-card audio{width:100%}.loading,.error{text-align:center;padding:20vh 1rem}.error{color:#8b362c}@media(max-width:680px){.gallery figure,.gallery figure:first-child{grid-column:span 12;grid-row:auto}.moment{grid-template-columns:1fr;gap:.25rem}.shell{padding-top:16vw}}
+  </style>
+</head>
+<body>
+  <main class="shell" id="app"><p class="loading">Opening this memory…</p></main>
+  <script>
+    window.__TIKOOL_MEMORY_MANIFEST__=__TIKOOL_MEMORY_MANIFEST_JSON__;
+    const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    const media=(items,type)=>items.map(item=>type==="video"?`<video controls preload="metadata" playsinline src="${esc(item.src)}"></video>`:`<div class="audio-card"><span>${esc(item.name||"A treasured sound")}</span><audio controls preload="metadata" src="${esc(item.src)}"></audio></div>`).join("");
+    try{
+      const m=window.__TIKOOL_MEMORY_MANIFEST__;
+      if(!m||typeof m!=="object")throw Error("invalid manifest");
+      document.title=m.title||m.pet?.name||"Memory Page";
+      const photos=m.media?.photos||[],videos=m.media?.videos||[],audio=m.media?.audio||[],timeline=m.timeline||[];
+      document.getElementById("app").innerHTML=`<header class="hero"><p class="kicker">Forever in our hearts</p><h1>${esc(m.pet?.name||m.title)}</h1>${m.story?`<p class="story">${esc(m.story)}</p>`:""}</header>${photos.length?`<section class="gallery">${photos.map(p=>`<figure><img src="${esc(p.src)}" alt="${esc(m.pet?.name||"")}" loading="lazy"></figure>`).join("")}</section>`:""}${timeline.length?`<section class="section"><h2>A life remembered</h2><div class="timeline">${timeline.map(t=>`<article class="moment"><time>${esc(t.date)}</time><div><h3>${esc(t.title)}</h3><p>${esc(t.text)}</p></div></article>`).join("")}</div></section>`:""}${videos.length?`<section class="section"><h2>Moments in motion</h2><div class="media-list">${media(videos,"video")}</div></section>`:""}${audio.length?`<section class="section"><h2>A voice to remember</h2><div class="media-list">${media(audio,"audio")}</div></section>`:""}`;
+    }catch(error){document.getElementById("app").innerHTML='<p class="error">This Memory Page is temporarily unavailable.</p>'}
+  </script>
+</body>
+</html>

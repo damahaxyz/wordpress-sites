@@ -1,0 +1,196 @@
+.tikool-toast-source-hidden {
+  display: none !important;
+}
+
+.tikool-toast-region {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 1000001;
+  top: calc(20px + var(--wp-admin--admin-bar--height, 0px));
+  right: max(20px, env(safe-area-inset-right));
+  display: grid;
+  width: min(430px, calc(100vw - 40px));
+  gap: 12px;
+  pointer-events: none;
+}
+
+.tikool-toast {
+  --tikool-toast-accent: #59344f;
+  position: relative;
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  grid-template-columns: 28px minmax(0, 1fr) 30px;
+  gap: 12px;
+  align-items: start;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(89, 52, 79, 0.18);
+  border-radius: 18px;
+  background: #fffaf7;
+  box-shadow: 0 16px 42px rgba(50, 32, 27, 0.18);
+  color: #382825;
+  font-family: inherit;
+  opacity: 0;
+  pointer-events: auto;
+  transform: translate3d(24px, 0, 0);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.tikool-toast::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--tikool-toast-accent);
+  content: "";
+  transform-origin: left;
+  animation: tikool-toast-progress var(--tikool-toast-duration, 6000ms) linear forwards;
+}
+
+.tikool-toast.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.tikool-toast.is-leaving {
+  opacity: 0;
+  transform: translate3d(24px, 0, 0);
+}
+
+.tikool-toast--success {
+  --tikool-toast-accent: #58715a;
+}
+
+.tikool-toast--error {
+  --tikool-toast-accent: #ad302b;
+}
+
+.tikool-toast--info {
+  --tikool-toast-accent: #59344f;
+}
+
+.tikool-toast__icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tikool-toast-accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tikool-toast__content {
+  min-width: 0;
+}
+
+.tikool-toast__message {
+  margin: 1px 0 0;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.tikool-toast__action {
+  display: inline-flex;
+  margin-top: 10px;
+  color: var(--tikool-toast-accent);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.tikool-toast__action:hover,
+.tikool-toast__action:focus-visible {
+  text-decoration: underline;
+}
+
+.tikool-toast__close {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  margin: -5px -5px 0 0;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #715e59;
+  cursor: pointer;
+  font: 400 25px/1 Arial, sans-serif;
+}
+
+.tikool-toast__close:hover,
+.tikool-toast__close:focus-visible {
+  background: rgba(89, 52, 79, 0.09);
+  color: #382825;
+}
+
+.is-tikool-submitting {
+  cursor: wait !important;
+  opacity: 0.76;
+  pointer-events: none !important;
+}
+
+.tikool-cart-button__spinner {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -3px;
+  animation: tikool-cart-button-spin 700ms linear infinite;
+}
+
+@keyframes tikool-cart-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tikool-toast-progress {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .tikool-toast-region {
+    top: calc(12px + var(--wp-admin--admin-bar--height, 0px) + env(safe-area-inset-top));
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .tikool-toast {
+    grid-template-columns: 26px minmax(0, 1fr) 28px;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .tikool-toast__message {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tikool-toast,
+  .tikool-toast::after,
+  .tikool-cart-button__spinner {
+    animation: none;
+    transition: none;
+  }
+}

@@ -6,13 +6,13 @@ umask 077
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 project_dir="$(cd -- "${script_dir}/.." && pwd)"
 
-deploy_host="${DEPLOY_HOST:-root@site}"
+deploy_host="${DEPLOY_HOST:-root@contabo2}"
 deploy_path="${DEPLOY_PATH:-/root/wordpress-sites/tikool-shop}"
 deploy_url="${DEPLOY_URL:-https://www.tikool.com/}"
 timestamp="$(date -u +'%Y%m%dT%H%M%SZ')"
 
 if (($# == 0)); then
-    echo "Usage: $0 theme [plugin] [frame-customizer]" >&2
+    echo "Usage: $0 theme [plugin] [frame-customizer] [ai] [memory-page]" >&2
     exit 64
 fi
 
@@ -46,8 +46,20 @@ for component in "$@"; do
             local_paths+=("${project_dir}/plugin/tikool-frame-customizer")
             required_files+=("tikool-frame-customizer.php")
             ;;
+        ai)
+            component_types+=("plugin")
+            component_slugs+=("tikool-ai")
+            local_paths+=("${project_dir}/plugin/tikool-ai")
+            required_files+=("tikool-ai.php")
+            ;;
+        memory-page)
+            component_types+=("plugin")
+            component_slugs+=("tikool-memory-page")
+            local_paths+=("${project_dir}/plugin/tikool-memory-page")
+            required_files+=("tikool-memory-page.php")
+            ;;
         *)
-            echo "Unknown component: ${component}. Expected theme, plugin, or frame-customizer." >&2
+            echo "Unknown component: ${component}. Expected theme, plugin, frame-customizer, ai, or memory-page." >&2
             exit 64
             ;;
     esac
@@ -101,12 +113,12 @@ for index in "${!component_types[@]}"; do
         "${deploy_host}:${remote_path}/"
 done
 
-echo "Validating Docker configuration and refreshing WordPress..."
+echo "Validating Docker configuration without interrupting active requests..."
 ssh "${deploy_host}" "
     cd '${deploy_path}'
     docker compose config --quiet
-    docker compose restart wordpress
     docker compose up -d --wait --wait-timeout 180 wordpress nginx
+    docker compose --profile tools run --rm wpcli tikool page-cache purge
 "
 
 if [[ -n "${deploy_url}" ]]; then

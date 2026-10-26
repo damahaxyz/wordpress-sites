@@ -496,7 +496,8 @@ body.cart-drawer-open {
 
 .trovesia-mini-cart__body .woocommerce-mini-cart-item > a:not(.remove) {
   display: grid;
-  align-items: center;
+  min-width: 0;
+  align-items: start;
   color: var(--shop-ink);
   grid-template-columns: 74px minmax(0, 1fr);
   gap: 14px;
@@ -504,7 +505,7 @@ body.cart-drawer-open {
   font-weight: 750;
   line-height: 1.35;
   overflow-wrap: anywhere;
-  padding-right: 28px;
+  padding-right: 8px;
 }
 
 .trovesia-mini-cart__body .woocommerce-mini-cart-item img {

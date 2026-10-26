@@ -32,6 +32,7 @@ final class Plugin
 
     public static function activate(): void
     {
+        AI_Jobs::install();
         update_option('tikool_frame_customizer_version', TIKOOL_FC_VERSION);
         Config::migrate_legacy_products();
     }
@@ -43,7 +44,9 @@ final class Plugin
         }
 
         $this->booted = true;
+        AI_Jobs::maybe_upgrade();
         Admin::instance()->boot();
+        AI_Styles::instance()->boot();
         Customizer::instance()->boot();
     }
 }

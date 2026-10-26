@@ -486,12 +486,12 @@
   letter-spacing: 0.14em;
 }
 
-.trovesia-bundle-options {
+.trovesia-variant-options {
   display: grid;
   gap: 10px;
 }
 
-.trovesia-bundle-card,
+.trovesia-variant-card,
 .trovesia-roller-addon {
   position: relative;
   width: 100%;
@@ -503,7 +503,7 @@
   transition: border-color var(--shop-transition), background var(--shop-transition), box-shadow var(--shop-transition), transform var(--shop-transition);
 }
 
-.trovesia-bundle-card {
+.trovesia-variant-card {
   display: grid;
   min-height: 92px;
   align-items: center;
@@ -513,7 +513,7 @@
   gap: 12px;
 }
 
-.trovesia-bundle-card:hover,
+.trovesia-variant-card:hover,
 .trovesia-roller-addon:hover {
   border-color: var(--shop-accent);
   color: var(--shop-ink);
@@ -521,7 +521,7 @@
   transform: translateY(-1px);
 }
 
-.trovesia-bundle-card.is-selected,
+.trovesia-variant-card.is-selected,
 .trovesia-roller-addon.is-selected {
   border-color: var(--shop-accent);
   color: var(--shop-ink);
@@ -529,7 +529,18 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--shop-accent) 25%, transparent);
 }
 
-.trovesia-bundle-card__visual {
+.trovesia-variant-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.trovesia-variant-card:disabled:hover {
+  border-color: var(--shop-line);
+  background: var(--shop-white);
+  transform: none;
+}
+
+.trovesia-variant-card__visual {
   display: grid;
   width: 62px;
   height: 66px;
@@ -539,31 +550,31 @@
   background: #eeeae0;
 }
 
-.trovesia-bundle-card__visual img {
+.trovesia-variant-card__visual img {
   width: 100%;
   height: 100%;
   margin: 0 !important;
   object-fit: cover;
 }
 
-.trovesia-bundle-card__copy,
-.trovesia-bundle-card__price {
+.trovesia-variant-card__copy,
+.trovesia-variant-card__price {
   display: flex;
   min-width: 0;
   flex-direction: column;
 }
 
-.trovesia-bundle-card__copy strong {
+.trovesia-variant-card__copy strong {
   font-size: 16px;
 }
 
-.trovesia-bundle-card__copy small {
+.trovesia-variant-card__copy small {
   margin-top: 3px;
   color: var(--shop-muted);
   font-size: 10px;
 }
 
-.trovesia-bundle-card__save {
+.trovesia-variant-card__save {
   align-self: flex-end;
   padding: 3px 8px;
   border-radius: 999px;
@@ -576,18 +587,18 @@
   white-space: nowrap;
 }
 
-.trovesia-bundle-card__price {
+.trovesia-variant-card__price {
   align-items: flex-end;
   gap: 3px;
   font-size: 13px;
   white-space: nowrap;
 }
 
-.trovesia-bundle-card__price strong {
+.trovesia-variant-card__price strong {
   font-size: 16px;
 }
 
-.trovesia-bundle-card__price del {
+.trovesia-variant-card__price del {
   color: var(--shop-muted);
   font-size: 10px;
 }
@@ -1183,18 +1194,18 @@
     padding: 0 18px;
   }
 
-  .trovesia-bundle-card {
+  .trovesia-variant-card {
     padding: 10px;
     grid-template-columns: 54px minmax(0, 1fr) auto;
     gap: 9px;
   }
 
-  .trovesia-bundle-card__visual {
+  .trovesia-variant-card__visual {
     width: 54px;
     height: 60px;
   }
 
-  .trovesia-bundle-card__price {
+  .trovesia-variant-card__price {
     grid-column: 3;
     grid-row: 1 / span 2;
   }

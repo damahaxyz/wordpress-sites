@@ -13,15 +13,15 @@
                 <span class="trovesia-wordmark__text">TROVESIA</span>
                 <span class="trovesia-wordmark__accent" aria-hidden="true"></span>
             </p>
-            <p><?php esc_html_e('A quieter, more considered approach to botanical hair care—selected for everyday rituals that feel good to keep.', 'trovesia'); ?></p>
+            <p><?php esc_html_e('Thoughtfully presented seasonal finds, clear product guidance and responsive support for every order.', 'trovesia'); ?></p>
             <a href="mailto:service@trovesia.com">service@trovesia.com</a>
         </div>
         <div>
             <h2><?php esc_html_e('Explore', 'trovesia'); ?></h2>
             <ul>
                 <li><a href="<?php echo esc_url(class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/#shop')); ?>"><?php esc_html_e('Shop all', 'trovesia'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/#ritual')); ?>"><?php esc_html_e('The ritual', 'trovesia'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/#ingredients')); ?>"><?php esc_html_e('Ingredients', 'trovesia'); ?></a></li>
+                <li><a href="<?php echo esc_url(home_url('/#how-it-works')); ?>"><?php esc_html_e('How it works', 'trovesia'); ?></a></li>
+                <li><a href="<?php echo esc_url(home_url('/#gift-set')); ?>"><?php esc_html_e('Inside the gift set', 'trovesia'); ?></a></li>
             </ul>
         </div>
         <div>

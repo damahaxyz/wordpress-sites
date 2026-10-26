@@ -57,6 +57,7 @@ final class Plugin
         Page_Cache::instance()->boot();
         Review_Experience::instance()->boot();
         Addon_Pricing::instance()->boot();
+        Storefront_Feedback::instance()->boot();
     }
 
     public function loaded(): void

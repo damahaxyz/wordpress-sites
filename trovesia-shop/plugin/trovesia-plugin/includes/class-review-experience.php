@@ -60,9 +60,44 @@ final class Review_Experience
         add_action('manage_comments_custom_column', [$this, 'render_comment_featured_column'], 10, 2);
         add_filter('woocommerce_product_reviews_table_columns', [$this, 'add_featured_column']);
         add_action('woocommerce_product_reviews_table_column_trovesia_featured', [$this, 'render_product_review_featured_column']);
+        add_filter('duplicate_comment_id', [$this, 'allow_repeat_review_for_customer_or_manager'], 10, 2);
 
         add_action('admin_post_nopriv_trovesia_submit_review', [$this, 'handle_review_submission']);
         add_action('admin_post_trovesia_submit_review', [$this, 'handle_review_submission']);
+    }
+
+    /**
+     * Permit an identical repeat product review only for a verified purchaser or store manager.
+     *
+     * @param int|null            $duplicate_comment_id Existing duplicate comment ID, or null.
+     * @param array<string,mixed> $comment_data         Filtered comment data.
+     */
+    public function allow_repeat_review_for_customer_or_manager(?int $duplicate_comment_id, array $comment_data): ?int
+    {
+        if ($duplicate_comment_id === null || $duplicate_comment_id < 1 || (string) ($comment_data['comment_type'] ?? '') !== 'review') {
+            return $duplicate_comment_id;
+        }
+
+        $product_id = absint($comment_data['comment_post_ID'] ?? 0);
+        if ($product_id < 1 || get_post_type($product_id) !== 'product') {
+            return $duplicate_comment_id;
+        }
+
+        $user_id = absint($comment_data['user_id'] ?? $comment_data['user_ID'] ?? 0);
+        if ($user_id > 0 && (user_can($user_id, 'manage_woocommerce') || user_can($user_id, 'manage_options'))) {
+            return 0;
+        }
+
+        $email = sanitize_email((string) ($comment_data['comment_author_email'] ?? ''));
+        if (
+            $email !== ''
+            && function_exists('wc_customer_bought_product')
+            && wc_customer_bought_product($email, $user_id, $product_id)
+        ) {
+            return 0;
+        }
+
+        return $duplicate_comment_id;
     }
 
     public function configure_product_page(): void
@@ -398,6 +433,7 @@ final class Review_Experience
             'comment_agent' => sanitize_text_field((string) ($_SERVER['HTTP_USER_AGENT'] ?? '')),
             'comment_author' => $author,
             'comment_author_email' => $email,
+            'comment_author_url' => '',
             'comment_author_IP' => sanitize_text_field((string) ($_SERVER['REMOTE_ADDR'] ?? '')),
             'comment_content' => $content,
             'comment_parent' => 0,
@@ -407,7 +443,8 @@ final class Review_Experience
         ]), true);
 
         if (is_wp_error($comment_id)) {
-            $this->redirect_review($redirect, 'failed');
+            $status = $comment_id->get_error_code() === 'comment_duplicate' ? 'duplicate' : 'failed';
+            $this->redirect_review($redirect, $status);
         }
 
         update_comment_meta((int) $comment_id, 'rating', $rating);
@@ -420,7 +457,9 @@ final class Review_Experience
             $attachment_id = media_handle_upload(
                 'trovesia_review_image',
                 $product_id,
-                sprintf(__('Review photo from %s', 'trovesia-plugin'), $author)
+                [
+                    'post_title' => sprintf(__('Review photo from %s', 'trovesia-plugin'), $author),
+                ]
             );
 
             if (is_wp_error($attachment_id)) {
@@ -543,6 +582,7 @@ final class Review_Experience
             'image' => __('The review photo must be a JPG, PNG or WebP image under 5 MB.', 'trovesia-plugin'),
             'closed' => __('Reviews are not currently open for this product.', 'trovesia-plugin'),
             'security' => __('The review form expired. Please try again.', 'trovesia-plugin'),
+            'duplicate' => __('This review has already been submitted. Verified customers and store managers may submit another review.', 'trovesia-plugin'),
             'failed' => __('The review could not be submitted. Please try again.', 'trovesia-plugin'),
         ];
 

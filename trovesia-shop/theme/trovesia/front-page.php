@@ -66,9 +66,9 @@ $hero_style  = sprintf(
 
     <section class="trust-ribbon" aria-label="<?php esc_attr_e('Why shop with Trovesia', 'trovesia'); ?>">
         <div class="trust-ribbon__inner shop-container">
-            <div><span aria-hidden="true">01</span><strong><?php esc_html_e('Ingredient-led', 'trovesia'); ?></strong><small><?php esc_html_e('Clear, useful product guidance', 'trovesia'); ?></small></div>
-            <div><span aria-hidden="true">02</span><strong><?php esc_html_e('30-day returns', 'trovesia'); ?></strong><small><?php esc_html_e('Straightforward customer care', 'trovesia'); ?></small></div>
-            <div><span aria-hidden="true">03</span><strong><?php esc_html_e('Tracked delivery', 'trovesia'); ?></strong><small><?php esc_html_e('Follow every parcel online', 'trovesia'); ?></small></div>
+            <div><span aria-hidden="true">01</span><strong><?php esc_html_e('Complete gift set', 'trovesia'); ?></strong><small><?php esc_html_e('Everything shown, packed together', 'trovesia'); ?></small></div>
+            <div><span aria-hidden="true">02</span><strong><?php esc_html_e('Five festive colours', 'trovesia'); ?></strong><small><?php esc_html_e('Choose the look for your moment', 'trovesia'); ?></small></div>
+            <div><span aria-hidden="true">03</span><strong><?php esc_html_e('8–15 day delivery', 'trovesia'); ?></strong><small><?php esc_html_e('Tracking provided after dispatch', 'trovesia'); ?></small></div>
         </div>
     </section>
 
@@ -117,68 +117,68 @@ $hero_style  = sprintf(
     </section>
     <?php endif; ?>
 
-    <section id="ritual" class="home-section ritual-section">
+    <section id="how-it-works" class="home-section ritual-section">
         <div class="shop-container">
             <div class="ritual-intro">
-                <p class="section-kicker"><?php esc_html_e('A ritual that stays simple', 'trovesia'); ?></p>
-                <h2><?php esc_html_e('Three considered steps. Nothing extra.', 'trovesia'); ?></h2>
-                <p><?php esc_html_e('Good routines work because they are easy to repeat. Start with the essentials and adjust the pace to what your hair and scalp need.', 'trovesia'); ?></p>
+                <p class="section-kicker"><?php esc_html_e('Celebrate with intention', 'trovesia'); ?></p>
+                <h2><?php esc_html_e('A brighter holiday moment, planned simply.', 'trovesia'); ?></h2>
+                <p><?php esc_html_e('Choose your colour, review the supplied safety instructions and prepare an outdoor setting away from flammable materials.', 'trovesia'); ?></p>
             </div>
             <ol class="ritual-steps">
                 <li>
                     <span>01</span>
                     <div>
-                        <h3><?php esc_html_e('Cleanse', 'trovesia'); ?></h3>
-                        <p><?php esc_html_e('Wash away buildup while keeping hair comfortable and manageable.', 'trovesia'); ?></p>
+                        <h3><?php esc_html_e('Choose your colour', 'trovesia'); ?></h3>
+                        <p><?php esc_html_e('Select Silver, Forest Green, Black, Pink or Yellow.', 'trovesia'); ?></p>
                     </div>
                 </li>
                 <li>
                     <span>02</span>
                     <div>
-                        <h3><?php esc_html_e('Nourish', 'trovesia'); ?></h3>
-                        <p><?php esc_html_e('Massage a few drops of botanical oil into the scalp and dry-feeling lengths.', 'trovesia'); ?></p>
+                        <h3><?php esc_html_e('Unbox the complete set', 'trovesia'); ?></h3>
+                        <p><?php esc_html_e('The gift box includes the wand, material chamber and one small gas canister.', 'trovesia'); ?></p>
                     </div>
                 </li>
                 <li>
                     <span>03</span>
                     <div>
-                        <h3><?php esc_html_e('Stay consistent', 'trovesia'); ?></h3>
-                        <p><?php esc_html_e('Make the routine yours and give each step time to become second nature.', 'trovesia'); ?></p>
+                        <h3><?php esc_html_e('Celebrate outdoors', 'trovesia'); ?></h3>
+                        <p><?php esc_html_e('Follow every safety instruction and confirm local venue rules before use.', 'trovesia'); ?></p>
                     </div>
                 </li>
             </ol>
         </div>
     </section>
 
-    <section id="ingredients" class="home-section ingredient-section">
+    <section id="gift-set" class="home-section ingredient-section">
         <div class="shop-container">
             <div class="section-heading">
                 <div>
-                    <p class="section-kicker"><?php esc_html_e('Inside the ritual', 'trovesia'); ?></p>
-                    <h2><?php esc_html_e('Botanicals with a purpose.', 'trovesia'); ?></h2>
+                    <p class="section-kicker"><?php esc_html_e('Inside the gift box', 'trovesia'); ?></p>
+                    <h2><?php esc_html_e('Everything in one festive set.', 'trovesia'); ?></h2>
                 </div>
-                <p><?php esc_html_e('Familiar ingredients, explained clearly—so you can choose what fits your routine.', 'trovesia'); ?></p>
+                <p><?php esc_html_e('This listing is for the complete presentation set, not a wand sold on its own.', 'trovesia'); ?></p>
             </div>
             <div class="ingredient-grid">
                 <article>
-                    <span aria-hidden="true">B</span>
-                    <h3><?php esc_html_e('Batana oil', 'trovesia'); ?></h3>
-                    <p><?php esc_html_e('A rich botanical oil used to condition dry-feeling hair and support softness.', 'trovesia'); ?></p>
+                    <span aria-hidden="true">W</span>
+                    <h3><?php esc_html_e('Atmosphere wand', 'trovesia'); ?></h3>
+                    <p><?php esc_html_e('One handheld spark-effect wand in the colour you select.', 'trovesia'); ?></p>
                 </article>
                 <article>
-                    <span aria-hidden="true">R</span>
-                    <h3><?php esc_html_e('Rosemary oil', 'trovesia'); ?></h3>
-                    <p><?php esc_html_e('An aromatic essential oil used in focused scalp-care routines.', 'trovesia'); ?></p>
+                    <span aria-hidden="true">G</span>
+                    <h3><?php esc_html_e('Presentation gift box', 'trovesia'); ?></h3>
+                    <p><?php esc_html_e('A coordinated box that keeps the complete set together.', 'trovesia'); ?></p>
                 </article>
                 <article>
-                    <span aria-hidden="true">J</span>
-                    <h3><?php esc_html_e('Jojoba oil', 'trovesia'); ?></h3>
-                    <p><?php esc_html_e('A lightweight emollient that helps smooth and soften without a heavy finish.', 'trovesia'); ?></p>
+                    <span aria-hidden="true">M</span>
+                    <h3><?php esc_html_e('Material chamber', 'trovesia'); ?></h3>
+                    <p><?php esc_html_e('One replaceable spark-material chamber is included.', 'trovesia'); ?></p>
                 </article>
                 <article>
-                    <span aria-hidden="true">E</span>
-                    <h3><?php esc_html_e('Vitamin E', 'trovesia'); ?></h3>
-                    <p><?php esc_html_e('An antioxidant commonly used to support the feel and stability of oil blends.', 'trovesia'); ?></p>
+                    <span aria-hidden="true">C</span>
+                    <h3><?php esc_html_e('Small gas canister', 'trovesia'); ?></h3>
+                    <p><?php esc_html_e('One dedicated pressurised canister is included, subject to destination restrictions.', 'trovesia'); ?></p>
                 </article>
             </div>
         </div>
@@ -187,11 +187,11 @@ $hero_style  = sprintf(
     <section class="home-section care-story">
         <div class="shop-container care-story__inner">
             <div>
-                <p class="section-kicker section-kicker--light"><?php esc_html_e('Care, without the noise', 'trovesia'); ?></p>
-                <h2><?php esc_html_e('We choose clarity over impossible promises.', 'trovesia'); ?></h2>
+                <p class="section-kicker section-kicker--light"><?php esc_html_e('Celebrate responsibly', 'trovesia'); ?></p>
+                <h2><?php esc_html_e('Bright moments begin with clear safety.', 'trovesia'); ?></h2>
             </div>
             <div>
-                <p><?php esc_html_e('Hair care is personal. Trovesia focuses on well-presented products, useful directions and responsive support—not fabricated countdowns or pressure-led claims.', 'trovesia'); ?></p>
+                <p><?php esc_html_e('For responsible adult outdoor use only. Read the supplied instructions, keep clear of people and flammable materials, and confirm local laws and venue rules before use.', 'trovesia'); ?></p>
                 <a class="text-link text-link--light" href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Ask a product question', 'trovesia'); ?> <span aria-hidden="true">↗</span></a>
             </div>
         </div>

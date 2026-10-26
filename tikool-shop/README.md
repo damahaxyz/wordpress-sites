@@ -9,9 +9,11 @@ volumes、数据库凭据与 Redis 键前缀，可以在同一台服务器上同
 ```text
 theme/tikool/                 页面模板、样式和前端交互
 plugin/tikool-plugin/         站点业务功能和 WordPress hooks
+plugin/tikool-ai/             AI 服务配置、提示词模板和服务端调用接口
+plugin/tikool-memory-page/    NFC 宠物纪念页、客户编辑器与 GitHub 发布
 ```
 
-这两个目录独立挂载到 WordPress 容器，本地修改后可直接刷新页面验证。
+这些目录独立挂载到 WordPress 容器，本地修改后可直接刷新页面验证。
 
 ## 默认端口
 
@@ -57,7 +59,12 @@ docker compose ps
 ```text
 外观 → 主题 → Tikool Shop → 启用
 插件 → 已安装的插件 → Tikool Shop Plugin → 启用
+插件 → 已安装的插件 → Tikool AI → 启用
+插件 → 已安装的插件 → Tikool Memory Page → 启用
 ```
+
+启用后在 **设置 → Tikool AI** 配置方舟 API Key、模型和功能提示词。密钥保存在
+WordPress 数据库中，不会回显到后台页面或发送给浏览器端代码。
 
 默认仅绑定 `127.0.0.1:8085`。在服务器本机上检查：
 
