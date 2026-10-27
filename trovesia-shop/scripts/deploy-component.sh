@@ -12,7 +12,7 @@ deploy_url="${DEPLOY_URL:-https://www.trovesia.com/}"
 timestamp="$(date -u +'%Y%m%dT%H%M%SZ')"
 
 if (($# == 0)); then
-    echo "Usage: $0 theme [plugin]" >&2
+    echo "Usage: $0 theme [plugin] [channel-plugin]" >&2
     exit 64
 fi
 
@@ -40,8 +40,14 @@ for component in "$@"; do
             local_paths+=("${project_dir}/plugin/trovesia-plugin")
             required_files+=("trovesia-plugin.php")
             ;;
+        channel-plugin)
+            component_types+=("plugin")
+            component_slugs+=("trovesia-channel")
+            local_paths+=("${project_dir}/plugin/trovesia-channel")
+            required_files+=("trovesia-channel.php")
+            ;;
         *)
-            echo "Unknown component: ${component}. Expected theme or plugin." >&2
+            echo "Unknown component: ${component}. Expected theme, plugin, or channel-plugin." >&2
             exit 64
             ;;
     esac
@@ -70,6 +76,14 @@ fi
 echo "Preparing ${deploy_host}:${deploy_path}..."
 ssh "${deploy_host}" \
     "mkdir -p '${deploy_path}/theme' '${deploy_path}/plugin' '${deploy_path}/deploy-backups'"
+
+if printf '%s\n' "$@" | grep -qx 'channel-plugin'; then
+    echo "Deploying Compose and Nginx routing configuration required by trovesia-channel..."
+    ssh "${deploy_host}" \
+        "if [ -f '${deploy_path}/compose.yaml' ]; then cp '${deploy_path}/compose.yaml' '${deploy_path}/deploy-backups/compose-${timestamp}.yaml'; fi; if [ -f '${deploy_path}/nginx/conf.d/default.conf' ]; then cp '${deploy_path}/nginx/conf.d/default.conf' '${deploy_path}/deploy-backups/nginx-default-${timestamp}.conf'; fi"
+    rsync -az "${project_dir}/compose.yaml" "${deploy_host}:${deploy_path}/compose.yaml"
+    rsync -az "${project_dir}/nginx/conf.d/default.conf" "${deploy_host}:${deploy_path}/nginx/conf.d/default.conf"
+fi
 
 for index in "${!component_types[@]}"; do
     component_type="${component_types[${index}]}"

@@ -2,7 +2,7 @@
 
 > **用途**：这是 Trovesia 独立站的长期维护入口。新对话开始时先完整读取本文件，再查看当前工作区和线上状态，即可继续开发、部署、排障或上架商品。
 >
-> **最后核对日期**：2026-10-26（Asia/Taipei）
+> **最后核对日期**：2026-10-27（Asia/Taipei）
 
 ## 1. 新对话开始时先做什么
 
@@ -81,6 +81,7 @@ trovesia-shop/
 ├── php/uploads.ini              PHP 上传限制
 ├── theme/trovesia/              展示层、模板、CSS、前端交互
 ├── plugin/trovesia-plugin/      业务逻辑、后台字段、购物车与迁移命令
+├── plugin/trovesia-channel/     渠道管理、推广链接、访问与订单归因、渠道门户
 ├── scripts/                     部署、备份和一次性/幂等商品脚本
 ├── product-assets/              商品原图、处理图和可上传成品
 └── runtime/page-cache/          FastCGI 缓存代次文件；运行时生成
@@ -156,6 +157,42 @@ _trovesia_source_url
 - 主题 text domain：`trovesia`
 - 插件 text domain：`trovesia-plugin`
 
+### 3.3 渠道插件 `plugin/trovesia-channel`
+
+2026-10-26 已开发并在线上启用独立的 `trovesia-channel` 插件，当前版本 1.2.2。它包括：
+
+- 总后台渠道、渠道账户和全局归因窗口管理；归因窗口不向渠道账户显示。
+- 渠道账户的独立前台门户 `/channel-portal/`。
+- 渠道方可为首页、Shop、公开商品分类和公开可见商品生成 `/go/{token}` 推广链接。
+- 不透明令牌跳转、第一方访问归因、机器人标记和干净目标 URL 重定向。
+- Checkout Block、经典结账和 HPOS 订单元数据归因。
+- 订单状态、付款金额和退款金额同步，以及渠道隔离的订单/统计查询。
+- WooCommerce 订单列表渠道列、渠道筛选和带审计记录的人工归属。
+
+相关部署接入：
+
+- `compose.yaml` 已增加 `trovesia-channel` 的 WordPress、WP-CLI 和 Nginx 挂载。
+- `nginx/conf.d/default.conf` 明确让 `/go/{token}` 绕过 FastCGI 页面缓存。
+- 单独部署脚本为 `scripts/deploy-channel-plugin.sh`；`deploy-all.sh` 也会包含该插件。
+
+2026-10-26 23:29（Asia/Taipei）完成正式部署与验证：六张插件数据表、`trovesia_channel_manager` 角色和 Channel Portal page ID 121 已创建，归因窗口默认为 30 天。真实 `/go/{token}` 请求已验证 302 商品跳转、安全 Cookie 和 FastCGI `BYPASS`；临时 HPOS 订单已验证渠道/Campaign/Visit 元数据、processing 状态、$10 部分退款与 $89 净额同步。测试订单、退款、渠道、链接、访问记录和测试账户随后全部删除，未残留测试数据。
+
+2026-10-26 发现渠道账户创建表单容易把“用户名”误认为“密码”。1.0.1 将登录邮箱、用户名和初始密码拆分为明确字段：新账户可由总站管理员设置初始密码；留空则生成安全随机密码并发送设置密码邮件；绑定已有邮箱不会改动已有用户密码。
+
+1.0.2 将密码字段扩展为总站管理员可直接设置或重置渠道账户密码：新账户留空时仍发送安全的密码设置邮件；已有账户留空保持密码不变，填写则立即重置并写入不含密码内容的审计记录。
+
+1.0.3 在编辑渠道时自动回填当前代理的登录邮箱和 WordPress 用户名。密码不会回填，因为 WordPress 只保存不可逆哈希；密码框仅用于新建或主动重置。
+
+1.1.0 将总站后台的“创建渠道”和“编辑渠道”改为同一个弹窗表单。弹窗可一次保存渠道名称、代码、状态和可选代理账户；编辑时自动带出邮箱及用户名，密码仍不回填，留空保持原密码。
+
+1.1.1 修复从带 `channel_id` 的后台页面打开“新增渠道”时浏览器可能恢复旧渠道默认值的问题；新增弹窗现在始终清空渠道及代理字段。
+
+1.2.0 重新设计渠道登录页与渠道数据门户：门户页不再套用普通内容页的大标题/白色外框，登录表单改为紧凑品牌卡片；登录后加入品牌概览区、分段时间筛选、数据卡片、规范化表单、状态徽章、表格容器与完整移动端响应布局。
+
+1.2.1 移除门户模板重复输出的页面级标题，确保登录页和渠道数据页各自只有一个明确的主标题。
+
+1.2.2 将渠道登录从 WordPress 原生 `wp-login.php` 提交改为插件自己的安全登录处理。账号或密码错误、登录 nonce 过期时都会返回 `/channel-portal/` 并在品牌登录卡片内显示统一错误，不再跳转到 WordPress 系统登录页。
+
 ## 4. 已启用的主要插件（2026-10-26 快照）
 
 | 插件 | 版本 | 用途 |
@@ -166,9 +203,13 @@ _trovesia_source_url
 | `redis-cache` | 2.8.0 | WordPress 对象缓存 |
 | `fluent-smtp` | 2.4.0 | 事务邮件投递 |
 | `wp-media-folder` | 5.5.2 | 媒体库文件夹管理 |
-| `trovesia-plugin` | 3.6.3 | 本站自定义业务功能 |
+| `trovesia-plugin` | 3.8.0 | 本站自定义业务功能 |
 
-当前主题 `trovesia` 版本为 2.6.0。
+当前主题 `trovesia` 版本为 2.8.0。
+
+2026-10-27 在全站页脚 `Customer care` 栏目的 `My account` 下方增加 `Channel partner login ↗` 入口，目标为 `/channel-portal/`。该入口使用分隔线和弱强调色，方便渠道商发现，同时避免占用普通顾客的主导航位置。
+
+2026-10-27 将 WooCommerce 的成功、信息及错误提示统一改为右上角悬浮通知。通知支持手动关闭、多条垂直堆叠，鼠标悬停或键盘聚焦时暂停倒计时；成功/普通提示默认 18 秒后关闭，错误提示默认 30 秒后关闭，移动端自动适配屏幕宽度。
 
 当前线上 GA4 Measurement ID 为：
 
@@ -180,7 +221,7 @@ G-M8186Y45Q9
 
 ## 5. 当前商品快照
 
-以下仅是 2026-10-26 的核对结果。价格和库存属于动态数据，修改前应重新查询。
+以下仅是 2026-10-27 的核对结果。价格和库存属于动态数据，修改前应重新查询。
 
 | ID | 商品 | 类型 | SKU | 发布状态 | 目录可见性 | 当前价格 |
 | ---: | --- | --- | --- | --- | --- | ---: |
@@ -188,7 +229,8 @@ G-M8186Y45Q9
 | 25 | Authentic Derma Roller | simple | `1775139057712537603` | private | visible | $23.61，原价 $47.22 |
 | 78 | Scalp Serum Applicator Comb | variable | `TV-COMB-1079994456070` | private | visible | $24.90，原价 $34.90 |
 | 17 | Advanced Batana Hair Regrowth Therapy — 2 Bottle Bundle | simple | `TV-BATANA-2B-ADDON` | private | hidden | $71.95 基础价；add-on 规则可覆盖结算价 |
-| 101 | Christmas Spark Atmosphere Wand Gift Set | variable | `TV-XMAS-SPARK-GIFT-SET` | publish | visible | $99.00 |
+| 101 | Christmas Spark Atmosphere Wand Gift Set | variable | `TV-XMAS-SPARK-GIFT-SET` | publish | visible | $69.90，原价 $99.00 |
+| 133 | Spark Atmosphere Wand Refill Packs | variable | `TV-SPARK-REFILL-PACKS` | publish | visible | $29.90–$45.00 |
 
 2026-10-26 16:29（Asia/Taipei），后台通过 WooCommerce 批量编辑把 ID 17、20、25、78 四个旧商品设为 `private`，站点的 `blog_public` 也为 `0`。匿名访客不能访问这四个旧商品，但新圣诞礼盒 ID 101 已公开发布并可购买。不要在未获用户确认时自行重新发布旧商品。
 
@@ -211,18 +253,18 @@ Batana 变体：
 
 | 变体 ID | Color | SKU | 售价 |
 | ---: | --- | --- | ---: |
-| 102 | Silver | `TV-XMAS-GIFT-SILVER` | $99.00 |
-| 103 | Forest Green | `TV-XMAS-GIFT-GREEN` | $99.00 |
-| 104 | Black | `TV-XMAS-GIFT-BLACK` | $99.00 |
-| 105 | Pink | `TV-XMAS-GIFT-PINK` | $99.00 |
-| 106 | Yellow | `TV-XMAS-GIFT-YELLOW` | $99.00 |
+| 102 | Silver | `TV-XMAS-GIFT-SILVER` | $69.90，原价 $99.00 |
+| 103 | Forest Green | `TV-XMAS-GIFT-GREEN` | $69.90，原价 $99.00 |
+| 104 | Black | `TV-XMAS-GIFT-BLACK` | $69.90，原价 $99.00 |
+| 105 | Pink | `TV-XMAS-GIFT-PINK` | $69.90，原价 $99.00 |
+| 106 | Yellow | `TV-XMAS-GIFT-YELLOW` | $69.90，原价 $99.00 |
 
 ### 5.1 圣诞氛围棒礼盒的当前配置
 
 - 正式页面：`https://www.trovesia.com/products/christmas-spark-atmosphere-wand-gift-set/`。
 - 售卖单位是完整礼盒，不单卖氛围棒；礼盒含氛围棒、礼盒包装、一个材料盒和一小罐高压气罐。
 - 商品没有功率参数，所有商品文案不得出现 `1000W`、瓦数或其他功率描述。
-- 售价为 USD $99；五个颜色变体均有独立英文礼盒内容图，默认颜色为 Pink。
+- 2026-10-27 线上售价快照为 USD $69.90，原价 $99；五个颜色变体均有独立英文礼盒内容图，默认颜色为 Pink。
 - 运输时间为 8–15 天。商品页的动态预计送达日期也按当前日期加 8 天至加 15 天计算。
 - 高压气罐须保留运输限制和户外使用安全提示；具体承运资格可能因目的地而异。
 - 导入脚本：`scripts/import-christmas-spark-wand.php`。
@@ -230,9 +272,32 @@ Batana 变体：
 - 原始和处理图片：`product-assets/focus-spark-atmosphere-wand/source/` 与 `product-assets/focus-spark-atmosphere-wand/ready/`。
 - d1–d3 详情图已本地化为 `ready/d1-en.png`、`ready/d2-en.png`、`ready/d3-en.png`，对应线上附件 ID 115–117；图片相册现有 8 张 gallery 图片，连同主图共 9 张。
 - 详情图本地化脚本：`scripts/localize-focus-detail-images.py`。它只替换说明文字，保留产品、技术图和真实包装印刷内容。
-- 首页 page ID 57 的桌面/手机横幅与圣诞文案已更新，商品展示仅指向 ID 101；主菜单 `Shop Now`（menu item ID 92）也指向该商品。
+- 首页 page ID 57 的桌面/手机横幅与圣诞文案已更新；2026-10-27 匿名首页验收时主菜单 `Shop Now` 指向 `/shop/`。
+- 首页商品模块从主题 2.8.0 起按 WooCommerce 商品标签动态筛选，不再保存固定商品 ID。当前标签 slug 为 `christmas`，模块标题为 `Festive finds for every celebration.`，说明为 `Explore seasonal gifts and celebration essentials selected for Christmas.`，不包含统一价格。商品 ID 101 和 133 当前都带有 `christmas` 标签，因此都会显示；以后给已发布且目录可见的商品添加或移除该标签即可控制首页显示。
 
-### 5.2 导液梳的已知特殊配置
+### 5.2 圣诞氛围棒耗材加购
+
+2026-10-27 已把两类耗材合并为一个可单独购买的公开可变商品 ID 133：`Spark Atmosphere Wand Refill Packs`。它使用单一 `Refill Option` 属性展开六个变体，正式页面为 `https://www.trovesia.com/products/spark-atmosphere-wand-refill-packs/`。
+
+| 变体 ID | SKU | Refill Option | 售价 |
+| ---: | --- | --- | ---: |
+| 134 | `TV-SPARK-REFILL-CHAMBER-2` | Material Chambers — 2 Pack | $29.90 |
+| 135 | `TV-SPARK-REFILL-CHAMBER-4` | Material Chambers — 4 Pack | $39.90 |
+| 136 | `TV-SPARK-REFILL-CHAMBER-6` | Material Chambers — 6 Pack | $45.00 |
+| 137 | `TV-SPARK-REFILL-BUTANE-2` | Butane Gas Canisters — 2 Pack | $29.90 |
+| 138 | `TV-SPARK-REFILL-BUTANE-4` | Butane Gas Canisters — 4 Pack | $39.90 |
+| 139 | `TV-SPARK-REFILL-BUTANE-6` | Butane Gas Canisters — 6 Pack | $45.00 |
+
+- 旧的临时简单商品 ID 127–132 已按用户确认永久删除；新站没有需要兼容的旧订单。
+- 燃料舱按供应商包装标识写为每个约 45 g（±5 g），不写功率。
+- 燃料罐明确为每罐 200 mL 的高压丁烷气罐；商品页和主商品加购区均包含极易燃、加压容器及承运限制提示。
+- 商品图为 `ready/replacement-material-chamber-en.png` 和 `ready/butane-gas-canister-en.png`；丁烷图已移除供应商二维码并加入英文安全标识。
+- 幂等导入脚本为 `scripts/import-spark-refill-addons.php`。
+- Product Add-ons 从插件 3.8.0 起可关联 simple product 或某一个具体 product variation。后台选择器会展开可变商品的各个变体；若要提供多个变体，必须分别新增多条 linked-product 规则。购物车会使用变体父商品 ID、变体 ID 及属性值创建正确的独立订单行。
+- add-on 规则还支持 `selection_group`、`group_title`、`group_description` 字段；相同 `selection_group` 的规则前台使用单选按钮，未分组规则仍保持原有复选行为。
+- 线上验收已验证礼盒 $69.90 + 4-pack 燃料舱 $39.90 + 2-pack 丁烷罐 $29.90 可同时形成三条购物车行，合计 $139.70。
+
+### 5.3 导液梳的已知特殊配置
 
 - 正式页面路径：`https://www.trovesia.com/products/scalp-serum-applicator-comb/`；商品处于 `private` 时匿名访问会返回 404。
 - 来源商品编号：`1079994456070`。
@@ -244,7 +309,7 @@ Batana 变体：
 - 图片处理脚本：`scripts/render-scalp-applicator-images.py`。
 - add-on 修复脚本：`scripts/repair-comb-addon.php`。
 
-导液梳的 Batana add-on 采用隐藏的简单商品 ID 17，原因是 add-on 规则需要一个明确、可购买的 **simple product**。原 Batana 商品 ID 20 是 variable product，代表多个 bundle，不能直接、无歧义地作为“一份两瓶套装”加入购物车。因此创建/保留 ID 17 来代表固定的 2 Bottle Bundle。用户已明确要求不要删除这个商品。
+导液梳的 Batana add-on 目前仍采用隐藏的简单商品 ID 17。它最初是在 Product Add-ons 只支持 simple product 时创建的；插件 3.8.0 已支持直接关联某一个 product variation，但商品 17 仍有明确业务用途，除非用户另行确认，不要删除或迁移。
 
 当前业务含义：
 
@@ -255,7 +320,7 @@ Batana 变体：
 - 如果限定颜色，`Allowed variation values` 必须精确匹配 `Clear`、`Pink`；留空表示所有变体。
 - add-on 商品保持 `publish + hidden`，可购买但不在商店目录和搜索中单独展示。
 
-### 5.3 迁移数据与线上数据的差异
+### 5.4 迁移数据与线上数据的差异
 
 `plugin/trovesia-plugin/data/catalog.php` 是原有三款商品的迁移数据源，但它不一定与后台后续手工调整完全一致。当前线上 Batana 变体标签是 `Buy 1, get 1 Free` 等，而数据文件可能仍使用较短标签。
 
@@ -616,6 +681,7 @@ docker compose --profile tools run --rm wpcli trovesia page-cache purge
 - 导液梳 add-on 的隐藏简单商品 ID 17 有明确业务用途，不要删除。
 - 图片必须忠实呈现滴管、注液口塞、防尘盖等配件，不要用生成图遗漏结构。
 - 当前本地有未提交的主题、插件、商品脚本和图片改动；新对话先检查并保护这些改动。
+- `trovesia-channel` 1.2.2 已在线上启用；本地仍有对应插件、Compose、Nginx、部署脚本和文档的未提交 Git 改动，后续提交时应作为同一功能变更处理。
 - 2026-10-26 16:29（Asia/Taipei）后台明确将商品 17、20、25、78 批量设为 `private`，且 `blog_public=0`；当前商店不是公开可购买状态，重新发布前必须先得到用户确认。
 
 ## 12. 完成任务后如何维护本文件

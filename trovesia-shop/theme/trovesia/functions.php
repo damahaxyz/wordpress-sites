@@ -90,9 +90,12 @@ function trovesia_enqueue_assets(): void
             true
         );
         wp_localize_script('trovesia-theme', 'trovesiaCart', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('trovesia_cart_quantity'),
-            'error'   => __('The cart could not be updated. Please try again.', 'trovesia'),
+            'ajaxUrl'             => admin_url('admin-ajax.php'),
+            'nonce'               => wp_create_nonce('trovesia_cart_quantity'),
+            'error'               => __('The cart could not be updated. Please try again.', 'trovesia'),
+            'noticeDuration'      => 18000,
+            'noticeErrorDuration' => 30000,
+            'noticeCloseLabel'    => __('Close notification', 'trovesia'),
         ]);
     }
 }

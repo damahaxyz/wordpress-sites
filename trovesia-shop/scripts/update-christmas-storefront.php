@@ -98,11 +98,31 @@ foreach ($banner as $key => $value) {
 }
 
 update_post_meta($front_page_id, '_trovesia_home_products_enabled', '1');
-update_post_meta($front_page_id, '_trovesia_home_products_kicker', 'Christmas 2026');
-update_post_meta($front_page_id, '_trovesia_home_products_heading', 'One complete gift set. Five festive colours.');
-update_post_meta($front_page_id, '_trovesia_home_products_description', 'Choose the colour that fits your celebration. Every $99 set includes the same gift-box contents.');
-update_post_meta($front_page_id, '_trovesia_home_products_product_ids', [$product_id]);
-update_post_meta($front_page_id, '_trovesia_home_products_columns', '1');
+update_post_meta($front_page_id, '_trovesia_home_products_kicker', 'Christmas Collection');
+update_post_meta($front_page_id, '_trovesia_home_products_heading', 'Festive finds for every celebration.');
+update_post_meta($front_page_id, '_trovesia_home_products_description', 'Explore seasonal gifts and celebration essentials selected for Christmas.');
+update_post_meta($front_page_id, '_trovesia_home_products_tag', 'christmas');
+delete_post_meta($front_page_id, '_trovesia_home_products_product_ids');
+update_post_meta($front_page_id, '_trovesia_home_products_columns', '3');
+
+$christmas_term = get_term_by('slug', 'christmas', 'product_tag');
+if (! $christmas_term instanceof WP_Term) {
+    $created = wp_insert_term('Christmas', 'product_tag', ['slug' => 'christmas']);
+    if (is_wp_error($created)) {
+        throw new RuntimeException($created->get_error_message());
+    }
+}
+$christmas_product_ids = [$product_id];
+$refill_product_id = (int) wc_get_product_id_by_sku('TV-SPARK-REFILL-PACKS');
+if ($refill_product_id > 0) {
+    $christmas_product_ids[] = $refill_product_id;
+}
+foreach ($christmas_product_ids as $christmas_product_id) {
+    $result = wp_set_object_terms($christmas_product_id, 'christmas', 'product_tag', true);
+    if (is_wp_error($result)) {
+        throw new RuntimeException($result->get_error_message());
+    }
+}
 
 $menu = wp_get_nav_menu_object('nav');
 $menu_item_id = 0;

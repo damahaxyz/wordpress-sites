@@ -45,6 +45,7 @@ final class Addon_Pricing
         add_action('add_meta_boxes_product', [$this, 'add_meta_box']);
         add_action('save_post_product', [$this, 'save_settings'], 20);
         add_action('woocommerce_update_product', [$this, 'clear_linked_product_caches']);
+        add_action('woocommerce_update_product_variation', [$this, 'clear_linked_product_caches']);
 
         add_filter('woocommerce_add_cart_item_data', [$this, 'capture_selected_addons'], 10, 4);
         add_action('woocommerce_add_to_cart', [$this, 'add_selected_addons'], 20, 6);
@@ -87,10 +88,33 @@ final class Addon_Pricing
             'status'  => ['publish', 'draft', 'private'],
             'type'    => 'simple',
         ]);
+        $variable_products = wc_get_products([
+            'exclude' => [$post->ID],
+            'limit'   => -1,
+            'orderby' => 'name',
+            'order'   => 'ASC',
+            'status'  => ['publish', 'draft', 'private'],
+            'type'    => 'variable',
+        ]);
+        foreach ($variable_products as $variable_product) {
+            if (! $variable_product instanceof \WC_Product_Variable) {
+                continue;
+            }
+            foreach ($variable_product->get_children() as $variation_id) {
+                $variation = wc_get_product($variation_id);
+                if ($variation instanceof \WC_Product_Variation) {
+                    $products[] = $variation;
+                }
+            }
+        }
+        usort($products, static fn (\WC_Product $left, \WC_Product $right): int => strcasecmp(
+            self::linked_product_label($left),
+            self::linked_product_label($right)
+        ));
 
         wp_nonce_field('trovesia_addon_rules', 'trovesia_addon_rules_nonce');
         ?>
-        <p><?php esc_html_e('Attach any simple product as an optional purchase. The linked product remains a separate cart and order line, so its stock, tax and shipping settings continue to work normally.', 'trovesia-plugin'); ?></p>
+        <p><?php esc_html_e('Attach a simple product or one specific variation as an optional purchase. To offer several variations, add one linked-product rule for each variation. Every linked item remains a separate cart and order line, so its stock, tax and shipping settings continue to work normally.', 'trovesia-plugin'); ?></p>
         <div class="trovesia-addon-rules" data-next-index="<?php echo esc_attr((string) count($rules)); ?>">
             <?php foreach ($rules as $index => $rule) : ?>
                 <?php $this->render_rule_row((string) $index, $rule, $products, $variation_values); ?>
@@ -144,7 +168,7 @@ final class Addon_Pricing
                 <select class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][product_id]">
                     <option value="0"><?php esc_html_e('Select a product', 'trovesia-plugin'); ?></option>
                     <?php foreach ($products as $candidate) : ?>
-                        <option value="<?php echo esc_attr((string) $candidate->get_id()); ?>" <?php selected((int) $rule['product_id'], $candidate->get_id()); ?>><?php echo esc_html($candidate->get_name()); ?></option>
+                        <option value="<?php echo esc_attr((string) $candidate->get_id()); ?>" <?php selected((int) $rule['product_id'], $candidate->get_id()); ?>><?php echo esc_html(self::linked_product_label($candidate)); ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php
@@ -157,6 +181,19 @@ final class Addon_Pricing
             <p class="trovesia-addon-rule__wide">
                 <label><?php esc_html_e('Display title (optional)', 'trovesia-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][title]" type="text" value="<?php echo esc_attr((string) $rule['title']); ?>">
+            </p>
+            <p>
+                <label><?php esc_html_e('Selection group (optional)', 'trovesia-plugin'); ?></label>
+                <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][selection_group]" type="text" value="<?php echo esc_attr((string) $rule['selection_group']); ?>" placeholder="refill-chambers">
+                <small><?php esc_html_e('Rules with the same group key become a single-choice set.', 'trovesia-plugin'); ?></small>
+            </p>
+            <p>
+                <label><?php esc_html_e('Group heading (optional)', 'trovesia-plugin'); ?></label>
+                <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][group_title]" type="text" value="<?php echo esc_attr((string) $rule['group_title']); ?>">
+            </p>
+            <p class="trovesia-addon-rule__wide">
+                <label><?php esc_html_e('Group description (optional)', 'trovesia-plugin'); ?></label>
+                <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][group_description]" type="text" value="<?php echo esc_attr((string) $rule['group_description']); ?>">
             </p>
             <p>
                 <label><?php esc_html_e('Pricing mode', 'trovesia-plugin'); ?></label>
@@ -224,7 +261,11 @@ final class Addon_Pricing
 
             $product_id = absint($row['product_id'] ?? 0);
             $linked = $product_id > 0 && $product_id !== $post_id ? wc_get_product($product_id) : false;
-            if (! $linked || ! $linked->is_type('simple')) {
+            if (
+                ! $linked
+                || ! in_array($linked->get_type(), ['simple', 'variation'], true)
+                || ($linked instanceof \WC_Product_Variation && $linked->get_parent_id() === $post_id)
+            ) {
                 continue;
             }
 
@@ -250,6 +291,9 @@ final class Addon_Pricing
                 'id'               => sanitize_key((string) ($row['id'] ?? '')) ?: wp_generate_uuid4(),
                 'product_id'       => $product_id,
                 'title'            => sanitize_text_field((string) ($row['title'] ?? '')),
+                'selection_group'  => sanitize_key((string) ($row['selection_group'] ?? '')),
+                'group_title'      => sanitize_text_field((string) ($row['group_title'] ?? '')),
+                'group_description' => sanitize_text_field((string) ($row['group_description'] ?? '')),
                 'pricing_mode'     => $mode,
                 'fixed_price'      => max(0, (float) wc_format_decimal((string) ($row['fixed_price'] ?? '0'))),
                 'compare_at_price' => max(0, (float) wc_format_decimal((string) ($row['compare_at_price'] ?? '0'))),
@@ -359,10 +403,18 @@ final class Addon_Pricing
         }
 
         $selected = [];
+        $selected_groups = [];
         foreach (self::get_rules($product_id) as $rule) {
             $rule_id = (string) ($rule['id'] ?? '');
             if ($rule_id !== '' && in_array($rule_id, $requested, true) && $this->rule_allows_variation($rule, $variation_id)) {
+                $group = sanitize_key((string) ($rule['selection_group'] ?? ''));
+                if ($group !== '' && isset($selected_groups[$group])) {
+                    continue;
+                }
                 $selected[] = $rule_id;
+                if ($group !== '') {
+                    $selected_groups[$group] = true;
+                }
             }
         }
 
@@ -397,11 +449,20 @@ final class Addon_Pricing
                 continue;
             }
 
+            $linked_product_id = $linked->get_id();
+            $linked_variation_id = 0;
+            $linked_variation = [];
+            if ($linked instanceof \WC_Product_Variation) {
+                $linked_product_id = $linked->get_parent_id();
+                $linked_variation_id = $linked->get_id();
+                $linked_variation = $linked->get_variation_attributes();
+            }
+
             WC()->cart->add_to_cart(
-                $linked->get_id(),
+                $linked_product_id,
                 max(1, (int) $rule['quantity']) * $quantity,
-                0,
-                [],
+                $linked_variation_id,
+                $linked_variation,
                 [
                     '_trovesia_addon_parent_key'        => $cart_item_key,
                     '_trovesia_addon_parent_product_id' => $product_id,
@@ -725,6 +786,9 @@ final class Addon_Pricing
             'id'               => '',
             'product_id'       => 0,
             'title'            => '',
+            'selection_group'  => '',
+            'group_title'      => '',
+            'group_description' => '',
             'pricing_mode'     => 'follow',
             'fixed_price'      => '',
             'compare_at_price' => '',
@@ -733,5 +797,19 @@ final class Addon_Pricing
             'default_selected' => false,
             'allowed_values'   => [],
         ];
+    }
+
+    private static function linked_product_label(\WC_Product $product): string
+    {
+        if (! $product instanceof \WC_Product_Variation) {
+            return $product->get_name();
+        }
+
+        $parent = wc_get_product($product->get_parent_id());
+        $parent_name = $parent ? $parent->get_name() : $product->get_name();
+        $variation = wc_get_formatted_variation($product, true, false, true);
+        $sku = $product->get_sku();
+
+        return trim($parent_name . ($variation !== '' ? ' — ' . $variation : '') . ($sku !== '' ? ' [' . $sku . ']' : ''));
     }
 }

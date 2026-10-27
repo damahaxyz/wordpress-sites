@@ -20,6 +20,12 @@ plugin/trovesia-plugin/
 ├── includes/class-review-migrator.php
 ├── data/catalog.php
 └── uninstall.php           卸载时清理插件自己的设置
+
+plugin/trovesia-channel/
+├── trovesia-channel.php    渠道插件入口与 HPOS 兼容声明
+├── includes/               渠道、短链、归因、后台与渠道门户
+├── assets/portal.css       渠道门户样式
+└── uninstall.php           默认保留归因数据的安全卸载逻辑
 ```
 
 页面展示只放在主题中；产品字段、订单规则、短代码、REST API、
@@ -38,7 +44,7 @@ plugin/trovesia-plugin/
 ## 本地检查
 
 ```bash
-find theme/trovesia plugin/trovesia-plugin \
+find theme/trovesia plugin/trovesia-plugin plugin/trovesia-channel \
   -type f -name '*.php' -exec php -l {} \;
 
 docker compose config --quiet
@@ -99,6 +105,7 @@ docker compose --profile tools run --rm wpcli trovesia page-cache purge
 ```bash
 ./scripts/deploy-theme.sh
 ./scripts/deploy-plugin.sh
+./scripts/deploy-channel-plugin.sh
 ./scripts/deploy-all.sh
 ```
 

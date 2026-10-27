@@ -893,37 +893,84 @@ final class Site_Experience
         if ($available_addons === []) {
             return;
         }
+
+        $groups = [];
+        $standalone = [];
+        foreach ($available_addons as $item) {
+            $group_key = sanitize_key((string) ($item['rule']['selection_group'] ?? ''));
+            if ($group_key === '') {
+                $standalone[] = $item;
+                continue;
+            }
+
+            if (! isset($groups[$group_key])) {
+                $groups[$group_key] = [
+                    'title'       => trim((string) ($item['rule']['group_title'] ?? '')),
+                    'description' => trim((string) ($item['rule']['group_description'] ?? '')),
+                    'has_default' => false,
+                    'items'       => [],
+                ];
+            }
+            $groups[$group_key]['has_default'] = $groups[$group_key]['has_default'] || ! empty($item['rule']['default_selected']);
+            $groups[$group_key]['items'][] = $item;
+        }
         ?>
         <div class="trovesia-addon-heading"><?php esc_html_e('Complete your order', 'trovesia-plugin'); ?></div>
         <div class="trovesia-product-addons">
-            <?php foreach ($available_addons as $item) : ?>
-                <?php
-                $rule = $item['rule'];
-                $linked = $item['linked'];
-                $title = trim((string) ($rule['title'] ?? '')) ?: $linked->get_name();
-                $price = Addon_Pricing::calculate_rule_price($rule);
-                $regular_price = Addon_Pricing::calculate_rule_regular_price($rule);
-                $saving = $regular_price > $price && $regular_price > 0
-                    ? (int) round((($regular_price - $price) / $regular_price) * 100)
-                    : 0;
-                $allowed_values = array_values((array) ($rule['allowed_values'] ?? []));
-                ?>
-                <label class="trovesia-roller-addon trovesia-product-addon<?php echo ! empty($rule['default_selected']) ? ' is-selected' : ''; ?>" data-allowed-values="<?php echo esc_attr(wp_json_encode($allowed_values)); ?>">
-                    <input class="trovesia-product-addon__input" name="trovesia_addons[]" type="checkbox" value="<?php echo esc_attr((string) $rule['id']); ?>" <?php checked(! empty($rule['default_selected'])); ?>>
-                    <span class="trovesia-roller-addon__check" aria-hidden="true">✓</span>
-                    <span class="trovesia-roller-addon__image"><?php echo $linked->get_image('woocommerce_thumbnail', ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
-                    <span class="trovesia-roller-addon__copy">
-                        <strong><?php echo esc_html($title); ?></strong>
-                        <small><?php esc_html_e('Add this product to your order', 'trovesia-plugin'); ?></small>
-                    </span>
-                    <span class="trovesia-roller-addon__price">
-                        <?php if ($saving > 0) : ?><span class="trovesia-product-addon__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
-                        <strong>+<?php echo wp_kses_post(wc_price($price)); ?></strong>
-                        <?php if ($saving > 0) : ?><del><?php echo wp_kses_post(wc_price($regular_price)); ?></del><?php endif; ?>
-                    </span>
-                </label>
+            <?php foreach ($groups as $group_key => $group) : ?>
+                <fieldset class="trovesia-product-addon-group">
+                    <legend>
+                        <strong><?php echo esc_html($group['title'] ?: ucwords(str_replace('-', ' ', $group_key))); ?></strong>
+                        <?php if ($group['description'] !== '') : ?><small><?php echo esc_html($group['description']); ?></small><?php endif; ?>
+                    </legend>
+                    <label class="trovesia-addon-group__none">
+                        <input class="trovesia-addon-group__none-input" name="trovesia_addons[<?php echo esc_attr($group_key); ?>]" type="radio" value="" <?php checked(! $group['has_default']); ?>>
+                        <span><?php esc_html_e('No extra pack', 'trovesia-plugin'); ?></span>
+                    </label>
+                    <div class="trovesia-product-addon-group__options">
+                        <?php foreach ($group['items'] as $item) : ?>
+                            <?php $this->render_addon_card($item, 'trovesia_addons[' . $group_key . ']', 'radio'); ?>
+                        <?php endforeach; ?>
+                    </div>
+                </fieldset>
+            <?php endforeach; ?>
+            <?php foreach ($standalone as $item) : ?>
+                <?php $this->render_addon_card($item, 'trovesia_addons[]', 'checkbox'); ?>
             <?php endforeach; ?>
         </div>
+        <?php
+    }
+
+    /**
+     * @param array{rule: array<string, mixed>, linked: \WC_Product} $item Linked add-on data.
+     */
+    private function render_addon_card(array $item, string $input_name, string $input_type): void
+    {
+        $rule = $item['rule'];
+        $linked = $item['linked'];
+        $title = trim((string) ($rule['title'] ?? '')) ?: $linked->get_name();
+        $price = Addon_Pricing::calculate_rule_price($rule);
+        $regular_price = Addon_Pricing::calculate_rule_regular_price($rule);
+        $saving = $regular_price > $price && $regular_price > 0
+            ? (int) round((($regular_price - $price) / $regular_price) * 100)
+            : 0;
+        $allowed_values = array_values((array) ($rule['allowed_values'] ?? []));
+        $selected = ! empty($rule['default_selected']);
+        ?>
+        <label class="trovesia-roller-addon trovesia-product-addon<?php echo $selected ? ' is-selected' : ''; ?>" data-allowed-values="<?php echo esc_attr(wp_json_encode($allowed_values)); ?>">
+            <input class="trovesia-product-addon__input" name="<?php echo esc_attr($input_name); ?>" type="<?php echo esc_attr($input_type); ?>" value="<?php echo esc_attr((string) $rule['id']); ?>" <?php checked($selected); ?>>
+            <span class="trovesia-roller-addon__check" aria-hidden="true">✓</span>
+            <span class="trovesia-roller-addon__image"><?php echo $linked->get_image('woocommerce_thumbnail', ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+            <span class="trovesia-roller-addon__copy">
+                <strong><?php echo esc_html($title); ?></strong>
+                <small><?php esc_html_e('Add this pack to your order', 'trovesia-plugin'); ?></small>
+            </span>
+            <span class="trovesia-roller-addon__price">
+                <?php if ($saving > 0) : ?><span class="trovesia-product-addon__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
+                <strong>+<?php echo wp_kses_post(wc_price($price)); ?></strong>
+                <?php if ($saving > 0) : ?><del><?php echo wp_kses_post(wc_price($regular_price)); ?></del><?php endif; ?>
+            </span>
+        </label>
         <?php
     }
 

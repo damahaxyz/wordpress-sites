@@ -5,6 +5,164 @@
   const cartTrigger = document.querySelector(".header-cart");
   const cartDrawer = document.querySelector(".trovesia-cart-drawer");
   const cartClosers = document.querySelectorAll("[data-cart-drawer-close]");
+  const noticeSelector = [
+    ".woocommerce-message",
+    ".woocommerce-info",
+    ".woocommerce-error",
+    ".wc-block-components-notice-banner",
+  ].join(",");
+  const managedNotices = new Set();
+  let noticeCollectionFrame = null;
+
+  const noticeIsError = (notice) => (
+    notice.classList.contains("woocommerce-error")
+    || notice.classList.contains("is-error")
+  );
+
+  const activeNotices = () => {
+    const notices = [...managedNotices].filter((notice) => notice.isConnected && !notice.classList.contains("is-closing"));
+    [...managedNotices].forEach((notice) => {
+      if (!notice.isConnected) {
+        managedNotices.delete(notice);
+      }
+    });
+    return notices;
+  };
+
+  const layoutNotices = () => {
+    let offset = window.innerWidth <= 782 ? 16 : 112;
+    activeNotices().forEach((notice) => {
+      notice.style.setProperty("--trovesia-notice-offset", `${offset}px`);
+      offset += notice.getBoundingClientRect().height + 12;
+    });
+  };
+
+  const dismissNotice = (notice) => {
+    if (!notice || notice.classList.contains("is-closing")) {
+      return;
+    }
+
+    window.clearTimeout(notice.trovesiaNoticeTimer);
+    notice.classList.add("is-closing");
+    notice.classList.remove("is-visible");
+    window.setTimeout(() => {
+      managedNotices.delete(notice);
+      notice.remove();
+      layoutNotices();
+    }, 280);
+  };
+
+  const startNoticeTimer = (notice, duration) => {
+    window.clearTimeout(notice.trovesiaNoticeTimer);
+    notice.trovesiaNoticeRemaining = duration;
+    notice.trovesiaNoticeDeadline = Date.now() + duration;
+    notice.trovesiaNoticeTimer = window.setTimeout(() => dismissNotice(notice), duration);
+  };
+
+  const pauseNoticeTimer = (notice) => {
+    if (notice.classList.contains("is-paused")) {
+      return;
+    }
+    notice.trovesiaNoticeRemaining = Math.max(500, notice.trovesiaNoticeDeadline - Date.now());
+    window.clearTimeout(notice.trovesiaNoticeTimer);
+    notice.classList.add("is-paused");
+  };
+
+  const resumeNoticeTimer = (notice) => {
+    if (!notice.classList.contains("is-paused") || notice.classList.contains("is-closing")) {
+      return;
+    }
+    notice.classList.remove("is-paused");
+    notice.trovesiaNoticeDeadline = Date.now() + notice.trovesiaNoticeRemaining;
+    notice.trovesiaNoticeTimer = window.setTimeout(
+      () => dismissNotice(notice),
+      notice.trovesiaNoticeRemaining,
+    );
+  };
+
+  const initializeNotice = (notice) => {
+    if (!(notice instanceof HTMLElement) || notice.dataset.trovesiaToastReady === "true") {
+      return;
+    }
+
+    const config = window.trovesiaCart || {};
+    const isError = noticeIsError(notice);
+    const duration = Number.parseInt(
+      isError ? config.noticeErrorDuration : config.noticeDuration,
+      10,
+    ) || (isError ? 30000 : 18000);
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "trovesia-toast-notice__close";
+    closeButton.setAttribute("aria-label", config.noticeCloseLabel || "Close notification");
+    closeButton.innerHTML = "&times;";
+
+    if (notice.matches("ul, ol")) {
+      const closeItem = document.createElement("li");
+      closeItem.className = "trovesia-toast-notice__close-item";
+      closeItem.append(closeButton);
+      notice.append(closeItem);
+    } else {
+      notice.append(closeButton);
+    }
+
+    notice.dataset.trovesiaToastReady = "true";
+    notice.classList.add("trovesia-toast-notice", isError ? "is-error" : "is-standard");
+    notice.style.setProperty("--trovesia-notice-duration", `${duration}ms`);
+    notice.setAttribute("aria-live", isError ? "assertive" : "polite");
+    if (!notice.hasAttribute("role")) {
+      notice.setAttribute("role", isError ? "alert" : "status");
+    }
+
+    managedNotices.add(notice);
+    closeButton.addEventListener("click", () => dismissNotice(notice));
+    notice.addEventListener("pointerenter", () => pauseNoticeTimer(notice));
+    notice.addEventListener("pointerleave", () => resumeNoticeTimer(notice));
+    notice.addEventListener("focusin", (event) => {
+      if (event.target !== notice) {
+        pauseNoticeTimer(notice);
+      }
+    });
+    notice.addEventListener("focusout", () => {
+      window.setTimeout(() => {
+        if (!notice.contains(document.activeElement)) {
+          resumeNoticeTimer(notice);
+        }
+      }, 0);
+    });
+
+    startNoticeTimer(notice, duration);
+    window.requestAnimationFrame(() => {
+      layoutNotices();
+      notice.classList.add("is-visible");
+    });
+  };
+
+  const collectNotices = () => {
+    document.querySelectorAll(noticeSelector).forEach(initializeNotice);
+    layoutNotices();
+  };
+
+  const queueNoticeCollection = () => {
+    if (noticeCollectionFrame !== null) {
+      return;
+    }
+    noticeCollectionFrame = window.requestAnimationFrame(() => {
+      noticeCollectionFrame = null;
+      collectNotices();
+    });
+  };
+
+  const showNotice = (message, type = "error") => {
+    const notice = document.createElement("div");
+    notice.className = type === "error" ? "woocommerce-error" : "woocommerce-info";
+    notice.textContent = message;
+    document.body.append(notice);
+    initializeNotice(notice);
+  };
+
+  collectNotices();
+  new MutationObserver(queueNoticeCollection).observe(document.body, { childList: true, subtree: true });
 
   const setHeaderState = () => {
     if (header) {
@@ -133,7 +291,7 @@
       });
       window.jQuery?.(document.body).trigger("wc_fragments_refreshed");
     } catch (error) {
-      window.alert(error.message || config.error);
+      showNotice(error.message || config.error);
     } finally {
       cartDrawer?.classList.remove("is-updating");
     }
@@ -148,6 +306,7 @@
 
   window.addEventListener("resize", () => {
     syncMenuHeight();
+    layoutNotices();
     if (window.innerWidth > 1020) {
       closeMenu();
     }
@@ -245,6 +404,9 @@
 
     addonCards.forEach((card) => {
       card.querySelector(".trovesia-product-addon__input")?.addEventListener("change", syncAddons);
+    });
+    form.querySelectorAll(".trovesia-addon-group__none-input").forEach((input) => {
+      input.addEventListener("change", syncAddons);
     });
 
     if (picker && attributeSelect && variantCards.length) {

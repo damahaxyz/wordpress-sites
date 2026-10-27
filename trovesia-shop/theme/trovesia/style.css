@@ -1,7 +1,7 @@
 /*
 Theme Name: Trovesia Shop
 Description: A refined, conversion-aware WooCommerce theme for the Trovesia botanical hair-care shop.
-Version: 2.6.0
+Version: 2.8.0
 Requires at least: 6.8
 Requires PHP: 8.3
 Text Domain: trovesia
@@ -1332,6 +1332,31 @@ body.cart-drawer-open {
 
 .site-footer a:hover {
   color: var(--shop-white);
+}
+
+.site-footer__partner-link {
+  padding-top: 14px;
+  margin-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.site-footer__partner-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--shop-accent-soft);
+  font-weight: 700;
+}
+
+.site-footer__partner-link a span {
+  color: var(--shop-accent);
+  font-size: 11px;
+  transition: transform var(--shop-transition);
+}
+
+.site-footer__partner-link a:hover span,
+.site-footer__partner-link a:focus-visible span {
+  transform: translate(2px, -2px);
 }
 
 .site-footer__bottom {

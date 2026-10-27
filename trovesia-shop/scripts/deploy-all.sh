@@ -4,4 +4,4 @@ set -Eeuo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-exec "${script_dir}/deploy-component.sh" theme plugin
+exec "${script_dir}/deploy-component.sh" theme plugin channel-plugin

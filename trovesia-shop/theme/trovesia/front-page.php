@@ -99,10 +99,9 @@ $hero_style  = sprintf(
             </div>
             <?php if ($woocommerce_ready) : ?>
                 <?php
-                $product_ids = $home_products['product_ids'] ?: trovesia_home_products_default_ids();
-                $shortcode   = sprintf(
-                    '[products ids="%s" columns="%d" orderby="post__in" order="ASC"]',
-                    implode(',', array_map('absint', $product_ids)),
+                $shortcode = sprintf(
+                    '[products tag="%s" limit="-1" columns="%d" orderby="menu_order title" order="ASC"]',
+                    sanitize_title((string) $home_products['tag']),
                     (int) $home_products['columns']
                 );
                 echo do_shortcode($shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
