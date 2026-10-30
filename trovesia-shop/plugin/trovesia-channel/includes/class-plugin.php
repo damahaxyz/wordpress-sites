@@ -55,6 +55,7 @@ final class Plugin
         }
 
         Attribution::instance()->boot();
+        add_action('init', [Installer::class, 'refresh_routes_after_upgrade'], 20);
         Order_Attribution::instance()->boot();
         Admin::instance()->boot();
         Portal::instance()->boot();

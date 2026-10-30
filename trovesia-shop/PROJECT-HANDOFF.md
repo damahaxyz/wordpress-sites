@@ -2,7 +2,30 @@
 
 > **用途**：这是 Trovesia 独立站的长期维护入口。新对话开始时先完整读取本文件，再查看当前工作区和线上状态，即可继续开发、部署、排障或上架商品。
 >
-> **最后核对日期**：2026-10-27（Asia/Taipei）
+> **最后核对日期**：2026-10-30（Asia/Taipei）
+
+## 2026-10-29 安全事件与恢复状态
+
+网站因恶意 PHP 插件启动伪装 Perl 进程而发生动态请求阻塞。两个 Maintenance Tools 随机目录插件 `wp-3hppkwvobt`、`wp-4jtash8wf0` 已隔离，PHP 容器已从原镜像重建，公网首页/商品页及结账页面恢复。详情见 `docs/incidents/2026-10-29-wordpress-compromise.md`。
+
+- 站主确认 `wp-media-folder` 5.5.2 是本人主动安装，要求恢复正常使用；已纳入白名单，并按该指示恢复。静态扫描未发现已确认的后门，不能据此证明整个旧发行包完全安全；后续使用站主正版新包更新。Maintenance Tools 不是站主安装，两个恶意目录继续隔离。
+- Nginx 已阻止直接公开执行 `/wp-content/` 下 PHP/PHTML/PHAR；PHP 禁止启动 shell/外部进程。配置分别位于 `nginx/conf.d/default.conf`、`php/uploads.ini`。
+- 旧登录会话已全部失效，需重新登录。后台密码及支付/SMTP 凭据仍需站主更换/轮换。
+- 后续历史日志分析已证实：同一来源在 10-25 05:44 与 10-28 03:08（Asia/Taipei）登录后台，经 `update.php?action=upload-plugin` 上传恶意插件，再直接执行插件 PHP。凭据最初如何泄露及是否发生数据外传仍未知；不能将媒体插件认定为此次已证实入口。完整时间线见上述事件报告。
+- root 私有取证/隔离与数据库备份目录为服务器 `/root/trovesia-incident-20261029/`；可能包含恶意样本和凭据，严禁提交或公开，不可作为干净备份整体回滚。
+- 已部署 MU 安全模块、官方 Two Factor 0.17.0、全密码入口限速、管理员原生登录与 Cloudflare 访问控制、后台代码修改锁、root 代码权限/只读挂载、代码 SHA-256 清单和插件白名单。2026-10-29 站主明确要求两步验证可关闭：已改为个人可选，不再强制勾选 Email，`damaha` 当前关闭两步验证。管理员仍从 `/wp-login.php` 登录。
+- 2026-10-30 按站主明确要求，管理员 IP 限制移交 Cloudflare，MU 安全模块 1.2.0 已删除网站层名单及登录/后台/AJAX/REST 来源拦截，`admin-access.json` 已私有归档移除。以后更换 IP 只改 Cloudflare；宿主 Nginx 仅允许 Cloudflare 回源。公开 AJAX/REST 仍依赖登录、权限和 nonce，不再额外按管理员 IP 拦截。
+- 已补查 10 个启用插件及主题的 wp-login 依赖。渠道与顾客退出均须保留 GET logout；当前交易/账户主流程走前台接口。只放行退出会阻止核心密码保护内容、隐私确认和其他原生账号恢复；当前密码保护内容/隐私请求为 0。边界、版本与证据见 `docs/WP-LOGIN-ACCESS-REVIEW.md`；不要把主流程可用解释为所有核心/未来插件流程都不受影响。
+- 数据库应用密码和 WordPress 认证 salts 已轮换；站主密码、邮箱和支付/SMTP 平台凭据仍需站主处理。
+- 部署脚本现强制执行部署前后安全检查；安全配置使用 `scripts/deploy-security.sh`，组件使用原组件脚本。不要绕过失败检查或直接重建可信清单。完整操作见 `docs/SECURITY-OPERATIONS.md`。
+- 服务器 `trovesia-security-watch.service` 每五分钟做轻量容器/动态页/认证审计检查，完整权限/哈希检查改为约每小时一次，失败则下一轮重试；部署前后仍完整检查。异常及恢复提醒继续发至现有 WordPress 管理员邮箱。备份按站主选择仅放 `/root/trovesia-backups/`，用 `scripts/security-backup.sh`；未设置异地或定时备份。
+- FluentSMTP Gmail 配置依赖登录 salts 加密；本次轮换后已在 root 私有环境重新加密原配置并成功调用发信。未来换 salts 必须同时处理 SMTP 加密兼容，门禁已增加解密哨兵检查；具体步骤见安全手册。实际收件仍需站主确认。
+
+## 2026-10-30 安全精简
+
+`security/` 运行目录从本地 13 文件精简为 8 文件（线上另归档一份遗留邮件诊断）；手工测试迁至 `tests/security/`，SMTP 一次性修复迁至 `scripts/maintenance/`。不再在安全部署时无条件注销所有管理员。保留代码只读/权限、后台代码修改锁、登录限速、危险 PHP 路径阻断、完整性门禁、日志轮转和状态变化告警。完整文件分析见 `docs/SECURITY-SIMPLIFICATION.md`；旧事件中的网站层 IP 保护描述属于历史状态。
+
+Cloudflare 已发布第二条 Block 规则，范围为 `/wp-admin` 或 `/wp-login.php` 开头，保留原三个白名单 IP；第一条 Skip 保留公开 admin-post/admin-ajax 以及 GET、单个精确 `action=logout` 的标准退出参数。此前线上 Block 遗漏登录路径，现已补齐。以后改 IP 只编辑 CF 的 `admin IP 加白`，勿恢复服务器旧名单。完整表达式见精简说明。
 
 ## 1. 新对话开始时先做什么
 
@@ -26,6 +49,7 @@
 3. 涉及价格、库存、商品 ID、插件版本、GA、支付或缓存时，用 WP-CLI/后台重新查询线上状态。
 4. 页面样式和交互改主题；持久业务逻辑、后台字段、购物车/订单规则改插件。
 5. 修改后先本地检查，再使用项目部署脚本；部署后清缓存并在真实页面验证。
+   安全门禁必须通过：`security-baseline.sh check` → 授权部署 → `apply` / `seal` / `check`；详细流程见 `docs/SECURITY-OPERATIONS.md`。第三方代码更新走服务器 root 的 `maintenance-wp.sh`，普通商品/媒体导入继续 UID 33。
 6. 如果本文件与代码或线上数据冲突，以当前代码和线上查询结果为准，并更新本文件的日期及相关章节。
 
 重要安全规则：
@@ -159,11 +183,11 @@ _trovesia_source_url
 
 ### 3.3 渠道插件 `plugin/trovesia-channel`
 
-2026-10-26 已开发并在线上启用独立的 `trovesia-channel` 插件，当前版本 1.2.2。它包括：
+2026-10-26 已开发并在线上启用独立的 `trovesia-channel` 插件，当前版本 1.7.3。它包括：
 
 - 总后台渠道、渠道账户和全局归因窗口管理；归因窗口不向渠道账户显示。
 - 渠道账户的独立前台门户 `/channel-portal/`。
-- 渠道方可为首页、Shop、公开商品分类和公开可见商品生成 `/go/{token}` 推广链接。
+- 渠道方可为首页、Shop、公开商品分类和公开可见商品生成 `https://trovesia.com/s/{token}/` 推广链接，token 为 6 位英文字母/数字。
 - 不透明令牌跳转、第一方访问归因、机器人标记和干净目标 URL 重定向。
 - Checkout Block、经典结账和 HPOS 订单元数据归因。
 - 订单状态、付款金额和退款金额同步，以及渠道隔离的订单/统计查询。
@@ -172,7 +196,7 @@ _trovesia_source_url
 相关部署接入：
 
 - `compose.yaml` 已增加 `trovesia-channel` 的 WordPress、WP-CLI 和 Nginx 挂载。
-- `nginx/conf.d/default.conf` 明确让 `/go/{token}` 绕过 FastCGI 页面缓存。
+- `nginx/conf.d/default.conf` 明确让 `/s/{token}`（及历史 `/go/` 路径）绕过 FastCGI 页面缓存。
 - 单独部署脚本为 `scripts/deploy-channel-plugin.sh`；`deploy-all.sh` 也会包含该插件。
 
 2026-10-26 23:29（Asia/Taipei）完成正式部署与验证：六张插件数据表、`trovesia_channel_manager` 角色和 Channel Portal page ID 121 已创建，归因窗口默认为 30 天。真实 `/go/{token}` 请求已验证 302 商品跳转、安全 Cookie 和 FastCGI `BYPASS`；临时 HPOS 订单已验证渠道/Campaign/Visit 元数据、processing 状态、$10 部分退款与 $89 净额同步。测试订单、退款、渠道、链接、访问记录和测试账户随后全部删除，未残留测试数据。
@@ -193,19 +217,53 @@ _trovesia_source_url
 
 1.2.2 将渠道登录从 WordPress 原生 `wp-login.php` 提交改为插件自己的安全登录处理。账号或密码错误、登录 nonce 过期时都会返回 `/channel-portal/` 并在品牌登录卡片内显示统一错误，不再跳转到 WordPress 系统登录页。
 
-## 4. 已启用的主要插件（2026-10-26 快照）
+1.3.0 按站主要求取消新渠道账号的设置密码邮件。后台新建账号必须填写至少 6 位初始密码，由管理员交给渠道；编辑已有账号时留空保持原密码。登录后的门户在 Sign out 旁增加 Reset password 弹窗，输入旧密码、新密码和确认新密码；站主确认前台新密码也至少 6 位。通过公开 `admin-ajax.php` 提交，校验当前登录身份、渠道权限和 nonce，只能修改自己，错误旧密码每 15 分钟最多 5 次；成功后重新签发当前浏览器 Cookie、撤销其他会话，审计不含密码。渠道新建/前台改密不再依赖原生设置密码链接；退出仍使用 `wp-login.php?action=logout`，顾客找回密码仍走 WooCommerce。真实 HTTP 回归脚本为 `tests/channel-password-self-test.php`，仅使用可清理的测试账户。
+
+2026-10-29（Asia/Taipei）已部署 1.3.0，部署前后安全门禁通过。32 项集成检查通过，覆盖创建无邮件/无重置 key、6 位边界、CSRF/旧密码/确认密码/越权/限速、旧 Cookie 失效及新 Cookie 继续登录；临时测试账户和渠道已清理。Chrome 实际页面的弹窗打开、取消、Escape 关闭及 390px 窄屏布局均已核对，没有改动现有用户密码。截图和脱敏验收记录位于 `qa/channel-password-20261029/`；部署前数据库及文件备份为服务器 `/root/trovesia-backups/20261029T113652Z`。
+
+1.4.0 将渠道门户拆分为 `Overview & orders` 与 `Tracking links` 两个标签页；创建推广链接和链接列表只在链接标签显示。订单查询改为数据库级分页，每页固定 20 条，并在翻页时保留统计时间范围与当前标签。
+
+2026-10-30（Asia/Taipei）已部署 1.4.0，部署前后安全门禁、权限与动态页面健康检查通过。真实渠道会话已验证两个标签互斥显示及移动端布局；事务内加入 25 条临时转换记录后验证总计 27 条时第 1 页返回 20 条、第 2 页返回 7 条、越界页归到最后一页，分页链接保留 `tab=overview` 和时间范围。事务回滚后渠道转换记录恢复为原 2 条，没有留下测试订单或转换数据。
+
+1.5.0 按站主要求将分享地址缩短为 `https://trovesia.com/s/{6位字母数字}/`，总站和渠道门户统一使用该格式；随机 token 先查重，并受数据库唯一索引保护。升级时自动刷新 WordPress 路由。根域名继续 301 到 `www` 的相同路径后再由插件记录访问及写 Cookie，确保进入现有商城域名后归因可用。站主明确要求清空现有推广链接、不保留旧链接；清理前已完成服务器私有备份 `/root/trovesia-backups/20261029T170949Z`，订单和访问统计保留。
+
+2026-10-30 已完成 1.5.0 和 `/s/` 缓存绕过规则部署，部署前后安全门禁通过。已备份并清空旧推广链接 ID 2–6（期间新增一条，最终共 5 条），额外精确备份为上述目录的 `channel-links-before-clear.json`；清理前后访问记录均为 10 条、归因订单均为 2 条，清理后推广链接为 0 条。`tests/channel-short-links-self-test.php` 的 14 项线上检查通过，覆盖根域名跳转、6 位路由、缓存 BYPASS、Cookie、未保存订单的归因、暂停/移除链接的回退；临时渠道、链接和访问记录均已清理，未创建测试订单。真实渠道门户已确认空列表。日常“删除链接”按钮尚未增加；已向站主建议保留历史统计并在二次确认后移除链接。
+
+1.5.1 修复门户营收卡片金额样式：卡片标签样式仅作用于直属标签，WooCommerce 金额不再被误设为小字号/块级元素；金额继承大号主数字样式，货币符号缩小且保持同行，使用等宽数字。2026-10-30 已部署，前后安全门禁通过；真实渠道页确认两张营收卡片由 11px 灰色块级金额恢复为当前视口 29px 深色行内金额，符号同行且金额禁止拆行。
+
+1.6.0 加入渠道门户删除链接功能，按站主要求必须先暂停：仅 Paused 行显示 Delete，弹窗显示名称和统计保留说明，默认聚焦 Cancel。删除只接受登录渠道账号的 POST，校验逐链接 nonce，并原子匹配渠道归属和 paused 状态。采用 `status=deleted` 保留链接行、token 和历史访问/订单统计，门户列表不再显示；旧启用 URL 也不能恢复已删除链接。2026-10-30 已部署，部署前后安全门禁通过；`tests/channel-delete-link-self-test.php` 20 项检查通过，覆盖 Active/跨渠道/无效 nonce/GET/匿名拦截、正确删除、历史统计、失效跳转、列表隐藏、阻止重新启用及重复提交。临时账号、渠道、链接、访问、转换和审计记录已清理，未创建真实订单。真实渠道页面已验证确认弹窗及取消，现有链接没有被删除。
+
+1.7.0–1.7.3 更新渠道概览及渠道字段：Net revenue 改为 Refunds，汇总所选下单周期内的部分/全额退款；原有 paid revenue 口径保持。前四项统计合成一个卡片，桌面四列、窄屏两列，移除重复的 Overview/Reporting period 标题。渠道表增加 `commission_rate decimal(5,4) NOT NULL DEFAULT 0.2000`，数据库版本 1.1.0；后台创建默认 0.2（20%），编辑自动回填，校验 0–1、最多四位小数，旧表单遗漏此字段时保留现值；此版本仅保存配置，未计算或支付佣金。推广链接增加 Copy/Copied 按钮及不支持剪贴板时的选中/手动复制提示。日期选项为 Today、Yesterday、7 days、30 days、90 days、All time（站主最终要求保留 90 days）；手机端保持单行，超出屏幕可横向滑动，初始化时选中项自动滚动到可见位置。当天/昨天按 WordPress 网站时区 +08:00 的自然日计算；修复 PHP 数字键与字符串参数严格比较导致 7/30/90 不高亮的问题，选中项深绿底白字。升级前完整备份为服务器 `/root/trovesia-backups/20261029T173351Z`。
+
+`tests/channel-dashboard-self-test.php` 的 25 项线上检查已通过，覆盖真实管理员保存入口、默认比例/四位精度/边界/非法输入、编辑回填、全额及部分退款、日期边界、数值范围高亮与门户结构。临时账号、渠道、链接、转换及审计数据均已清理，未创建真实订单。浏览器已核对分组卡片、Refunds、标题移除、日期高亮及 Copy 点击成功状态。
+
+1.7.3 已完成线上部署及安全检查（`check-20261029T174720Z-2919807.log`）。390px 手机视口验收：六个日期选项处于同一行，导航内容宽 454px、容器宽 341px，可横向滑动；选择 All time 后当前项自动保持可见，7 days 深绿底白字，页面无横向溢出。四项统计在同一卡片内显示为两列，金额卡片并排。验收后已恢复浏览器默认视口。
+
+## 4. 已启用的主要插件（2026-10-29 核对）
 
 | 插件 | 版本 | 用途 |
 | --- | ---: | --- |
-| `woocommerce` | 11.1.0 | 商品、购物车、订单、结账 |
+| `woocommerce` | 11.1.2 | 商品、购物车、订单、结账；2026-10-29 官方补丁更新 |
 | `woocommerce-paypal-payments` | 4.1.3 | PayPal 收款与快捷支付按钮 |
-| `woocommerce-google-analytics-integration` | 2.4.2 | WooCommerce/GA4 统计 |
+| `woocommerce-google-analytics-integration` | 2.4.4 | WooCommerce/GA4 统计 |
 | `redis-cache` | 2.8.0 | WordPress 对象缓存 |
-| `fluent-smtp` | 2.4.0 | 事务邮件投递 |
-| `wp-media-folder` | 5.5.2 | 媒体库文件夹管理 |
-| `trovesia-plugin` | 3.8.0 | 本站自定义业务功能 |
+| `fluent-smtp` | 2.4.1 | 事务邮件投递 |
+| `wp-media-folder` | 5.5.2 | 站主确认安装并要求恢复，已启用并纳入代码基线 |
+| `two-factor` | 0.17.0 | 官方管理员双重验证 |
+| `trovesia-security` | 1.2.0（MU） | 登录限速、代码修改策略及安全审计；管理员 IP 由 Cloudflare 控制 |
+| `trovesia-plugin` | 3.8.1 | 本站自定义业务功能 |
 
-当前主题 `trovesia` 版本为 2.8.0。
+当前主题 `trovesia` 版本为 2.9.2。
+
+2026-10-30 主题 2.9.0–2.9.2 统一个人中心展示：账户页移除普通内容页的大白框，增加品牌页头；桌面侧边导航、手机单行横滑导航及当前项自动可见；首页以原生账户菜单为依据显示常用入口卡片。新增 `assets/css/account.css`，仅账户页加载，覆盖订单/订单详情、下载空状态、地址列表及账单/收货地址编辑、支付方式及添加支付方式、账户资料、登录/注册和密码恢复表单。原生数据查询、表单 nonce、保存及支付网关 iframe 保持使用 WooCommerce 实现；首页模板覆盖为 `woocommerce/myaccount/dashboard.php`，保留原 dashboard 扩展 hooks。
+
+首次新增模板后须清理 WooCommerce 模板路径缓存：`wp eval 'wc_clear_template_cache();'`，否则 Redis 可能继续引用插件默认首页。页面布局只在存在账户导航时使用两列，避免已登录用户访问 lost-password 时表单挤到侧栏宽度。内容区内的持久信息（无下载、支付方式为空、邮箱验证说明）保留为内嵌内容，`woocommerce-notices-wrapper` 内的操作成功/失败提示仍使用原可关闭通知。
+
+2.9.2 修复账户原生密码输入框眼睛图标：使用 `top:50%` 和 `translateY(-50%)`，44px 按钮内 flex 居中，避免原固定 top 与 WooCommerce 自带平移叠加；登录/注册、账户改密、密码重置共享此样式。线上三个改密框在桌面、390px 手机视口和显示/隐藏状态下测量中心偏移均为 0px，匿名登录/注册的两个图标也为 0px。
+
+已通过 PHP/JavaScript 语法及 Git 空白检查；真实会话逐页核对主要五个栏目及订单详情、账单/收货编辑、添加支付方式，390px 无横向页面溢出；登录/注册使用无 Cookie 的线上 HTML 本地预览核对双栏/单栏，未提交表单；线上密码恢复表单桌面宽 560px。未保存资料、改密码或添加支付方式。主题通过原部署脚本三轮门禁发布，最终安全报告为 `security-reports/check-20261030T031644Z-3349014.log`，最终部署备份标记 `20261030T031521Z`。截图与验收记录在 `qa/account-20261030/`。
+
+2026-10-28 优化 Checkout Block 支付选项样式：PayPal 与其他支付选项采用独立圆角卡片，品牌绿色选中态、20px 单选框、左对齐紧凑说明及手机端间距。样式仅限定在结账 `#payment-method`，位于 `theme/trovesia/assets/css/woocommerce.css`，保留官方网关表单与 SDK 按钮。CSS 使用文件修改时间作为资源版本；此次只部署该 CSS，原线上文件备份为 `deploy-backups/woocommerce-payment-20261028.css`。
 
 2026-10-27 在全站页脚 `Customer care` 栏目的 `My account` 下方增加 `Channel partner login ↗` 入口，目标为 `/channel-portal/`。该入口使用分隔线和弱强调色，方便渠道商发现，同时避免占用普通顾客的主导航位置。
 
@@ -297,7 +355,26 @@ Batana 变体：
 - add-on 规则还支持 `selection_group`、`group_title`、`group_description` 字段；相同 `selection_group` 的规则前台使用单选按钮，未分组规则仍保持原有复选行为。
 - 线上验收已验证礼盒 $69.90 + 4-pack 燃料舱 $39.90 + 2-pack 丁烷罐 $29.90 可同时形成三条购物车行，合计 $139.70。
 
-### 5.3 导液梳的已知特殊配置
+### 5.3 DIY 圣诞串珠树套装
+
+2026-10-27 已发布可变商品 ID 149：`DIY Beaded Holiday Tree Craft Kit`，正式页面为 `https://www.trovesia.com/products/diy-beaded-holiday-tree-craft-kit/`。父商品 SKU 为 `TV-DIY-BEADED-HOLIDAY-TREE`，目录可见并带有 `christmas` 商品标签，因此会自动显示在首页 `Christmas Collection` 模块。
+
+| 变体 ID | SKU | Style | 原价 | 促销价 |
+| ---: | --- | --- | ---: | ---: |
+| 150 | `TV-BEADED-TREE-A001` | A001 — Classic Christmas | $24.90 | $19.90 |
+| 151 | `TV-BEADED-TREE-A002` | A002 — Winter Frost | $24.90 | $19.90 |
+| 152 | `TV-BEADED-TREE-A003` | A003 — Faith & Peace | $24.90 | $19.90 |
+| 153 | `TV-BEADED-TREE-A004` | A004 — Autumn Glow | $24.90 | $19.90 |
+| 154 | `TV-BEADED-TREE-A005` | A005 — Halloween Glow | $24.90 | $19.90 |
+| 155 | `TV-BEADED-TREE-RANDOM` | Random Style | $24.90 | $19.90 |
+
+- `Random Style` 明确从 A001–A005 的现货款式中随机发一款，不保证指定款式。
+- 英文化 DIY 套件拆解图以 `ready/diy-beaded-tree-kit-hero-en-webp.webp` 作为商品首图；1254×1254，约 333 KB，线上附件 ID 157。PNG 只作为本地母版保留，不在商品页或首页使用；之前上传的 PNG 附件 ID 156 已脱离商品引用但尚未永久删除。源素材 2–7 号图作为变体图和相册图，对应线上附件 ID 143–148。含中文促销文字的 1 号图只保留在本地源素材中，没有上传到英文站前台。
+- 本地素材：`product-assets/diy-beaded-holiday-tree/source/` 与 `product-assets/diy-beaded-holiday-tree/ready/`。
+- 幂等导入脚本：`scripts/import-diy-beaded-holiday-tree.php`。
+- 商品运输说明为预计 5–10 天；商品 meta `_trovesia_delivery_min_days=5`、`_trovesia_delivery_max_days=10` 驱动动态预计送达日期。插件 3.8.1 起支持按商品覆盖动态日期，未设置时仍默认 8–15 天。描述包含小零件与成人监护提示，不承诺场景图中的环境灯光属于套装内容。
+
+### 5.4 导液梳的已知特殊配置
 
 - 正式页面路径：`https://www.trovesia.com/products/scalp-serum-applicator-comb/`；商品处于 `private` 时匿名访问会返回 404。
 - 来源商品编号：`1079994456070`。
@@ -552,10 +629,12 @@ root@site:/root/wordpress-sites/trovesia-shop
 脚本会：
 
 - 检查 PHP 语法。
+- 部署前先检查线上权限、可信代码清单、MFA 和真实 FPM 健康；失败则禁止同步或重启。
 - 在服务器 `deploy-backups/` 备份旧组件。
 - 使用 rsync 更新指定主题/插件目录。
 - 检查 Docker Compose 配置并重启相关容器。
 - 执行健康检查和正式 URL 检查。
+- 恢复 root 代码权限，登记授权版本清单并再次运行安全检查；报告保存在服务器 root 私有 `security-reports/`。
 
 `rsync --delete-delay` 只作用于当前部署的自定义主题或插件目录，不会删除数据库、上传文件、`.env` 或其他插件。
 
@@ -582,6 +661,8 @@ DEPLOY_URL=https://shop.example.com/ \
 ```
 
 备份包含数据库、`wp-content` 和校验文件。涉及批量商品迁移、评论导入、价格更新或插件升级前先备份。
+
+正式站优先使用服务器 root 的 `bash scripts/security-backup.sh`，额外包含 `.env`、`wp-config.php` 与部署配置，全部保存 `/root/trovesia-backups/` 私有目录。不要把这些敏感归档复制到本地仓库或上传公开目录。
 
 ## 9. 常用 WP-CLI 命令
 

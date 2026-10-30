@@ -75,6 +75,18 @@ function trovesia_enqueue_assets(): void
         );
     }
 
+    if (function_exists('is_account_page') && is_account_page()) {
+        $account_path = get_template_directory() . '/assets/css/account.css';
+        if (is_file($account_path)) {
+            wp_enqueue_style(
+                'trovesia-account',
+                get_template_directory_uri() . '/assets/css/account.css',
+                ['trovesia-woocommerce'],
+                (string) filemtime($account_path)
+            );
+        }
+    }
+
     if (is_file($script_path)) {
         $script_dependencies = [];
         if (class_exists('WooCommerce') && wp_script_is('wc-cart-fragments', 'registered')) {

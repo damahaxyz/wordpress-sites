@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Asia/Taipei",
+  "component": "trovesia-channel",
+  "version": "1.3.0",
+  "backup": "/root/trovesia-backups/20261029T113652Z",
+  "pre_deploy_security_report": "security-reports/check-20261029T113855Z-2596679.log",
+  "post_deploy_security_report": "security-reports/check-20261029T113958Z-2597973.log",
+  "integration_checks_passed": 32,
+  "temporary_accounts_cleaned": true,
+  "existing_passwords_changed": false,
+  "initial_password_min_characters": 6,
+  "portal_password_min_characters": 6,
+  "new_account_setup_email_sent": false,
+  "checks": [
+    "new account missing or five-character password rejected",
+    "six-character initial password works",
+    "creation sends no mail or reset key",
+    "existing account blank password unchanged",
+    "anonymous/non-POST/invalid nonce/customer/archived account rejected",
+    "incorrect old password, mismatched confirmation, short or unchanged password rejected",
+    "non-scalar password rejected",
+    "six-character new password including quote/backslash accepted",
+    "posted target user ID ignored",
+    "old password and old signed cookie rejected",
+    "current session preserved with re-signed cookies",
+    "other sessions revoked",
+    "repeat update without refreshing nonce works",
+    "five wrong old passwords allowed; sixth attempt returns 429"
+  ],
+  "public_ajax_anonymous_http_status": 401,
+  "visual_checks": [
+    "live Chrome portal Reset password button next to Sign out",
+    "live dialog has current/new/confirmation fields and six-character help",
+    "Cancel closes dialog",
+    "Escape closes dialog",
+    "390x844 layout fits"
+  ],
+  "screenshots": [
+    "password-dialog-desktop.png",
+    "password-dialog-mobile.png"
+  ],
+  "notes": "HTTP mutation checks use disposable accounts through the private nginx gateway; public AJAX reachability was separately checked. Browser visual checks did not submit a real user password.",
+  "deployment_id": "20261029T113849Z"
+}

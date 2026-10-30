@@ -50,7 +50,14 @@ final class Attribution
 
     public static function add_rewrite_rule(): void
     {
-        add_rewrite_rule('^go/([A-Za-z0-9_-]+)/?$', 'index.php?trovesia_channel_token=$matches[1]', 'top');
+        add_rewrite_rule('^s/([A-Za-z0-9]{6})/?$', 'index.php?trovesia_channel_token=$matches[1]', 'top');
+    }
+
+    public static function link_url(string $token): string
+    {
+        $url = home_url('/s/' . rawurlencode($token) . '/');
+
+        return (string) preg_replace('#^(https?://)www\.#i', '$1', $url);
     }
 
     /** @param list<string> $query_vars */
@@ -70,7 +77,7 @@ final class Attribution
 
         nocache_headers();
 
-        if (! preg_match('/^[A-Za-z0-9_-]{8,64}$/', $token)) {
+        if (! preg_match('/^[A-Za-z0-9]{6}$/', $token)) {
             $this->safe_fallback();
         }
 

@@ -268,14 +268,29 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     max-width: 570px;
 }
 
-.entry-content .trovesia-channel-logout {
+.trovesia-channel-account-actions {
     align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    max-width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.entry-content .trovesia-channel-logout,
+.entry-content .trovesia-channel-password-toggle {
+    align-items: center;
+    background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.42);
     border-radius: 999px;
     color: #fff;
     display: inline-flex;
     flex: 0 0 auto;
     font-size: 10px;
+    font-family: inherit;
     font-weight: 800;
     justify-content: center;
     letter-spacing: 0.12em;
@@ -287,10 +302,142 @@ body.trovesia-channel-page .content-card--page > .entry-title {
 }
 
 .entry-content .trovesia-channel-logout:hover,
-.entry-content .trovesia-channel-logout:focus-visible {
+.entry-content .trovesia-channel-logout:focus-visible,
+.entry-content .trovesia-channel-password-toggle:hover,
+.entry-content .trovesia-channel-password-toggle:focus-visible {
     background: #fff;
     border-color: #fff;
     color: var(--channel-brand-deep);
+}
+
+.trovesia-channel-password-dialog {
+    background: var(--channel-panel, #fffefb);
+    border: 1px solid var(--channel-border, #dfe3dc);
+    border-radius: 24px;
+    box-shadow: 0 28px 90px rgba(16, 44, 37, 0.24);
+    color: var(--channel-ink, #17211d);
+    margin: auto;
+    max-height: calc(100dvh - 32px);
+    max-width: calc(100% - 32px);
+    overflow-y: auto;
+    padding: clamp(24px, 5vw, 36px);
+    width: 500px;
+}
+
+.trovesia-channel-password-dialog::backdrop {
+    backdrop-filter: blur(4px);
+    background: rgba(16, 35, 28, 0.5);
+}
+
+.trovesia-channel-password-dialog__header {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.trovesia-channel-password-dialog__header h2 {
+    font-size: 32px;
+    margin: 0;
+}
+
+.trovesia-channel-password-dialog__header .trovesia-channel-eyebrow {
+    margin-bottom: 8px;
+}
+
+.trovesia-channel-password-dialog .trovesia-channel-password-dialog__close {
+    align-items: center;
+    background: #f0f3ee;
+    border: 0;
+    border-radius: 50%;
+    color: var(--channel-ink);
+    display: inline-flex;
+    flex: 0 0 40px;
+    font-size: 26px;
+    height: 40px;
+    justify-content: center;
+    padding: 0;
+}
+
+.trovesia-channel-password-dialog > p {
+    color: var(--channel-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 18px 0 24px;
+}
+
+.trovesia-channel-password-dialog form > p {
+    margin: 0 0 18px;
+}
+
+.trovesia-channel-password-dialog label {
+    display: block;
+    font-size: 12px;
+    font-weight: 750;
+    margin-bottom: 7px;
+}
+
+.trovesia-channel-password-dialog input[type="password"] {
+    background: #fff;
+    border: 1px solid #ccd3cc;
+    border-radius: 10px;
+    color: var(--channel-ink);
+    font-family: inherit;
+    font-size: 16px;
+    min-height: 48px;
+    padding: 10px 12px;
+    width: 100%;
+}
+
+.trovesia-channel-password-dialog input:focus-visible {
+    border-color: var(--channel-brand);
+    box-shadow: 0 0 0 3px rgba(49, 95, 79, 0.12);
+    outline: 0;
+}
+
+.trovesia-channel-password-dialog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.trovesia-channel-password-dialog__actions button {
+    background: transparent;
+    border: 1px solid var(--channel-border);
+    border-radius: 999px;
+    color: var(--channel-brand);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 750;
+    min-height: 46px;
+    padding: 10px 20px;
+}
+
+.trovesia-channel-password-dialog__actions button[type="submit"] {
+    background: var(--channel-brand);
+    border-color: var(--channel-brand);
+    color: #fff;
+}
+
+.trovesia-channel-password-dialog button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.trovesia-channel-password-dialog .trovesia-channel-password-notice {
+    background: #f8e5e1;
+    border-radius: 10px;
+    color: #7f352c;
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 12px 14px;
+}
+
+.trovesia-channel-password-dialog .trovesia-channel-password-notice.is-success {
+    background: #e2f1e9;
+    color: #246148;
 }
 
 .trovesia-channel-portal > .woocommerce-message,
@@ -300,12 +447,49 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     margin: 18px 0 0;
 }
 
+.trovesia-channel-tabs {
+    align-items: center;
+    background: rgba(255, 254, 251, 0.82);
+    border: 1px solid var(--channel-border);
+    border-radius: 18px;
+    display: flex;
+    gap: 6px;
+    margin: 32px 0 18px;
+    padding: 6px;
+}
+
+.entry-content .trovesia-channel-tabs a {
+    align-items: center;
+    border-radius: 13px;
+    color: var(--channel-muted);
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 800;
+    justify-content: center;
+    letter-spacing: 0.035em;
+    min-height: 48px;
+    padding: 10px 22px;
+    text-align: center;
+}
+
+.entry-content .trovesia-channel-tabs a.is-active {
+    background: var(--channel-brand);
+    box-shadow: 0 9px 24px rgba(49, 95, 79, 0.2);
+    color: #fff;
+}
+
+.entry-content .trovesia-channel-tabs a:not(.is-active):hover,
+.entry-content .trovesia-channel-tabs a:not(.is-active):focus-visible {
+    background: #eef2eb;
+    color: var(--channel-brand-dark);
+}
+
 .trovesia-channel-toolbar {
     align-items: center;
     display: flex;
     gap: 24px;
     justify-content: space-between;
-    margin: 32px 0 16px;
+    margin: 18px 0 16px;
 }
 
 .trovesia-channel-toolbar > div {
@@ -329,10 +513,15 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     align-items: center;
     background: rgba(255, 254, 251, 0.78);
     border: 1px solid var(--channel-border);
-    border-radius: 999px;
+    border-radius: 16px;
     display: flex;
+    flex-wrap: nowrap;
     gap: 3px;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding: 4px;
+    scrollbar-width: thin;
 }
 
 .entry-content .trovesia-channel-ranges a {
@@ -340,20 +529,56 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     color: var(--channel-muted);
     font-size: 11px;
     font-weight: 750;
+    flex: 0 0 auto;
     padding: 8px 14px;
     white-space: nowrap;
 }
 
-.entry-content .trovesia-channel-ranges a.is-active {
+.entry-content .trovesia-channel-portal .trovesia-channel-ranges a.is-active {
     background: var(--channel-brand);
     box-shadow: 0 5px 14px rgba(49, 95, 79, 0.2);
     color: #fff;
+    outline: 2px solid rgba(49, 95, 79, 0.15);
+    outline-offset: 1px;
 }
 
 .trovesia-channel-cards {
     display: grid;
     gap: 14px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.trovesia-channel-summary {
+    background: var(--channel-panel);
+    border: 1px solid var(--channel-border);
+    border-radius: 18px;
+    box-shadow: 0 16px 42px rgba(31, 48, 40, 0.06);
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: hidden;
+}
+
+.trovesia-channel-summary .trovesia-channel-card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 0;
+    padding: 20px;
+}
+
+.trovesia-channel-summary .trovesia-channel-card + .trovesia-channel-card {
+    border-left: 1px solid var(--channel-border);
+}
+
+.trovesia-channel-summary .trovesia-channel-card strong {
+    font-size: clamp(26px, 3vw, 34px);
+    margin-top: 12px;
+}
+
+.trovesia-channel-summary .trovesia-channel-card i {
+    display: none;
 }
 
 .trovesia-channel-card,
@@ -371,7 +596,7 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     position: relative;
 }
 
-.trovesia-channel-card span {
+.trovesia-channel-card > span {
     color: var(--channel-muted);
     display: block;
     font-size: 11px;
@@ -386,6 +611,7 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     font-size: clamp(29px, 4vw, 40px);
     font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
     letter-spacing: -0.04em;
     line-height: 1.1;
     margin-top: 18px;
@@ -393,8 +619,20 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     z-index: 1;
 }
 
+.trovesia-channel-card strong .woocommerce-Price-amount {
+    color: inherit;
+    display: inline;
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: nowrap;
+}
+
 .trovesia-channel-card strong .woocommerce-Price-currencySymbol {
+    color: inherit;
+    display: inline;
     font-size: 0.62em;
+    font-weight: inherit;
+    letter-spacing: 0;
     vertical-align: 0.16em;
 }
 
@@ -418,6 +656,10 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     margin-top: 18px;
     overflow: hidden;
     padding: clamp(22px, 3vw, 34px);
+}
+
+.trovesia-channel-panel--first {
+    margin-top: 0;
 }
 
 .trovesia-channel-panel__heading {
@@ -480,6 +722,39 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     min-height: 48px;
     padding: 9px 12px;
     width: 100%;
+}
+
+.trovesia-channel-copy-control {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    min-width: 330px;
+}
+
+.trovesia-channel-copy-control .trovesia-channel-copy {
+    flex: 1 1 auto;
+    min-width: 200px;
+}
+
+.trovesia-channel-copy-button {
+    background: #eef2eb;
+    border: 1px solid #ccd3cc;
+    border-radius: 9px;
+    color: var(--channel-brand);
+    cursor: pointer;
+    flex: 0 0 auto;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    min-height: 40px;
+    padding: 8px 13px;
+    white-space: nowrap;
+}
+
+.trovesia-channel-copy-button:hover,
+.trovesia-channel-copy-button:focus-visible {
+    background: var(--channel-brand);
+    color: #fff;
 }
 
 .trovesia-channel-link-form input:focus,
@@ -604,6 +879,99 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     text-align: center !important;
 }
 
+.trovesia-channel-link-actions {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+}
+
+.trovesia-channel-link-delete {
+    background: transparent;
+    border: 0;
+    color: #914237;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 8px 0;
+}
+
+.trovesia-channel-link-delete[hidden] {
+    display: none;
+}
+
+.trovesia-channel-link-delete:hover,
+.trovesia-channel-link-delete:focus-visible {
+    color: #6f2b23;
+    text-decoration: underline;
+}
+
+#trovesia-channel-delete-dialog .trovesia-channel-delete-name {
+    color: var(--channel-ink);
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+#trovesia-channel-delete-dialog .trovesia-channel-delete-confirm {
+    background: #914237;
+    border-color: #914237;
+}
+
+#trovesia-channel-delete-dialog .trovesia-channel-delete-confirm:hover,
+#trovesia-channel-delete-dialog .trovesia-channel-delete-confirm:focus-visible {
+    background: #6f2b23;
+    border-color: #6f2b23;
+}
+
+.trovesia-channel-pagination {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.trovesia-channel-pagination__summary {
+    color: var(--channel-muted);
+    font-size: 12px;
+}
+
+.trovesia-channel-pagination__links {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.entry-content .trovesia-channel-pagination .page-numbers {
+    align-items: center;
+    background: #f4f6f2;
+    border: 1px solid #e1e5de;
+    border-radius: 9px;
+    color: var(--channel-brand);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 38px;
+    min-width: 38px;
+    padding: 7px 11px;
+}
+
+.entry-content .trovesia-channel-pagination .page-numbers.current {
+    background: var(--channel-brand);
+    border-color: var(--channel-brand);
+    color: #fff;
+}
+
+.entry-content .trovesia-channel-pagination a.page-numbers:hover,
+.entry-content .trovesia-channel-pagination a.page-numbers:focus-visible {
+    background: var(--channel-brand-dark);
+    border-color: var(--channel-brand-dark);
+    color: #fff;
+}
+
 @media (max-width: 900px) {
     .trovesia-channel-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -620,6 +988,17 @@ body.trovesia-channel-page .content-card--page > .entry-title {
 }
 
 @media (max-width: 720px) {
+    .trovesia-channel-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .trovesia-channel-summary .trovesia-channel-card:nth-child(3) {
+        border-left: 0;
+    }
+
+    .trovesia-channel-summary .trovesia-channel-card:nth-child(n+3) {
+        border-top: 1px solid var(--channel-border);
+    }
     body.trovesia-channel-page .site-main.shop-container {
         width: min(calc(100% - 32px), var(--shop-max, 1240px));
     }
@@ -627,6 +1006,10 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     .trovesia-channel-header {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .trovesia-channel-account-actions {
+        justify-content: flex-start;
     }
 
     .trovesia-channel-toolbar,
@@ -640,6 +1023,14 @@ body.trovesia-channel-page .content-card--page > .entry-title {
         overflow-x: auto;
     }
 
+    .trovesia-channel-tabs {
+        overflow-x: auto;
+    }
+
+    .entry-content .trovesia-channel-tabs a {
+        flex: 1 0 auto;
+    }
+
     .trovesia-channel-panel__heading > p {
         flex-basis: auto;
     }
@@ -650,6 +1041,15 @@ body.trovesia-channel-page .content-card--page > .entry-title {
 
     .trovesia-channel-link-form .button {
         grid-column: auto;
+    }
+
+    .trovesia-channel-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .trovesia-channel-pagination__links {
+        justify-content: flex-start;
     }
 }
 
@@ -675,6 +1075,15 @@ body.trovesia-channel-page .content-card--page > .entry-title {
     }
 
     .trovesia-channel-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .trovesia-channel-cards > .trovesia-channel-card {
+        min-height: 112px;
+        padding: 18px 16px;
+    }
+
+    .trovesia-channel-cards > .trovesia-channel-card strong {
+        font-size: 26px;
     }
 }

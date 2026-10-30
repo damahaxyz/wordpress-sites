@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
 
 final class Database
 {
-    public const VERSION = '1.0.0';
+    public const VERSION = '1.1.0';
 
     public static function table(string $name): string
     {
@@ -44,6 +44,7 @@ final class Database
             name varchar(190) NOT NULL,
             code varchar(64) NOT NULL,
             status varchar(20) NOT NULL DEFAULT 'active',
+            commission_rate decimal(5,4) NOT NULL DEFAULT 0.2000,
             created_at datetime NOT NULL,
             updated_at datetime NOT NULL,
             PRIMARY KEY  (id),

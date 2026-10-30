@@ -34,6 +34,16 @@ final class Installer
         flush_rewrite_rules();
     }
 
+    public static function refresh_routes_after_upgrade(): void
+    {
+        if (get_option('trovesia_channel_version') === TROVESIA_CHANNEL_VERSION) {
+            return;
+        }
+
+        flush_rewrite_rules(false);
+        update_option('trovesia_channel_version', TROVESIA_CHANNEL_VERSION, false);
+    }
+
     public static function attribution_window_days(): int
     {
         return max(1, min(365, (int) get_option(self::WINDOW_OPTION, 30)));

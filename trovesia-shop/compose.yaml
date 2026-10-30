@@ -51,6 +51,11 @@ services:
   wordpress:
     image: ${WORDPRESS_IMAGE:-wordpress:7.0-php8.3-fpm}
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
@@ -62,6 +67,7 @@ services:
       WORDPRESS_REDIS_PREFIX: "${COMPOSE_PROJECT_NAME:-trovesia-shop}:"
       TROVESIA_PAGE_CACHE_GENERATION_FILE: /var/run/trovesia-page-cache/generation.conf
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      TROVESIA_TRUST_PROXY_HEADERS: "1"
       WORDPRESS_HOME: ${WORDPRESS_HOME:-https://www.trovesia.com}
       WORDPRESS_SITEURL: ${WORDPRESS_SITEURL:-https://www.trovesia.com}
       WORDPRESS_CONFIG_EXTRA: |
@@ -81,10 +87,13 @@ services:
         define('WP_REDIS_READ_TIMEOUT', 1);
     volumes:
       - wordpress_data:/var/www/html
-      - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
-      - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel
+      - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
+      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
+      - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel:ro
+      - ./security/trovesia-security.php:/var/www/html/wp-content/mu-plugins/trovesia-security.php:ro
+      - ./security:/opt/trovesia:ro
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./php/fpm-security.conf:/usr/local/etc/php-fpm.d/zz-security.conf:ro
       - ./runtime/page-cache:/var/run/trovesia-page-cache
     networks:
       - frontend
@@ -95,15 +104,20 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "php-fpm", "-t"]
-      interval: 30s
-      timeout: 5s
+      test: ["CMD", "php", "/opt/trovesia/fpm-healthcheck.php"]
+      interval: 60s
+      timeout: 15s
       retries: 3
       start_period: 30s
 
   nginx:
     image: ${NGINX_IMAGE:-nginx:1.28-alpine}
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
     command: ["/bin/sh", "/etc/nginx/cache-watch.sh"]
     ports:
       - "${HTTP_BIND_IP:-127.0.0.1}:${HTTP_PORT:-8083}:80"
@@ -117,6 +131,7 @@ services:
       - ./nginx/cache-watch.sh:/etc/nginx/cache-watch.sh:ro
       - ./runtime/page-cache:/var/run/trovesia-page-cache
       - page_cache:/var/cache/nginx/trovesia
+      - ./runtime/security-logs/nginx:/var/log/nginx/trovesia
     networks:
       - frontend
     depends_on:
@@ -156,7 +171,9 @@ services:
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
       - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
       - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel
+      - ./security/trovesia-security.php:/var/www/html/wp-content/mu-plugins/trovesia-security.php:ro
       - ./runtime/page-cache:/var/run/trovesia-page-cache
+      - ./security:/opt/trovesia:ro
     networks:
       - frontend
       - backend

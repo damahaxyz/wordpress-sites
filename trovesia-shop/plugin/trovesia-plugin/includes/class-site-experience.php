@@ -696,8 +696,12 @@ final class Site_Experience
             return;
         }
 
-        $start = wp_date('M j', strtotime('+8 days'));
-        $end = wp_date('M j', strtotime('+15 days'));
+        $delivery_min_days = absint(get_post_meta($product->get_id(), '_trovesia_delivery_min_days', true));
+        $delivery_max_days = absint(get_post_meta($product->get_id(), '_trovesia_delivery_max_days', true));
+        $delivery_min_days = $delivery_min_days > 0 ? min($delivery_min_days, 365) : 8;
+        $delivery_max_days = $delivery_max_days >= $delivery_min_days ? min($delivery_max_days, 365) : max(15, $delivery_min_days);
+        $start = wp_date('M j', strtotime(sprintf('+%d days', $delivery_min_days)));
+        $end = wp_date('M j', strtotime(sprintf('+%d days', $delivery_max_days)));
         $guarantee = (string) get_post_meta($product->get_id(), '_trovesia_guarantee', true);
         $shipping = (string) get_post_meta($product->get_id(), '_trovesia_shipping', true);
         $order_activity = trim((string) get_post_meta($product->get_id(), '_trovesia_order_activity', true));

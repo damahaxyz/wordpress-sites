@@ -120,7 +120,7 @@ final class Admin
         $selected_channel_id = isset($_GET['channel_id']) ? absint($_GET['channel_id']) : 0;
         $channels = Database::get_channels();
         $notice = isset($_GET['trovesia_notice']) ? sanitize_key(wp_unslash((string) $_GET['trovesia_notice'])) : '';
-        $auto_open_modal = in_array($notice, ['invalid_channel', 'duplicate_code', 'invalid_manager'], true);
+        $auto_open_modal = in_array($notice, ['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager', 'manager_password_required', 'manager_password_invalid'], true);
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Trovesia Channels', 'trovesia-channel'); ?></h1>
@@ -154,6 +154,7 @@ final class Admin
                                 data-name="<?php echo esc_attr((string) $channel->name); ?>"
                                 data-code="<?php echo esc_attr((string) $channel->code); ?>"
                                 data-status="<?php echo esc_attr((string) $channel->status); ?>"
+                                data-commission-rate="<?php echo esc_attr((string) ($channel->commission_rate ?? '0.2')); ?>"
                                 data-manager-email="<?php echo esc_attr($manager?->user_email ?? ''); ?>"
                                 data-manager-username="<?php echo esc_attr($manager?->user_login ?? ''); ?>"
                             ><?php esc_html_e('Edit', 'trovesia-channel'); ?></button></td>
@@ -206,6 +207,11 @@ final class Admin
         $code = isset($_POST['code']) ? sanitize_title(wp_unslash((string) $_POST['code'])) : '';
         $status = isset($_POST['status']) ? sanitize_key(wp_unslash((string) $_POST['status'])) : 'active';
         $status = in_array($status, ['active', 'paused', 'archived'], true) ? $status : 'paused';
+        $existing_channel = $channel_id > 0 ? Database::get_channel($channel_id) : null;
+        $commission_rate = $this->parse_commission_rate($_POST['commission_rate'] ?? (string) ($existing_channel->commission_rate ?? '0.2'));
+        if ($commission_rate === null) {
+            $this->redirect_with_notice('invalid_commission_rate', $channel_id);
+        }
         $manager_email = isset($_POST['manager_email']) ? sanitize_email(wp_unslash((string) $_POST['manager_email'])) : '';
         $manager_username = isset($_POST['manager_username']) ? sanitize_user(wp_unslash((string) $_POST['manager_username']), true) : '';
         $manager_password = isset($_POST['manager_password']) ? (string) wp_unslash($_POST['manager_password']) : '';
@@ -218,6 +224,10 @@ final class Admin
                 $this->redirect_with_notice('invalid_manager', $channel_id);
             }
             $manager_user = get_user_by('email', $manager_email);
+            $password_error = $this->manager_password_error($manager_password, ! $manager_user instanceof \WP_User);
+            if ($password_error) {
+                $this->redirect_with_notice($password_error->get_error_code(), $channel_id);
+            }
             if (! $manager_user instanceof \WP_User) {
                 $candidate_username = $manager_username !== '' ? $manager_username : sanitize_user(strstr($manager_email, '@', true) ?: '', true);
                 if ($candidate_username === '' || username_exists($candidate_username)) {
@@ -230,17 +240,17 @@ final class Admin
         if ($channel_id > 0 && Database::get_channel($channel_id)) {
             $result = $wpdb->update(
                 Database::table('channels'),
-                ['name' => $name, 'code' => $code, 'status' => $status, 'updated_at' => $now],
+                ['name' => $name, 'code' => $code, 'status' => $status, 'commission_rate' => $commission_rate, 'updated_at' => $now],
                 ['id' => $channel_id],
-                ['%s', '%s', '%s', '%s'],
+                ['%s', '%s', '%s', '%s', '%s'],
                 ['%d']
             );
             $action = 'channel_updated';
         } else {
             $result = $wpdb->insert(
                 Database::table('channels'),
-                ['uuid' => wp_generate_uuid4(), 'name' => $name, 'code' => $code, 'status' => $status, 'created_at' => $now, 'updated_at' => $now],
-                ['%s', '%s', '%s', '%s', '%s', '%s']
+                ['uuid' => wp_generate_uuid4(), 'name' => $name, 'code' => $code, 'status' => $status, 'commission_rate' => $commission_rate, 'created_at' => $now, 'updated_at' => $now],
+                ['%s', '%s', '%s', '%s', '%s', '%s', '%s']
             );
             $channel_id = (int) $wpdb->insert_id;
             $action = 'channel_created';
@@ -250,18 +260,26 @@ final class Admin
             $this->redirect_with_notice('duplicate_code', $channel_id);
         }
 
-        Database::audit($action, 'channel', $channel_id, ['name' => $name, 'code' => $code, 'status' => $status]);
+        Database::audit($action, 'channel', $channel_id, ['name' => $name, 'code' => $code, 'status' => $status, 'commission_rate' => $commission_rate]);
 
         if ($manager_email !== '') {
             $manager_result = $this->upsert_manager($channel_id, $manager_email, $manager_username, $manager_password);
             if (is_wp_error($manager_result)) {
-                $this->redirect_with_notice('invalid_manager', $channel_id);
+                $this->redirect_with_notice(in_array($manager_result->get_error_code(), ['manager_password_required', 'manager_password_invalid'], true) ? $manager_result->get_error_code() : 'invalid_manager', $channel_id);
             }
 
             $this->redirect_with_notice($manager_result);
         }
 
         $this->redirect_with_notice('saved');
+    }
+
+    private function parse_commission_rate($value): ?string
+    {
+        if (! is_string($value) || ! preg_match('/^(?:0(?:\.\d{1,4})?|1(?:\.0{1,4})?)$/D', trim(wp_unslash($value)))) {
+            return null;
+        }
+        return number_format((float) trim(wp_unslash($value)), 4, '.', '');
     }
 
     public function save_settings(): void
@@ -288,7 +306,7 @@ final class Admin
         $initial_password = isset($_POST['manager_password']) ? (string) wp_unslash($_POST['manager_password']) : '';
         $result = $this->upsert_manager($channel_id, $email, $username, $initial_password);
 
-        $this->redirect_with_notice(is_wp_error($result) ? 'invalid_manager' : $result, $channel_id);
+        $this->redirect_with_notice(is_wp_error($result) ? (in_array($result->get_error_code(), ['manager_password_required', 'manager_password_invalid'], true) ? $result->get_error_code() : 'invalid_manager') : $result, $channel_id);
     }
 
     public function register_order_meta_box(): void
@@ -542,6 +560,10 @@ final class Admin
                                 <th scope="row"><label for="trovesia-channel-status"><?php esc_html_e('Status', 'trovesia-channel'); ?></label></th>
                                 <td><select id="trovesia-channel-status" name="status"><option value="active" <?php selected($selected_channel->status ?? 'active', 'active'); ?>><?php esc_html_e('Active', 'trovesia-channel'); ?></option><option value="paused" <?php selected($selected_channel->status ?? '', 'paused'); ?>><?php esc_html_e('Paused', 'trovesia-channel'); ?></option><option value="archived" <?php selected($selected_channel->status ?? '', 'archived'); ?>><?php esc_html_e('Archived', 'trovesia-channel'); ?></option></select></td>
                             </tr>
+                            <tr>
+                                <th scope="row"><label for="trovesia-channel-commission-rate"><?php esc_html_e('Commission rate', 'trovesia-channel'); ?></label></th>
+                                <td><input type="number" id="trovesia-channel-commission-rate" name="commission_rate" min="0" max="1" step="0.0001" required value="<?php echo esc_attr((string) ($selected_channel->commission_rate ?? '0.2')); ?>"><p class="description"><?php esc_html_e('Enter a ratio from 0 to 1. For example, 0.2 means 20%.', 'trovesia-channel'); ?></p></td>
+                            </tr>
                         </table>
 
                         <hr>
@@ -550,7 +572,7 @@ final class Admin
                         <table class="form-table" role="presentation">
                             <tr><th scope="row"><label for="manager-email"><?php esc_html_e('Login email', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="email" id="manager-email" name="manager_email" autocomplete="off" value="<?php echo esc_attr($manager?->user_email ?? ''); ?>"><p class="description"><?php esc_html_e('The channel manager can use this email address to sign in. An existing user with the same email will be assigned without changing that user’s password.', 'trovesia-channel'); ?></p></td></tr>
                             <tr><th scope="row"><label for="manager-username"><?php esc_html_e('Username', 'trovesia-channel'); ?></label></th><td><input class="regular-text" id="manager-username" name="manager_username" autocomplete="off" value="<?php echo esc_attr($manager?->user_login ?? ''); ?>"><p class="description"><?php esc_html_e('For a new account, leave this empty to derive a username from the email. An existing username cannot be changed here.', 'trovesia-channel'); ?></p></td></tr>
-                            <tr><th scope="row"><label for="manager-password"><?php esc_html_e('Set or reset password', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="password" id="manager-password" name="manager_password" autocomplete="new-password"><p class="description"><?php esc_html_e('Passwords cannot be displayed. Leave this empty to keep an existing password, or enter a new password to reset it immediately.', 'trovesia-channel'); ?></p></td></tr>
+                            <tr><th scope="row"><label for="manager-password"><?php esc_html_e('Initial / new password', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="password" id="manager-password" name="manager_password" autocomplete="new-password" minlength="6" maxlength="4096" aria-describedby="manager-password-help"><p class="description" id="manager-password-help"><?php esc_html_e('For a new account, enter an initial password of at least 6 characters and share it with the manager. No password setup email is sent. For an existing account, leave this empty to keep its password or enter a new one to reset it.', 'trovesia-channel'); ?></p></td></tr>
                         </table>
                     </div>
                     <div class="trovesia-channel-modal__footer">
@@ -573,19 +595,17 @@ final class Admin
         }
 
         $user = get_user_by('email', $email);
+        $password_error = $this->manager_password_error($initial_password, ! $user instanceof \WP_User);
+        if ($password_error) {
+            return $password_error;
+        }
         $created = false;
-        $generated_password = false;
         if (! $user instanceof \WP_User) {
             if ($username === '') {
                 $username = sanitize_user(strstr($email, '@', true) ?: '', true);
             }
             if ($username === '' || username_exists($username)) {
                 return new \WP_Error('invalid_manager');
-            }
-
-            if ($initial_password === '') {
-                $initial_password = wp_generate_password(32, true, true);
-                $generated_password = true;
             }
 
             $user_id = wp_create_user($username, $initial_password, $email);
@@ -627,13 +647,21 @@ final class Admin
             return new \WP_Error('invalid_manager');
         }
 
-        if ($created && $generated_password) {
-            wp_new_user_notification($user->ID, null, 'user');
-        }
-
         Database::audit('manager_assigned', 'channel', $channel_id, ['user_id' => $user->ID, 'password_updated' => $password_updated]);
 
         return $created ? 'manager_created' : ($password_updated ? 'manager_password_updated' : 'manager_assigned');
+    }
+
+    private function manager_password_error(string $password, bool $creating): ?\WP_Error
+    {
+        if ($creating && $password === '') {
+            return new \WP_Error('manager_password_required');
+        }
+        if ($password !== '' && (mb_strlen(trim($password)) < 6 || strlen($password) > 4096)) {
+            return new \WP_Error('manager_password_invalid');
+        }
+
+        return null;
     }
 
     private function channel_manager(int $channel_id): ?\WP_User
@@ -704,7 +732,7 @@ final class Admin
             <tbody>
             <?php if (! is_array($campaigns) || $campaigns === []) : ?><tr><td colspan="5"><?php esc_html_e('No links have been created for this channel.', 'trovesia-channel'); ?></td></tr><?php endif; ?>
             <?php foreach ((array) $campaigns as $campaign) : ?>
-                <tr><td><?php echo esc_html($campaign->name !== '' ? $campaign->name : __('Untitled campaign', 'trovesia-channel')); ?></td><td><?php echo esc_html($campaign->target_type . ((int) $campaign->target_id > 0 ? ' #' . $campaign->target_id : '')); ?></td><td><code><?php echo esc_html(home_url('/go/' . $campaign->token . '/')); ?></code></td><td><?php echo esc_html((string) $campaign->clicks); ?></td><td><?php echo esc_html(ucfirst($campaign->status)); ?></td></tr>
+                <tr><td><?php echo esc_html($campaign->name !== '' ? $campaign->name : __('Untitled campaign', 'trovesia-channel')); ?></td><td><?php echo esc_html($campaign->target_type . ((int) $campaign->target_id > 0 ? ' #' . $campaign->target_id : '')); ?></td><td><code><?php echo esc_html(Attribution::link_url((string) $campaign->token)); ?></code></td><td><?php echo esc_html((string) $campaign->clicks); ?></td><td><?php echo esc_html(ucfirst($campaign->status)); ?></td></tr>
             <?php endforeach; ?>
             </tbody>
         </table>
@@ -737,18 +765,21 @@ final class Admin
         $notice = isset($_GET['trovesia_notice']) ? sanitize_key(wp_unslash((string) $_GET['trovesia_notice'])) : '';
         $messages = [
             'saved' => __('Saved.', 'trovesia-channel'),
-            'manager_created' => __('The manager account was created and assigned.', 'trovesia-channel'),
+            'manager_created' => __('The manager account was created with the initial password you entered. Share the login details with the manager; no password setup email was sent.', 'trovesia-channel'),
             'manager_assigned' => __('The existing account was assigned.', 'trovesia-channel'),
             'manager_password_updated' => __('The existing account was assigned and its password was reset.', 'trovesia-channel'),
             'invalid_channel' => __('Enter a valid channel name and code.', 'trovesia-channel'),
+            'invalid_commission_rate' => __('Enter a commission rate between 0 and 1, with up to four decimal places.', 'trovesia-channel'),
             'duplicate_code' => __('That channel code is already in use.', 'trovesia-channel'),
             'invalid_manager' => __('Enter a valid manager email and an available username when creating an account.', 'trovesia-channel'),
+            'manager_password_required' => __('Enter an initial password for the new manager account. No password setup email will be sent.', 'trovesia-channel'),
+            'manager_password_invalid' => __('Use a password of at least 6 characters and no more than 4096 bytes.', 'trovesia-channel'),
         ];
         if (! isset($messages[$notice])) {
             return;
         }
 
-        $error = in_array($notice, ['invalid_channel', 'duplicate_code', 'invalid_manager'], true);
+        $error = in_array($notice, ['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager', 'manager_password_required', 'manager_password_invalid'], true);
         printf('<div class="notice %s is-dismissible"><p>%s</p></div>', $error ? 'notice-error' : 'notice-success', esc_html($messages[$notice]));
     }
 }

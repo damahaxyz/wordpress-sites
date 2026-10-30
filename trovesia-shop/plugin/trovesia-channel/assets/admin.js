@@ -16,6 +16,7 @@
         name: document.getElementById('trovesia-channel-name'),
         code: document.getElementById('trovesia-channel-code'),
         status: document.getElementById('trovesia-channel-status'),
+        commissionRate: document.getElementById('trovesia-channel-commission-rate'),
         email: document.getElementById('manager-email'),
         username: document.getElementById('manager-username'),
         password: document.getElementById('manager-password'),
@@ -46,6 +47,7 @@
         fields.name.value = '';
         fields.code.value = '';
         fields.status.value = 'active';
+        fields.commissionRate.value = '0.2';
         fields.email.value = '';
         fields.username.value = '';
         fields.password.value = '';
@@ -59,6 +61,7 @@
         fields.name.value = button.dataset.name || '';
         fields.code.value = button.dataset.code || '';
         fields.status.value = button.dataset.status || 'active';
+        fields.commissionRate.value = button.dataset.commissionRate || '0.2';
         fields.email.value = button.dataset.managerEmail || '';
         fields.username.value = button.dataset.managerUsername || '';
         fields.password.value = '';

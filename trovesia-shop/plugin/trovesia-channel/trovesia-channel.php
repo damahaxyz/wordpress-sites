@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Trovesia Channel
  * Description: First-party channel links, WooCommerce order attribution, and a private channel portal.
- * Version: 1.2.2
+ * Version: 1.7.3
  * Requires at least: 6.8
  * Requires PHP: 8.3
  * Requires Plugins: woocommerce
@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('TROVESIA_CHANNEL_VERSION', '1.2.2');
+define('TROVESIA_CHANNEL_VERSION', '1.7.3');
 define('TROVESIA_CHANNEL_FILE', __FILE__);
 define('TROVESIA_CHANNEL_DIR', plugin_dir_path(__FILE__));
 define('TROVESIA_CHANNEL_URL', plugin_dir_url(__FILE__));

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-29T16:13:16.194742+00:00",
+  "security_files": [
+    "admin-access-self-test.php",
+    "admin-access.json",
+    "filesystem-audit.php",
+    "fpm-healthcheck.php",
+    "inspect-mail.php",
+    "logrotate-trovesia.conf",
+    "media-self-test.php",
+    "plugin-allowlist.json",
+    "rekey-fluent-smtp.php",
+    "self-test.php",
+    "send-alert.php",
+    "trovesia-security-watch.service",
+    "trovesia-security.php",
+    "verify-wordpress.php"
+  ],
+  "hashes": {
+    "security/trovesia-security.php": "d8308834fff86f2419004277ea98e882794d88ea381caae51c3b9a27231419d5",
+    "security/admin-access.json": "cb3b44f155ad54e35b45858d52af1461e602b1a4f21dcee54006e666d66ef7f7",
+    "security-reports/code-manifest.sha256": "f864aa21fdfa38faca0f87e084ed794445b1591d9a7ab6fc91ed899c9a50bfea"
+  },
+  "containers": "2026-10-29T11:39:42.789286099Z"
+}

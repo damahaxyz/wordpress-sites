@@ -1,0 +1,259 @@
+/* Customer account pages only; gateway fields and WooCommerce actions stay native. */
+.woocommerce-account .site-main:not(.site-main--wide) {
+  padding-top: clamp(32px, 5vw, 64px);
+  padding-bottom: 80px;
+}
+
+.trovesia-account-page.content-card--page {
+  max-width: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.trovesia-account-heading { margin-bottom: 32px; }
+.trovesia-account-heading .entry-title { margin: 8px 0 12px; font-size: clamp(36px, 4.5vw, 52px); }
+.trovesia-account-heading > p:last-child { max-width: 640px; margin: 0; color: var(--shop-muted); font-size: 15px; }
+.trovesia-account-eyebrow { display: block; margin: 0; color: var(--shop-brand); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+
+.trovesia-account-page .entry-content > .woocommerce:has(> .woocommerce-MyAccount-navigation) {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.trovesia-account-page .woocommerce::before,
+.trovesia-account-page .woocommerce::after { display: none; }
+.trovesia-account-page .woocommerce > .woocommerce-notices-wrapper { grid-column: 1 / -1; }
+.trovesia-account-page .woocommerce > .woocommerce-notices-wrapper:empty { display: none; }
+.trovesia-account-page .woocommerce-MyAccount-navigation {
+  position: sticky;
+  top: 120px;
+  grid-column: 1;
+  float: none;
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--shop-line);
+  border-radius: 20px;
+  background: var(--shop-white);
+  box-shadow: 0 12px 36px rgba(31, 48, 40, .035);
+}
+.trovesia-account-page .woocommerce-MyAccount-navigation ul { display: grid; gap: 5px; padding: 0; margin: 0; list-style: none; }
+.trovesia-account-page .woocommerce-MyAccount-navigation li { padding: 0; margin: 0; }
+.trovesia-account-page .woocommerce-MyAccount-navigation a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 15px;
+  border-radius: 12px;
+  color: var(--shop-muted);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.trovesia-account-page .woocommerce-MyAccount-navigation a::after { content: '›'; font-size: 20px; font-weight: 400; }
+.trovesia-account-page .woocommerce-MyAccount-navigation a:hover { background: var(--shop-soft); color: var(--shop-brand-dark); }
+.trovesia-account-page .woocommerce-MyAccount-navigation .is-active a { background: var(--shop-brand); color: #fff; }
+.trovesia-account-page .woocommerce-MyAccount-navigation-link--customer-logout { padding-top: 9px; margin-top: 7px; border-top: 1px solid var(--shop-line); }
+.trovesia-account-page .woocommerce-MyAccount-navigation-link--customer-logout a { color: var(--shop-muted); }
+.trovesia-account-page .woocommerce-MyAccount-content {
+  grid-column: 2;
+  float: none;
+  width: 100%;
+  min-width: 0;
+  min-height: 420px;
+  padding: clamp(24px, 3vw, 36px);
+  border: 1px solid var(--shop-line);
+  border-radius: 20px;
+  background: var(--shop-white);
+  box-shadow: 0 18px 50px rgba(31, 48, 40, .045);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.trovesia-account-page .woocommerce-MyAccount-content > :last-child { margin-bottom: 0; }
+.trovesia-account-page .woocommerce h2 { margin-top: 0; font-size: clamp(25px, 3vw, 32px); }
+.trovesia-account-page .woocommerce h3 { font-size: 23px; }
+.trovesia-account-page .woocommerce mark { padding: 2px 5px; border-radius: 4px; color: var(--shop-brand-dark); background: #e4eee7; }
+.trovesia-account-page .woocommerce a:focus-visible,
+.trovesia-account-page .woocommerce button:focus-visible { outline: 2px solid var(--shop-brand); outline-offset: 4px; }
+
+/* Dashboard shortcuts. */
+.trovesia-account-welcome { padding: 0 0 26px; margin-bottom: 24px; border-bottom: 1px solid var(--shop-line); }
+.trovesia-account-welcome h2 { margin: 10px 0 12px; }
+.trovesia-account-welcome p { max-width: 540px; margin: 0; color: var(--shop-muted); }
+.trovesia-account-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.trovesia-account-page a.trovesia-account-shortcut { position: relative; padding: 22px; border: 1px solid var(--shop-line); border-radius: 14px; background: #fafbf7; color: var(--shop-ink); text-decoration: none; }
+.trovesia-account-page a.trovesia-account-shortcut:hover { border-color: #a7b9ab; background: var(--shop-soft); transform: translateY(-2px); }
+.trovesia-account-shortcut__arrow { display: grid; width: 30px; height: 30px; place-items: center; margin-bottom: 20px; border-radius: 50%; background: #e5eee7; color: var(--shop-brand); font-size: 19px; }
+.trovesia-account-page .trovesia-account-shortcut h3 { margin: 0 0 8px; font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
+.trovesia-account-shortcut p { margin: 0; color: var(--shop-muted); font-size: 13px; line-height: 1.6; }
+.trovesia-account-help { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 24px; margin-top: 26px; border-top: 1px solid var(--shop-line); }
+.trovesia-account-help strong { font-size: 14px; }
+.trovesia-account-help p { margin: 4px 0 0; color: var(--shop-muted); font-size: 12px; }
+.trovesia-account-help a { flex-shrink: 0; font-size: 13px; font-weight: 700; }
+
+/* Native WooCommerce forms: login, registration, recovery, addresses and profile. */
+.trovesia-account-page .woocommerce form .form-row { padding: 0; margin: 0 0 20px; }
+.trovesia-account-page .woocommerce form .form-row label { display: block; margin-bottom: 7px; color: var(--shop-ink); font-size: 13px; font-weight: 650; line-height: 1.5; }
+.trovesia-account-page .woocommerce form .form-row input.input-text,
+.trovesia-account-page .woocommerce form .form-row textarea,
+.trovesia-account-page .woocommerce form .form-row select {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid #d4dbd3;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--shop-ink);
+  font-size: 16px;
+  line-height: 1.5;
+  box-shadow: none;
+}
+.trovesia-account-page .woocommerce input.input-text:focus,
+.trovesia-account-page .woocommerce textarea:focus,
+.trovesia-account-page .woocommerce select:focus { outline: 0; border-color: var(--shop-brand); box-shadow: 0 0 0 3px rgba(49, 95, 79, .12); }
+.trovesia-account-page .woocommerce form .form-row .required { color: var(--shop-danger); }
+.trovesia-account-page .woocommerce form .form-row em,
+.trovesia-account-page .woocommerce form .form-row .description,
+.trovesia-account-page .woocommerce .woocommerce-privacy-policy-text { display: block; margin-top: 7px; color: var(--shop-muted); font-size: 12px; font-style: normal; }
+.trovesia-account-page .woocommerce form fieldset { padding: 24px; margin: 28px 0; border: 1px solid var(--shop-line); border-radius: 14px; background: #fafbf7; }
+.trovesia-account-page .woocommerce form legend { padding: 0 8px; font-size: 15px; font-weight: 700; }
+.trovesia-account-page .woocommerce form fieldset .form-row:last-child { margin-bottom: 0; }
+.trovesia-account-page .woocommerce form .password-input { position: relative; display: flex; width: 100%; }
+.trovesia-account-page .woocommerce form .password-input input { padding-right: 52px; }
+.trovesia-account-page .woocommerce form .show-password-input {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--shop-ink);
+  line-height: 1;
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+.trovesia-account-page .woocommerce form .show-password-input::before { display: block; line-height: 1; }
+.trovesia-account-page .woocommerce input[type="checkbox"],
+.trovesia-account-page .woocommerce input[type="radio"] { accent-color: var(--shop-brand); }
+.trovesia-account-page .woocommerce .select2-container { max-width: 100%; }
+.trovesia-account-page .woocommerce .select2-container .select2-selection--single { height: 48px; border: 1px solid #d4dbd3; border-radius: 10px; background: #fff; }
+.trovesia-account-page .woocommerce .select2-selection--single .select2-selection__rendered { padding: 0 36px 0 14px; color: var(--shop-ink); font-size: 16px; line-height: 46px; }
+.trovesia-account-page .woocommerce .select2-selection--single .select2-selection__arrow { top: 11px; right: 10px; }
+.trovesia-account-page .woocommerce a.button,
+.trovesia-account-page .woocommerce button.button,
+.trovesia-account-page .woocommerce input.button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 12px 22px; border: 1px solid transparent; border-radius: 999px; background: var(--shop-brand); color: #fff; font-size: 12px; font-weight: 750; line-height: 1.4; letter-spacing: .02em; text-align: center; text-decoration: none; }
+.trovesia-account-page .woocommerce a.button:hover,
+.trovesia-account-page .woocommerce button.button:hover,
+.trovesia-account-page .woocommerce input.button:hover { background: var(--shop-brand-dark); color: #fff; }
+.trovesia-account-page .woocommerce .button:disabled { opacity: .5; cursor: not-allowed; }
+.trovesia-account-page .woocommerce form.login,
+.trovesia-account-page .woocommerce form.register { padding: 0; margin: 24px 0 0; border: 0; border-radius: 0; }
+.trovesia-account-page .woocommerce > #customer_login { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.trovesia-account-page #customer_login::before,
+.trovesia-account-page #customer_login::after { display: none; }
+.trovesia-account-page #customer_login > div { float: none; width: 100%; padding: clamp(24px, 3vw, 36px); border: 1px solid var(--shop-line); border-radius: 20px; background: var(--shop-white); }
+.trovesia-account-page .woocommerce > form.login,
+.trovesia-account-page .woocommerce > form.lost_reset_password { max-width: 560px; padding: 28px; margin: 20px 0 0; border: 1px solid var(--shop-line); border-radius: 20px; background: var(--shop-white); }
+.trovesia-account-page .woocommerce > form.lost_reset_password .form-row { float: none; width: 100%; }
+.trovesia-account-page .woocommerce .woocommerce-form-login__rememberme { margin-bottom: 14px; }
+.trovesia-account-page .woocommerce .woocommerce-LostPassword { margin: 22px 0 0; font-size: 13px; }
+.trovesia-account-page .woocommerce-password-strength { margin-top: 8px; border-radius: 8px; font-size: 12px; }
+.trovesia-account-page .woocommerce-password-hint { color: var(--shop-muted); font-size: 12px; }
+
+/* Address summaries and native data tables. */
+.trovesia-account-page .woocommerce-Addresses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+.trovesia-account-page .woocommerce-Addresses::before,
+.trovesia-account-page .woocommerce-Addresses::after { display: none; }
+.trovesia-account-page .woocommerce-Address { float: none !important; width: 100% !important; padding: 22px; border: 1px solid var(--shop-line); border-radius: 14px; background: #fafbf7; }
+.trovesia-account-page .woocommerce-Address-title { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 18px; }
+.trovesia-account-page .woocommerce-Address-title::before,
+.trovesia-account-page .woocommerce-Address-title::after { display: none; }
+.trovesia-account-page .woocommerce-Address-title h2 { float: none; margin: 0; font-size: 25px; }
+.trovesia-account-page .woocommerce-Address-title a.edit { float: none; font-size: 12px; font-weight: 700; }
+.trovesia-account-page .woocommerce address { padding: 0; margin: 0; border: 0; color: var(--shop-muted); font-style: normal; line-height: 1.8; }
+.trovesia-account-page .woocommerce table.shop_table { width: 100%; margin: 0 0 24px; border: 1px solid var(--shop-line); border-spacing: 0; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+.trovesia-account-page .woocommerce table.shop_table th { padding: 14px 16px; border-top: 0; background: #f0f4ee; color: var(--shop-muted); font-size: 11px; font-weight: 750; letter-spacing: .04em; }
+.trovesia-account-page .woocommerce table.shop_table td { padding: 16px; border-top: 1px solid var(--shop-line); background: transparent; }
+.trovesia-account-page .woocommerce table.shop_table td a:not(.button) { font-weight: 650; }
+.trovesia-account-page .woocommerce table.shop_table .button { min-height: 36px; padding: 8px 14px; margin: 3px; font-size: 11px; }
+.trovesia-account-page .woocommerce-orders-table__cell-order-status { color: var(--shop-brand); font-weight: 650; }
+.trovesia-account-page .woocommerce .woocommerce-pagination { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.trovesia-account-page .woocommerce-order-details,
+.trovesia-account-page .woocommerce-customer-details,
+.trovesia-account-page .woocommerce-order-downloads { margin-top: 30px; margin-bottom: 28px; }
+.trovesia-account-page .woocommerce-customer-details .col2-set { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.trovesia-account-page .woocommerce-customer-details .col2-set::before,
+.trovesia-account-page .woocommerce-customer-details .col2-set::after { display: none; }
+.trovesia-account-page .woocommerce-customer-details .col2-set > div { float: none; width: 100%; }
+.trovesia-account-page .woocommerce-customer-details h2 { font-size: 25px; }
+.trovesia-account-page .woocommerce .woocommerce-info:not(.trovesia-toast-notice),
+.trovesia-account-page .woocommerce .wc-block-components-notice-banner:not(.trovesia-toast-notice) { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 22px; margin: 0 0 24px; border: 1px solid var(--shop-line); border-radius: 14px; background: #f0f4ee; color: var(--shop-ink); font-size: 14px; line-height: 1.8; }
+.trovesia-account-page .woocommerce .woocommerce-info:not(.trovesia-toast-notice)::before { display: none; }
+.trovesia-account-page .woocommerce .woocommerce-info:not(.trovesia-toast-notice) .button { float: none; order: 1; }
+.trovesia-account-page #add_payment_method #payment { padding: 18px; border: 1px solid var(--shop-line); border-radius: 14px; background: #fafbf7; }
+.trovesia-account-page #add_payment_method #payment ul.payment_methods { padding: 0 0 18px; border-color: var(--shop-line); }
+.trovesia-account-page #add_payment_method #payment div.form-row { padding: 18px 0 0; }
+
+@media (max-width: 900px) {
+  .trovesia-account-page .entry-content > .woocommerce:has(> .woocommerce-MyAccount-navigation) { grid-template-columns: 190px minmax(0, 1fr); gap: 18px; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation { padding: 8px; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation a { padding: 12px; font-size: 13px; }
+  .trovesia-account-page .woocommerce-Addresses { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .woocommerce-account .shop-container { width: calc(100% - 32px); }
+  .woocommerce-account .site-main:not(.site-main--wide) { padding-top: 28px; padding-bottom: 48px; }
+  .trovesia-account-heading { margin-bottom: 24px; }
+  .trovesia-account-heading > p:last-child { font-size: 13px; }
+  .trovesia-account-page .entry-content > .woocommerce:has(> .woocommerce-MyAccount-navigation) { display: block; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation { position: static; padding: 7px; margin-bottom: 20px; border-radius: 15px; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation ul { display: flex; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation li { flex: 0 0 auto; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation a { min-height: 44px; padding: 11px 16px; white-space: nowrap; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation a::after { display: none; }
+  .trovesia-account-page .woocommerce-MyAccount-navigation-link--customer-logout { padding: 0 0 0 5px; margin: 0 0 0 5px; border-top: 0; border-left: 1px solid var(--shop-line); }
+  .trovesia-account-page .woocommerce-MyAccount-content { min-height: 280px; padding: 22px 18px; border-radius: 18px; }
+  .trovesia-account-shortcuts { gap: 10px; }
+  .trovesia-account-page a.trovesia-account-shortcut { padding: 17px; }
+  .trovesia-account-help { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .trovesia-account-page .woocommerce > #customer_login,
+  .trovesia-account-page .woocommerce-customer-details .col2-set { grid-template-columns: 1fr; }
+  .trovesia-account-page .woocommerce form .form-row-first,
+  .trovesia-account-page .woocommerce form .form-row-last { float: none; width: 100%; }
+  .trovesia-account-page .woocommerce form fieldset { padding: 18px 14px; }
+  .trovesia-account-page .woocommerce table.shop_table_responsive tbody tr { display: block; padding: 8px 0; }
+  .trovesia-account-page .woocommerce table.shop_table_responsive tbody tr + tr { border-top: 1px solid var(--shop-line); }
+  .trovesia-account-page .woocommerce table.shop_table_responsive tbody td { padding: 10px 14px; border: 0; background: transparent; }
+  .trovesia-account-page .woocommerce table.shop_table_responsive tbody td::before { margin-right: 14px; color: var(--shop-muted); font-size: 12px; }
+  .trovesia-account-page .woocommerce table.woocommerce-table--order-details { table-layout: fixed; }
+  .trovesia-account-page .woocommerce table.woocommerce-table--order-details th,
+  .trovesia-account-page .woocommerce table.woocommerce-table--order-details td { padding: 12px 10px; }
+  .trovesia-account-page .woocommerce table.woocommerce-table--order-details th:last-child,
+  .trovesia-account-page .woocommerce table.woocommerce-table--order-details td:last-child { width: 36%; }
+}
+
+@media (max-width: 360px) {
+  .trovesia-account-shortcuts { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trovesia-account-page a.trovesia-account-shortcut:hover { transform: none; }
+}

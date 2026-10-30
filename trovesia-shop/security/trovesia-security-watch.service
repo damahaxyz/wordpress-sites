@@ -1,0 +1,20 @@
+[Unit]
+Description=Trovesia health/auth monitor with hourly integrity checks
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/wordpress-sites/trovesia-shop
+ExecStart=/usr/bin/python3 /root/wordpress-sites/trovesia-shop/scripts/security-watch.py
+Restart=on-failure
+RestartSec=30
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=read-only
+ReadWritePaths=/root/wordpress-sites/trovesia-shop/security-reports /root/wordpress-sites/trovesia-shop/runtime
+
+[Install]
+WantedBy=multi-user.target

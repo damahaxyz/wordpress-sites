@@ -16,10 +16,21 @@ if (($# == 0)); then
     exit 64
 fi
 
-if [[ ! "${deploy_path}" =~ ^/[A-Za-z0-9._/-]+$ ]]; then
-    echo "DEPLOY_PATH must be an absolute path containing only letters, numbers, '.', '_', '-' and '/'." >&2
+if [[ ! "${deploy_path}" =~ ^/[A-Za-z0-9._/-]+$ || "${deploy_path##*/}" != trovesia-shop ]]; then
+    echo "DEPLOY_PATH must be an absolute safe path ending in trovesia-shop." >&2
     exit 64
 fi
+
+deployment_started=0
+cleanup_deployment() {
+    status=$?
+    trap - EXIT
+    if [[ "${deployment_started}" == 1 ]]; then
+        ssh -o ConnectTimeout=5 "${deploy_host}" "rm -f '${deploy_path}/security-reports/deployment-in-progress'" || true
+    fi
+    exit "${status}"
+}
+trap cleanup_deployment EXIT
 
 declare -a component_types=()
 declare -a component_slugs=()
@@ -74,15 +85,18 @@ if command -v php >/dev/null 2>&1; then
 fi
 
 echo "Preparing ${deploy_host}:${deploy_path}..."
+echo "Verifying the deployed security baseline before changing code..."
+ssh "${deploy_host}" "cd '${deploy_path}' && bash scripts/security-baseline.sh check"
+ssh "${deploy_host}" "touch '${deploy_path}/security-reports/deployment-in-progress'"
+deployment_started=1
 ssh "${deploy_host}" \
     "mkdir -p '${deploy_path}/theme' '${deploy_path}/plugin' '${deploy_path}/deploy-backups'"
 
 if printf '%s\n' "$@" | grep -qx 'channel-plugin'; then
-    echo "Deploying Compose and Nginx routing configuration required by trovesia-channel..."
+    echo "Backing up current infrastructure configuration..."
     ssh "${deploy_host}" \
         "if [ -f '${deploy_path}/compose.yaml' ]; then cp '${deploy_path}/compose.yaml' '${deploy_path}/deploy-backups/compose-${timestamp}.yaml'; fi; if [ -f '${deploy_path}/nginx/conf.d/default.conf' ]; then cp '${deploy_path}/nginx/conf.d/default.conf' '${deploy_path}/deploy-backups/nginx-default-${timestamp}.conf'; fi"
-    rsync -az "${project_dir}/compose.yaml" "${deploy_host}:${deploy_path}/compose.yaml"
-    rsync -az "${project_dir}/nginx/conf.d/default.conf" "${deploy_host}:${deploy_path}/nginx/conf.d/default.conf"
+    echo "Infrastructure is managed by deploy-security.sh; component deployment preserves it."
 fi
 
 for index in "${!component_types[@]}"; do
@@ -111,10 +125,14 @@ done
 
 echo "Validating Docker configuration and refreshing WordPress..."
 ssh "${deploy_host}" "
+    set -e
     cd '${deploy_path}'
     docker compose config --quiet
     docker compose restart wordpress
     docker compose up -d --wait --wait-timeout 180 wordpress nginx
+    bash scripts/security-baseline.sh apply
+    bash scripts/security-baseline.sh seal
+    bash scripts/security-baseline.sh check
 "
 
 if [[ -n "${deploy_url}" ]]; then

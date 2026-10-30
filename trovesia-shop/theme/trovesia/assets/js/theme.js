@@ -5,6 +5,13 @@
   const cartTrigger = document.querySelector(".header-cart");
   const cartDrawer = document.querySelector(".trovesia-cart-drawer");
   const cartClosers = document.querySelectorAll("[data-cart-drawer-close]");
+  const accountMenu = document.querySelector('.trovesia-account-page .woocommerce-MyAccount-navigation ul');
+  const accountCurrent = accountMenu?.querySelector('[aria-current="page"]');
+  if (accountCurrent && accountMenu.scrollWidth > accountMenu.clientWidth) {
+    const menuBounds = accountMenu.getBoundingClientRect();
+    const itemBounds = accountCurrent.getBoundingClientRect();
+    accountMenu.scrollLeft += itemBounds.left - menuBounds.left - (menuBounds.width - itemBounds.width) / 2;
+  }
   const noticeSelector = [
     ".woocommerce-message",
     ".woocommerce-info",
@@ -82,6 +89,14 @@
 
   const initializeNotice = (notice) => {
     if (!(notice instanceof HTMLElement) || notice.dataset.trovesiaToastReady === "true") {
+      return;
+    }
+
+    // Account empty states and verification instructions are page content.
+    // Transaction feedback in the notices wrapper still uses dismissible toasts.
+    if (notice.matches('.woocommerce-info, .wc-block-components-notice-banner.is-info')
+      && notice.closest('.trovesia-account-page .woocommerce-MyAccount-content')
+      && !notice.closest('.woocommerce-notices-wrapper')) {
       return;
     }
 
