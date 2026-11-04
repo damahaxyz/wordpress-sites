@@ -1,0 +1,21 @@
+{
+  "version": "0.2.1",
+  "passed": 15,
+  "checks": [
+    "Authenticated production UI: overview",
+    "Authenticated production UI: stores",
+    "Authenticated production UI: templates",
+    "Authenticated production UI: categories",
+    "Authenticated production UI: collections",
+    "Authenticated production UI: catalog",
+    "Authenticated production UI: products",
+    "Authenticated production UI: orders",
+    "Authenticated production UI: customers",
+    "Authenticated production UI: reviews",
+    "Authenticated production UI: audit",
+    "Authenticated production UI: help",
+    "Production draft product editor uses category/tag pickers",
+    "All public master products report in-stock through the native Store API",
+    "Second-store draft products remain absent from the public product API"
+  ]
+}

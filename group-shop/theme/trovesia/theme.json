@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "palette": [
+        {
+          "color": "#17211d",
+          "name": "Ink",
+          "slug": "ink"
+        },
+        {
+          "color": "#315f4f",
+          "name": "Botanical green",
+          "slug": "botanical-green"
+        },
+        {
+          "color": "#183c33",
+          "name": "Deep green",
+          "slug": "deep-green"
+        },
+        {
+          "color": "#c6965c",
+          "name": "Warm gold",
+          "slug": "warm-gold"
+        },
+        {
+          "color": "#eef2eb",
+          "name": "Sage mist",
+          "slug": "sage-mist"
+        },
+        {
+          "color": "#f8f7f2",
+          "name": "Warm paper",
+          "slug": "warm-paper"
+        },
+        {
+          "color": "#fffefb",
+          "name": "Ivory",
+          "slug": "ivory"
+        }
+      ]
+    },
+    "layout": {
+      "contentSize": "820px",
+      "wideSize": "1240px"
+    },
+    "spacing": {
+      "units": ["px", "rem", "%", "vw", "vh"]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "\"Avenir Next\", Avenir, Inter, ui-sans-serif, system-ui, sans-serif",
+          "name": "Trovesia Sans",
+          "slug": "trovesia-sans"
+        },
+        {
+          "fontFamily": "\"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif",
+          "name": "Trovesia Serif",
+          "slug": "trovesia-serif"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#f8f7f2",
+      "text": "#17211d"
+    },
+    "typography": {
+      "fontFamily": "\"Avenir Next\", Avenir, Inter, ui-sans-serif, system-ui, sans-serif",
+      "lineHeight": "1.65"
+    }
+  }
+}

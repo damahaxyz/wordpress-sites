@@ -1,0 +1,18 @@
+{
+  "mode": "built-in image_gen",
+  "date": "2026-11-02",
+  "jobs": [
+    {
+      "key": "bubble_machine_only_single",
+      "filename": "firework-bubble-machine-single-no-supplies-en.png",
+      "reference": "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/retouched/firework-bubble-machine-single-set-en.png",
+      "prompt": "Use case: precise-object-edit / text-localization. Edit this supplied single-machine SKU card. Preserve the EXACT red cylindrical bubble machine and every physical detail: shape/proportions, textured red surface, top rim, round red button below star, black vent patterns, festive lantern/firecracker/crescent/character decals; preserve the red/gold scene, soap bubbles and header style. Remove ALL loose AA batteries, ALL bubble solution bottles and ALL pink concentrate sachets from the image and remove their included-content labels. Keep ONE machine and ONE sticker sheet only as the included products. Recompose the left panel attractively with a single sticker sheet and concise English content, with no empty placeholders or remnants of deleted accessories. Header \"SINGLE MACHINE SET\". Subheading \"2026 • BATTERY EDITION\". Included list EXACT: \"1 × Bubble machine\", \"1 × Sticker sheet\". Prominent clear purchase note EXACT: \"Bubble solution sold separately\" and \"Requires 4 AA batteries (not included)\". Keep \"Fully automatic • Ambient lights\" as a small benefit line. No prices, no claims that batteries or any liquid are included, no chargers or cables. Keep actual machine decals unchanged (decorative firecracker artwork on stickers is fine). Single square English e-commerce image, readable typography and safe margins."
+    },
+    {
+      "key": "bubble_machine_only_double",
+      "filename": "firework-bubble-machine-double-no-supplies-en.png",
+      "reference": "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/retouched/firework-bubble-machine-double-set-en.png",
+      "prompt": "Use case: precise-object-edit / text-localization. Edit this supplied two-machine SKU card. Preserve EXACTLY TWO identical red cylindrical bubble machines, their textured finish, top rims, round red side buttons below stars, vent patterns and festive lantern/firecracker/crescent/character decals. Preserve warm red/gold scene, soap bubbles and cohesive English card style. Remove ALL eight loose batteries, both solution bottles and ALL pink concentrate sachets, along with every old included-accessory label referring to them. Keep only TWO machines and TWO sticker sheets as included products. Recompose the left information panel without empty placeholders or remnants. Header \"TWO-MACHINE SET\". Subheading \"2026 • BATTERY EDITION\". Included list EXACT: \"2 × Bubble machines\", \"2 × Sticker sheets\". Prominent purchase note EXACT: \"Bubble solution sold separately\" and \"Requires 8 AA batteries total (not included)\". Small benefit line \"Fully automatic • Ambient lights\". No prices, chargers or cables. Do not imply any batteries or bubble liquid are included. Retain reference hardware and decals faithfully. Single square English e-commerce image, clear text and safe margins."
+    }
+  ]
+}

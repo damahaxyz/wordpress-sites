@@ -1,0 +1,14 @@
+.env
+cert/
+backups/
+deploy-backups/
+security-reports/
+runtime/security-logs/
+__pycache__/
+*.sql
+*.sql.gz
+*.tar.gz
+.qa.env
+.qa-admin-password
+.qa-install.log
+dist/

@@ -1,0 +1,28 @@
+{
+    "version": "0.3.0",
+    "passed": 7,
+    "stores": {
+        "1": {
+            "legacy_metadata": 0,
+            "collections_local": true,
+            "native_categories": 10,
+            "native_tags": 6
+        },
+        "6": {
+            "legacy_metadata": 0,
+            "collections_local": true,
+            "native_categories": 11,
+            "native_tags": 2
+        },
+        "7": {
+            "legacy_metadata": 0,
+            "collections_local": true,
+            "native_categories": 1,
+            "native_tags": 0
+        }
+    },
+    "plugin_tables": [
+        "wp_gsm_audit",
+        "wp_gsm_catalog"
+    ]
+}

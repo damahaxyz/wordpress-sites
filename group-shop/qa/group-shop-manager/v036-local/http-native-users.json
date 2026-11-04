@@ -1,0 +1,28 @@
+{
+  "version": "0.3.6",
+  "passed": 22,
+  "checks": [
+    "Anonymous network users requires login",
+    "Native network users renders origin column",
+    "Native Sites, search and bulk controls remain",
+    "Native row origin matches recorded source: 1",
+    "Native membership and edit links remain: 1",
+    "Native row origin matches recorded source: 2",
+    "Native membership and edit links remain: 2",
+    "Native row origin matches recorded source: 3",
+    "Native membership and edit links remain: 3",
+    "Native row origin matches recorded source: 4",
+    "Native membership and edit links remain: 4",
+    "Native username search works",
+    "Native network user editor loads",
+    "Origin extension adds no editable field or save handler",
+    "Main site user list is not extended with network-only origin",
+    "Woo native user editor retains shared billing and shipping fields",
+    "Manager no longer exposes shared customer tab",
+    "Overview has seven tabs and native network user entry",
+    "Old customer bookmark falls back to overview",
+    "Child site user list retains its original columns",
+    "Frontend account still explains shared credentials and addresses",
+    "Only temporary per-domain acceptance sessions were logged out"
+  ]
+}

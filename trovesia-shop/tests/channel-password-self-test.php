@@ -70,7 +70,7 @@ try {
     $assert($mail_count === 0 && $user->user_activation_key === '', 'No account setup mail or reset key generated');
     $result = $upsert->invoke(Admin::instance(), $channel_id, $email, '', '');
     clean_user_cache($user_id);
-    $assert($result === 'manager_assigned' && wp_check_password($initial, get_userdata($user_id)->user_pass, $user_id), 'Editing with blank password preserves existing password');
+    $assert($result === 'manager_updated' && wp_check_password($initial, get_userdata($user_id)->user_pass, $user_id), 'Editing with blank password preserves existing password');
     $manager = $identity($user_id);
     $other_token = WP_Session_Tokens::get_instance($user_id)->create(time() + HOUR_IN_SECONDS);
     $customer_id = wp_create_user('qa_customer_' . $suffix, wp_generate_password(24), 'qa-customer-' . $suffix . '@example.invalid');

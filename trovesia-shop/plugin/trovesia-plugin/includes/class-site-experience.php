@@ -783,7 +783,7 @@ final class Site_Experience
         $default_attributes = $product->get_default_attributes();
         $default_value = (string) ($default_attributes[sanitize_title($attribute_name)] ?? '');
         if (! isset($options[$default_value])) {
-            $default_value = (string) array_key_first($options);
+            $default_value = '';
         }
 
         $heading = $is_bundle

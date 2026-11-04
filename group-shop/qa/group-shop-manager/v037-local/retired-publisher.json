@@ -1,0 +1,36 @@
+{
+    "version": "0.3.7",
+    "passed": 25,
+    "checks": [
+        "Cross-store publication method removed: publish",
+        "Cross-store publication method removed: publish_locked",
+        "Cross-store publication method removed: snapshot",
+        "Cross-store publication method removed: attribute_snapshot",
+        "Cross-store publication method removed: variation_attributes",
+        "Cross-store publication method removed: import_media",
+        "Cross-store publication method removed: mapping",
+        "Retired field-copy allowlist is removed",
+        "Local simple-product name and prices still save",
+        "Local rich descriptions still save",
+        "Local existing media selection still saves",
+        "Local quick publish remains available",
+        "Stale local status request remains rejected",
+        "Local quick disable remains available",
+        "Invalid local prices remain rejected",
+        "Invalid local media remains rejected",
+        "Local variation prices and enabled state still save",
+        "Variable parent price still synchronizes",
+        "Invalid later variation still rejects the batch",
+        "Invalid batch leaves parent and earlier row untouched",
+        "Unlimited stock policy remains intact",
+        "Local edits create no publication mapping",
+        "Old catalog tab falls back to overview with no publication UI",
+        "Six manager tabs remain",
+        "Local edits and failures restore original context"
+    ],
+    "fixtures": {
+        "main_product": 58,
+        "target_store": 6,
+        "edit_product": 132
+    }
+}

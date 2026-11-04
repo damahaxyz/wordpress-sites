@@ -1,0 +1,145 @@
+[
+  {
+    "source": "christmas-spark-atmosphere-wand-hero.png",
+    "optimized": "christmas-spark-atmosphere-wand-hero.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 2327384,
+    "after_bytes": 232798,
+    "source_sha256": "30fb7dc26f5d3455bef6f8cfd0b0f2887491399e682945ab5bc5bb43cb73225b",
+    "sha256": "6d4bafca099d8379016243ab9fb5ecba316cf592059e01ef3c1b7ce18da684bd"
+  },
+  {
+    "source": "gift-set-silver-en.png",
+    "optimized": "gift-set-silver-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1704460,
+    "after_bytes": 86736,
+    "source_sha256": "6d5709d3f3b4a8ef29ca629dde5894c64d57329131c43625a8bbf2dd52416770",
+    "sha256": "6122ac31f1ad979147ebfea079e4e955f0fde646e020665e553e7736420799ae"
+  },
+  {
+    "source": "gift-set-green-en.png",
+    "optimized": "gift-set-green-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1735434,
+    "after_bytes": 95234,
+    "source_sha256": "0b6600dfb53fa1abeb3c6019eb34546a07a57d6a9ca10e9270a018077d010e8b",
+    "sha256": "56b9b903f2dc25d5559447d22a47438ed16f069ba42b8bc37671b320216def2c"
+  },
+  {
+    "source": "gift-set-black-en.png",
+    "optimized": "gift-set-black-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1740463,
+    "after_bytes": 93694,
+    "source_sha256": "c6e9df8e14286bf45be780cd7ce0f8814bea5bad16f4124efd1349a81954d6c7",
+    "sha256": "c459558aa781e840e23ba79b09363a0f4913b433468ee553269a65d8335f0c1d"
+  },
+  {
+    "source": "gift-set-pink-en.png",
+    "optimized": "gift-set-pink-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1691050,
+    "after_bytes": 84568,
+    "source_sha256": "bca02855f9ad5ae288baf9b4cc1ca13e40697810a32a646561082865d7f5898a",
+    "sha256": "fdd31ab846fd87a689cce7f5b7b094140ec3e148a9e92560d7f45c771f0caaf4"
+  },
+  {
+    "source": "gift-set-yellow-en.png",
+    "optimized": "gift-set-yellow-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1725346,
+    "after_bytes": 91140,
+    "source_sha256": "56b3ebc0b67e48fc7545779bd11e5b2fc72314548975da09b4bab7dbdfadf785",
+    "sha256": "bacf2262810ef486a6bc7aaef8ff9e6d4f3850305e64d19010f15ab14625997e"
+  },
+  {
+    "source": "d1-en.png",
+    "optimized": "d1-en.webp",
+    "width": 790,
+    "height": 1278,
+    "quality": 84,
+    "before_bytes": 855339,
+    "after_bytes": 79716,
+    "source_sha256": "c074b66a961d3ca8c46a0541d6232a33636c5fd3bfaa13bc1fc7342fae1770f8",
+    "sha256": "088292ab9599a56d4fec381a115eac3c0d4b8974259ab6e7d85e0370c410d023"
+  },
+  {
+    "source": "d2-en.png",
+    "optimized": "d2-en.webp",
+    "width": 790,
+    "height": 840,
+    "quality": 90,
+    "before_bytes": 181958,
+    "after_bytes": 40526,
+    "source_sha256": "585436ecf061cea2d3caf310dc76660e4701c4b2ab9efef5931e8a5081ad33e1",
+    "sha256": "f330952063ffcb9b518960e813c14aaf0e94a98883530df3bd28162a94bf0b79"
+  },
+  {
+    "source": "d3-en.png",
+    "optimized": "d3-en.webp",
+    "width": 790,
+    "height": 1580,
+    "quality": 90,
+    "before_bytes": 648090,
+    "after_bytes": 121946,
+    "source_sha256": "efe7d2d1d21e9e4612225d6d7f5ce4fe76995d5aa48c4cbbcc94db168903523c",
+    "sha256": "dbcb30501b0efc7efb1543fdb4967e69210c110fb319ad0733b750d2c083328c"
+  },
+  {
+    "source": "christmas-storefront-desktop.png",
+    "optimized": "christmas-storefront-desktop.webp",
+    "width": 1672,
+    "height": 941,
+    "quality": 84,
+    "before_bytes": 2169092,
+    "after_bytes": 208176,
+    "source_sha256": "2d8ce7e5254098944fdf0c7d9a1d2f2bca919057adb8e222dd167fbdd61e2a1c",
+    "sha256": "88613beeb2a30a1aa3546fb6327a8540876d016ba74d721763e4341d6f1d076c"
+  },
+  {
+    "source": "christmas-storefront-mobile.png",
+    "optimized": "christmas-storefront-mobile.webp",
+    "width": 1122,
+    "height": 1402,
+    "quality": 84,
+    "before_bytes": 2203297,
+    "after_bytes": 213808,
+    "source_sha256": "ce90eb1b8dc430d2df23b8d36635feea389b2db5d859d9975aff610f94f6157b",
+    "sha256": "2bad63e9f4429ed00ed2339b658f5cd3b1025fad9afad7f263a0912c07beb415"
+  },
+  {
+    "source": "replacement-material-chamber-en.png",
+    "optimized": "replacement-material-chamber-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1560756,
+    "after_bytes": 95972,
+    "source_sha256": "b28daf2b29f8ad513846114af7227b2659224113292f90cbef6a9ab05e065517",
+    "sha256": "e7f20e22bb603f93cb9ca42cc8f1614fd227023ddbb12e4ba00df96dd5d0e391"
+  },
+  {
+    "source": "butane-gas-canister-en.png",
+    "optimized": "butane-gas-canister-en.webp",
+    "width": 1254,
+    "height": 1254,
+    "quality": 84,
+    "before_bytes": 1387078,
+    "after_bytes": 77440,
+    "source_sha256": "6d0161936b260e4d7de7739e44cc890ee519589c0b84b2f0b7afaf78f631e77b",
+    "sha256": "8b7eaf68bed3e78fcd38f6b70ca7fd409704a064d64c51bcdcee27bcbcefc4e3"
+  }
+]

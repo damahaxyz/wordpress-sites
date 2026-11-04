@@ -2,7 +2,7 @@
 
 > **用途**：这是 Trovesia 独立站的长期维护入口。新对话开始时先完整读取本文件，再查看当前工作区和线上状态，即可继续开发、部署、排障或上架商品。
 >
-> **最后核对日期**：2026-10-30（Asia/Taipei）
+> **最后核对日期**：2026-11-02（Asia/Taipei）
 
 ## 2026-10-29 安全事件与恢复状态
 
@@ -28,6 +28,10 @@
 Cloudflare 已发布第二条 Block 规则，范围为 `/wp-admin` 或 `/wp-login.php` 开头，保留原三个白名单 IP；第一条 Skip 保留公开 admin-post/admin-ajax 以及 GET、单个精确 `action=logout` 的标准退出参数。此前线上 Block 遗漏登录路径，现已补齐。以后改 IP 只编辑 CF 的 `admin IP 加白`，勿恢复服务器旧名单。完整表达式见精简说明。
 
 ## 1. 新对话开始时先做什么
+
+2026-11-01 23:33–23:38（Asia/Taipei）按站主要求只读检查整机负载：主要占用来自同机 `/root/wordpress-sites/13799-shop` 的 PHP/Redis，13799 首页未见页面缓存命中，30 秒 Docker 首页探测跟随公网跳转；Trovesia PHP 占用低且近期安全检查 PASS。未发现同类 Perl 异常进程，未重启或变更线上配置。证据、范围和建议见 `docs/PERFORMANCE-REVIEW-20261101.md`；不能据此证明所有插件绝对安全。
+
+随后按站主明确要求，23:38 停止 13799 的 `wordpress-nginx-1` 和 `wordpress-wordpress-1`，保留容器、数据与配置；数据库/Redis 因历史 `/root/perfume-wordpress` 标签的归属风险被自动审批拦截，仍运行，不能将此状态写成四个容器全部停止。Trovesia 四容器保持 healthy，公网首页 HTTP 200。23:39 再次确认所有容器、Nginx、systemd、cron 均无引用后，按站主确认直接删除服务器 `/root/wordpress-sites/manga-shop`（12 文件）和 `tikool-shop`（58 文件）。服务器该目录现仅保留 `trovesia-shop`、`13799-shop`、`13799-shop-old`；不要向此服务器重新部署 manga/tikool。此次没有删除本地同名项目。
 
 本地项目路径：
 
@@ -183,7 +187,15 @@ _trovesia_source_url
 
 ### 3.3 渠道插件 `plugin/trovesia-channel`
 
-2026-10-26 已开发并在线上启用独立的 `trovesia-channel` 插件，当前版本 1.7.3。它包括：
+2026-10-26 已开发并在线上启用独立的 `trovesia-channel` 插件，当前版本 1.7.4。
+
+2026-11-02 修复渠道账号编辑及遗留角色不一致：旧版按新邮箱查找/新建 WordPress 用户，替换渠道绑定后没有移除旧账号的 Channel Manager 角色，导致两个渠道、三个渠道用户。线上确认渠道 2 绑定用户 5、渠道 3 绑定用户 11；用户 6（旧 tiktokb）无绑定但仍持有渠道角色。已在完整私有备份 `/root/trovesia-backups/20261102T034220Z` 后，仅移除用户 6 的 `trovesia_channel_manager`，保留 subscriber、账号、密码及历史数据。
+
+1.7.4 编辑已有渠道按当前绑定用户 ID 更新邮箱，不再因换邮箱创建或切换账号；密码留空保持，填写才重设。既有用户名在弹窗中只读，后端也拒绝篡改；被其他账号占用的邮箱拒绝，且在保存渠道详情前完成验证。未绑定渠道仍可创建账号或绑定未分配的现有账号，拒绝静默挪走其他渠道的经理；新绑定通过渠道行锁串行插入，不再先删除绑定。新增 `manager_updated` 审计及错误说明。用户名只读属性使用原生 HTML 输出，避免当前 PHP/WordPress 环境缺少 `readonly()` 辅助函数的问题。
+
+最终部署前后安全检查通过，报告 `security-reports/check-20261102T034916Z-2314616.log`。临时账号回归共 77 项通过（账号/绑定 20、密码 32、门户 25），全部测试数据已清理；验证没有新增真实订单。角色修复脚本为 `scripts/maintenance/reconcile-channel-manager-roles.php`，WP-CLI 下默认只读，应用时必须指定单个用户 ID 和 `apply`；不得自动删除旧账号。详情见 `qa/channel-manager-20261102/README.md`。
+
+主要功能：
 
 - 总后台渠道、渠道账户和全局归因窗口管理；归因窗口不向渠道账户显示。
 - 渠道账户的独立前台门户 `/channel-portal/`。
@@ -251,9 +263,19 @@ _trovesia_source_url
 | `wp-media-folder` | 5.5.2 | 站主确认安装并要求恢复，已启用并纳入代码基线 |
 | `two-factor` | 0.17.0 | 官方管理员双重验证 |
 | `trovesia-security` | 1.2.0（MU） | 登录限速、代码修改策略及安全审计；管理员 IP 由 Cloudflare 控制 |
-| `trovesia-plugin` | 3.8.1 | 本站自定义业务功能 |
+| `trovesia-plugin` | 3.8.3 | 本站自定义业务功能 |
 
-当前主题 `trovesia` 版本为 2.9.2。
+2026-10-30 插件 3.8.2 修复登录/注册弹窗在 WooCommerce 页面出现两个密码显示控件的问题：WooCommerce 会给弹窗密码框的父元素加 `password-input`，并追加 `show-password-input` 按钮；`assets/css/account-modal.css` 现在仅在 `.trovesia-account-modal` 内隐藏此额外按钮，保留插件 Show/Hide 文字控件和原有切换逻辑。个人中心原生资料表单的眼睛按钮不受影响。
+
+个人中心退出通过 `woocommerce_logout_default_redirect_url` 将默认目标设置为 `home_url('/')`，覆盖 WooCommerce 菜单的 `customer-logout` 以及 `wc_logout_url()` 默认链接；仍由原生流程校验 nonce 并注销当前会话。原生管理员退出和渠道指定的退出目标保持。真实 Chrome 会话已通过个人中心菜单退出，确认落地路径 `/`、登录状态清除、未出现独立登录表单；四个只读退出目标检查全部通过。匿名 Shop/账户的线上 HTML 和正式资源在本地独立预览中验证文字控件、显示/隐藏及 390px 窄屏，未提交登录或注册、未更改密码。原插件部署脚本安全门禁通过，最终报告 `security-reports/check-20261030T033506Z-3366625.log`；备份标记 `20261030T033356Z`。页面缓存已清理，验收截图见 `qa/account-modal-logout-20261030/`。
+
+当前主题 `trovesia` 版本为 2.9.5。
+
+2026-11-01 插件 3.8.3 / 主题 2.9.5 修复单属性商品的默认变体：后台未设置默认值时，PHP 卡片字段不再回退到第一个变体，JavaScript 初始化也不再自动选择第一个可用卡片；有效默认值和 WooCommerce URL 属性预选保持有效。商品 101 本次查询的默认属性为空，原先第一个变体为 Yellow，导致后台“不选中”仍被前台强制选中。现首次访问所有卡片均为 `aria-pressed=false`，原生颜色值为空，购买按钮保持 `wc-variation-selection-needed`；手动 Pink、URL `attribute_color=Pink` 及键盘激活原生清除操作均已验证。未保存商品、未提交购物车。`tests/variant-defaults-self-test.php` 使用克隆商品对象验证空/有效/失效默认值和持久配置不变，4 项通过。原部署脚本备份标记 `20261101T154427Z`，部署前后安全门禁通过，最终报告 `security-reports/check-20261101T154650Z-1821995.log`；页面缓存已清理，验收记录见 `qa/variant-defaults-20261101/`。
+
+2026-10-30 主题 2.9.4 为 Cart Block 空购物车内的原生“New in store”推荐区补充独立卡片样式。范围限定 `.woocommerce-cart .wp-block-woocommerce-empty-cart-block`：桌面三列、521–800px 两列、520px 以下单列；修复区块声明四列但现有三个商品未铺满的问题。统一方图、边框/圆角、商品名称排版、售价/原价、Sale 胶囊及金色评分；按钮为深绿白字且卡片内底部对齐，移除推荐区标题前的点状分隔。商品查询、价格和链接均为原生输出，未修改已有购物车或结账逻辑。1280px 桌面三卡等宽 262px、同高约 535px、按钮底部一致；320/390/768px 无页面横向溢出，按钮均高于 44px。推荐按钮已验证能到对应商品，返回后购物车仍为空且有三个推荐商品。部署标记 `20261030T034853Z`，最终安全报告 `security-reports/check-20261030T035010Z-3381534.log`，验收截图见 `qa/empty-cart-20261030/`。
+
+2026-10-30 主题 2.9.3 优化 Shop 顶部：`assets/css/woocommerce.css` 仅在商品归档、商品分类及标签页启用两列网格，让原生商品数量和排序控件垂直居中，减少标题前后留白。手机端 36px 标题、44px 高排序框、左右 16px 留白；排序框使用品牌色箭头和焦点轮廓，保留原生 select 提交逻辑。390px 实测商品列表顶部从约 301px 上移至约 264px；320/390/768/1280px 均无页面横向溢出，数量与排序框中心差为 0px。价格升序与降序的实际商品顺序正确，验收后恢复默认排序及浏览器视口。通过原主题部署脚本完成备份和安全门禁，部署标记 `20261030T032147Z`，最终报告 `security-reports/check-20261030T032322Z-3355721.log`。截图和验收记录在 `qa/shop-header-20261030/`。
 
 2026-10-30 主题 2.9.0–2.9.2 统一个人中心展示：账户页移除普通内容页的大白框，增加品牌页头；桌面侧边导航、手机单行横滑导航及当前项自动可见；首页以原生账户菜单为依据显示常用入口卡片。新增 `assets/css/account.css`，仅账户页加载，覆盖订单/订单详情、下载空状态、地址列表及账单/收货地址编辑、支付方式及添加支付方式、账户资料、登录/注册和密码恢复表单。原生数据查询、表单 nonce、保存及支付网关 iframe 保持使用 WooCommerce 实现；首页模板覆盖为 `woocommerce/myaccount/dashboard.php`，保留原 dashboard 扩展 hooks。
 
@@ -322,7 +344,7 @@ Batana 变体：
 - 正式页面：`https://www.trovesia.com/products/christmas-spark-atmosphere-wand-gift-set/`。
 - 售卖单位是完整礼盒，不单卖氛围棒；礼盒含氛围棒、礼盒包装、一个材料盒和一小罐高压气罐。
 - 商品没有功率参数，所有商品文案不得出现 `1000W`、瓦数或其他功率描述。
-- 2026-10-27 线上售价快照为 USD $69.90，原价 $99；五个颜色变体均有独立英文礼盒内容图，默认颜色为 Pink。
+- 2026-10-27 线上售价快照为 USD $69.90，原价 $99；五个颜色变体均有独立英文礼盒内容图，当时默认颜色为 Pink。2026-11-01 后台已清空默认颜色，前台默认不选中；价格使用前须重新查询。
 - 运输时间为 8–15 天。商品页的动态预计送达日期也按当前日期加 8 天至加 15 天计算。
 - 高压气罐须保留运输限制和户外使用安全提示；具体承运资格可能因目的地而异。
 - 导入脚本：`scripts/import-christmas-spark-wand.php`。
@@ -334,6 +356,10 @@ Batana 变体：
 - 首页商品模块从主题 2.8.0 起按 WooCommerce 商品标签动态筛选，不再保存固定商品 ID。当前标签 slug 为 `christmas`，模块标题为 `Festive finds for every celebration.`，说明为 `Explore seasonal gifts and celebration essentials selected for Christmas.`，不包含统一价格。商品 ID 101 和 133 当前都带有 `christmas` 标签，因此都会显示；以后给已发布且目录可见的商品添加或移除该标签即可控制首页显示。
 
 ### 5.2 圣诞氛围棒耗材加购
+
+2026-11-01 图片优化：礼盒主图、五张颜色图、d1–d3 详情图、首页桌面/手机 Hero，以及本商品页两张耗材加购图共 13 张已改用 WebP，保持原像素尺寸。全尺寸文件合计 19,929,747 → 1,521,754 bytes（减少 92.36%），其中桌面 Hero 2,169,092 → 208,176 bytes，手机 Hero 2,203,297 → 213,808 bytes。原附件 ID 95、107–113、115–117、125–126、alt text 和导入 key 沿用，所有响应式缩略图同步改用 WebP；原 PNG 和旧缩略图保留用于回滚。现有导入脚本仍可通过原导入 key 复用相同附件。
+
+可重复编码脚本为 `scripts/optimize-christmas-images.py`；精确更新脚本为 `scripts/apply-christmas-image-optimization.php`，只接受当前商品/首页/加购实际引用且原图 SHA-256 匹配的附件，先生成全部缩略图再更改引用。WebP 与校验清单位于 `product-assets/focus-spark-atmosphere-wand/optimized/`。执行时遇过一次 CLI Redis 读取超时（准备阶段、尚未改引用），仅给该维护命令设置 `--exec='define("WP_REDIS_READ_TIMEOUT", 10);'` 后成功，未改网站配置。更改前服务器私有完整备份为 `/root/trovesia-backups/20261101T150246Z`。页面缓存已清理，前后安全门禁通过，最终报告 `security-reports/check-20261101T150858Z-1791611.log`。匿名浏览器确认桌面/390px 手机 Hero 使用对应 WebP，商品相册/加购图正常加载，五个颜色切换至正确 WebP；公开 CDN 两张 Hero 均为 HTTP 200、`image/webp`。验收记录见 `qa/image-optimization-20261101/`。
 
 2026-10-27 已把两类耗材合并为一个可单独购买的公开可变商品 ID 133：`Spark Atmosphere Wand Refill Packs`。它使用单一 `Refill Option` 属性展开六个变体，正式页面为 `https://www.trovesia.com/products/spark-atmosphere-wand-refill-packs/`。
 
@@ -413,6 +439,35 @@ docker compose --profile tools run --rm wpcli trovesia migrate-catalog
 2. 对照 `data/catalog.php` 与线上商品名称、价格、变体、图片和描述。
 3. 如只更新文字或数据而不下载图片，使用 `--skip-images`。
 4. 迁移脚本会保留已经存在的 `_trovesia_addon_rules`，但仍需在购物车实际验证。
+
+### 5.5 2026 电动烟花泡泡机
+
+2026-11-02 按站主要求上架商品 ID 175，当前名称 `2026 Christmas Firework Bubble Machine with Ambient Lights`，正式地址 `https://www.trovesia.com/products/2026-firework-bubble-machine-with-ambient-lights/`。父 SKU 为 `TV-2026-FIREWORK-BUBBLE`，分类 `Party & Celebration`（slug `party-celebration`），publish + visible，已在 Shop 目录验证；未更改首页圣诞模块筛选。
+
+| 变体 ID | Pack | SKU | USD |
+| ---: | --- | --- | ---: |
+| 176 | Single Machine Set | `TV-BUBBLE-2026-SINGLE` | 29.90 |
+| 177 | Two-Machine Set | `TV-BUBBLE-2026-DUO` | 49.90 |
+
+当前包装已按站主后续指示修订：单台含 1 台机器、1 张贴纸，双台含 2 台机器、2 张贴纸；**电池、泡泡液瓶、浓缩补充液均不包含**。每台需 4 节 AA 电池（双台共 8 节），客户自行准备，泡泡液另购。原供应商全套图片只作为历史参考，原件保存在 `product-assets/2026-firework-bubble-machine/source/`。站主确认预计送达 5–15 天，商品 meta `_trovesia_delivery_min_days=5`、`_trovesia_delivery_max_days=15`；默认变体为空，不设预选。2026 新款、电动全自动和氛围灯已在标题/短描述/卖点/主图中突出。尺寸按素材标注约高 15.5 cm、宽 6.7 cm。不将它写成真实烟花，不沿用未验证的每秒出泡数量、无毒、续航或充电款说法。
+
+最初使用内置 image_gen 制作 7 张英文图，原 PNG/提示词/全套 SKU 图保留为历史素材。当前主图和详情图仍用附件 168、171–174；两张规格图已替换为不含耗材的新附件 188（单台）、189（双台），旧附件 169/170 不再用于商品相册或变体。新图及提示词位于 `product-assets/2026-firework-bubble-machine/revisions/20261102-no-supplies/`：两张 1254×1254 WebP 共 550,678 bytes，分别 248,878 / 301,800 bytes，较 PNG 减少 88%。原始导入脚本 `scripts/import-2026-firework-bubble-machine.php` 已对现有 SKU 加入阻断，避免覆盖后台后续名称/价格/包装修改；定向更新使用 `scripts/update-bubble-machine-no-supplies.php`。
+
+初次上架的历史备份/验收为 `/root/trovesia-backups/20261102T092247Z`、`qa/bubble-machine-20261102/`，其中原全套售价与配件清单已被本次修订取代。最新修订先读取线上名称与售价（当时为 39.90/69.90），随后按站主明确追加指示将售价改为 **29.90/49.90**，并同步短描述、详情包装表、卖点、配送说明和变体描述，加入独立补充液链接。商品名称、主图、视频、现有加购配置、分类和默认值保留。私有备份 `/root/trovesia-backups/20261102T101359Z`，前后基线通过，最终报告 `security-reports/check-20261102T103219Z-2591248.log`，缓存已清。实际购物车两规格各 1 份，金额 29.90 + 49.90 = 79.80，随后移除测试项恢复为空；390px 手机端双台为 $49.90，无横向溢出。未结账或创建订单。最新验收见 `qa/bubble-machine-no-supplies-20261102/`。
+
+### 5.6 泡泡机浓缩补充液
+
+2026-11-02 按站主要求独立上架商品 ID 184：`Bubble Machine Refill Concentrate Sachets`，正式地址 `https://www.trovesia.com/products/bubble-machine-refill-concentrate-sachets/`。父 SKU `TV-BUBBLE-MACHINE-REFILL`，分类 `Party & Celebration`，publish + visible，已在 Shop 目录确认。明确标注泡泡机补充液/浓缩液、不含泡泡机，也不含瓶子、电池等机器配件；按袋上说明稀释，不添加未确认兑水比例或无毒承诺。
+
+| 变体 ID | Pack | SKU | USD |
+| ---: | --- | --- | ---: |
+| 185 | 10 Sachets | `TV-BUBBLE-REFILL-10` | 12.90 |
+| 186 | 30 Sachets | `TV-BUBBLE-REFILL-30` | 19.90 |
+| 187 | 50 Sachets | `TV-BUBBLE-REFILL-50` | 29.90 |
+
+默认规格为空；配送沿用相关泡泡机的 5–15 天，设置 `_trovesia_delivery_min_days=5` / `_trovesia_delivery_max_days=15`。新商品详情含独立销售的泡泡机链接，未修改机器商品或为其配置加购规则。素材来源为用户提供的粉色浓缩液袋图，保留原包装印字；四张内置 image_gen 英文展示图带有产品示意说明，实际发货数量以所选 10/30/50 袋规格为准。资产/提示词位于 `product-assets/bubble-machine-refill/`，四张 1254×1254 WebP 合计 527,694 bytes（原 PNG 6,842,399 bytes，减少 92.29%），单张 120,532–146,616 bytes；附件 ID 180–183，原 PNG 仅本地保留。脚本为 `scripts/prepare-bubble-refill-images.py`、`scripts/import-bubble-machine-refill.php`。
+
+草稿和发布两次执行复用相同附件与变体，均校验三种售价/规格数/无默认值。正式浏览器逐项验证三种选图和售价，测试购物车各数量 1，合计 12.90 + 19.90 + 29.90 = 62.70，随后清理测试项恢复为空；未结账或创建订单。390px 手机端无横向溢出，50 袋仍为 $29.90；Shop 可见。私有备份 `/root/trovesia-backups/20261102T094700Z`，前后安全/动态页面检查通过，最终报告 `security-reports/check-20261102T095228Z-2563558.log`，页面缓存已清。验收记录在 `qa/bubble-refill-20261102/`。
 
 ## 6. 如何上架新商品
 

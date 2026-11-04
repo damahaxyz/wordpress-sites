@@ -1,0 +1,56 @@
+{
+    "network": "www.main.local",
+    "version": "0.3.4",
+    "stores": {
+        "1": {
+            "domain": "www.main.local",
+            "home": "http://www.main.local",
+            "media": "http://www.main.local/wp-content/uploads",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "6": {
+            "domain": "www.branda.local",
+            "home": "http://www.branda.local",
+            "media": "http://www.branda.local/wp-content/uploads/sites/6",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "7": {
+            "domain": "www.brandb.local",
+            "home": "http://www.brandb.local",
+            "media": "http://www.brandb.local/wp-content/uploads/sites/7",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "9": {
+            "domain": "www.brandc.local",
+            "home": "http://www.brandc.local",
+            "media": "http://www.brandc.local/wp-content/uploads/sites/9",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "11": {
+            "domain": "www.brande.local",
+            "home": "http://www.brande.local",
+            "media": "http://www.brande.local/wp-content/uploads/sites/11",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "12": {
+            "domain": "www.brandf.local",
+            "home": "http://www.brandf.local",
+            "media": "http://www.brandf.local/wp-content/uploads/sites/12",
+            "uuid_preserved": true,
+            "data_preserved": true
+        },
+        "13": {
+            "domain": "www.brandg.local",
+            "home": "http://www.brandg.local",
+            "media": "http://www.brandg.local/wp-content/uploads/sites/13",
+            "uuid_preserved": true,
+            "data_preserved": true
+        }
+    },
+    "mail_guard": true
+}

@@ -1,0 +1,12 @@
+{
+  "version": "0.3.0",
+  "passed": 6,
+  "checks": [
+    "Native themed archive displays its collection and two products",
+    "Real archive contains exactly the expected synthetic products",
+    "Navigation shortcode renders links inside the active theme",
+    "Public Store API pagination returns distinct collection members",
+    "Public API category filtering agrees with the native archive",
+    "Public API reports unlimited products in stock"
+  ]
+}

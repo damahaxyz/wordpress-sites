@@ -51,6 +51,12 @@ final class Account_Experience
         add_action('wp_footer', [$this, 'render_modal'], 5);
         add_action('wp_ajax_nopriv_trovesia_account_login', [$this, 'handle_login']);
         add_action('wp_ajax_nopriv_trovesia_account_register', [$this, 'handle_registration']);
+        add_filter('woocommerce_logout_default_redirect_url', [$this, 'customer_logout_redirect']);
+    }
+
+    public function customer_logout_redirect(string $redirect): string
+    {
+        return home_url('/');
     }
 
     public function enqueue_assets(): void

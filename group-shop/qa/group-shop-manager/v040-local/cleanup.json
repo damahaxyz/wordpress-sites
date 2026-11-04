@@ -1,0 +1,22 @@
+{
+    "version": "0.4.0",
+    "removed_redundant_synthetic_users": 22,
+    "retained_fixture_ids": [
+        41,
+        42,
+        43
+    ],
+    "identities": [
+        {
+            "kind": "customer",
+            "accounts": "7"
+        },
+        {
+            "kind": "staff",
+            "accounts": "2"
+        }
+    ],
+    "orphan_identities": 0,
+    "test_sessions_revoked": true,
+    "ready": true
+}

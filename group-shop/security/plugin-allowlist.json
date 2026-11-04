@@ -1,0 +1,15 @@
+[
+  "akismet",
+  "hello",
+  "fluent-smtp",
+  "redis-cache",
+  "two-factor",
+  "trovesia-channel",
+  "trovesia-plugin",
+  "woocommerce",
+  "woocommerce-gateway-stripe",
+  "woocommerce-google-analytics-integration",
+  "woocommerce-paypal-payments",
+  "wp-media-folder",
+  "group-shop-manager"
+]

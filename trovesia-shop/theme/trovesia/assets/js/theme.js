@@ -441,8 +441,8 @@
         });
       });
 
-      if (!attributeSelect.value) {
-        choose(attributeSelect, picker.dataset.defaultValue || variantCards.find((card) => !card.disabled)?.dataset.attributeValue || "");
+      if (!attributeSelect.value && picker.dataset.defaultValue) {
+        choose(attributeSelect, picker.dataset.defaultValue);
       }
 
       attributeSelect.addEventListener("change", syncVariants);

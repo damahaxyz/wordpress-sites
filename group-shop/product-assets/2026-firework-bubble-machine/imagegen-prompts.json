@@ -1,0 +1,58 @@
+{
+  "mode": "built-in image_gen",
+  "date": "2026-11-02",
+  "jobs": [
+    {
+      "key": "bubble_hero",
+      "args": {
+        "referenced_image_paths": [
+          "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/source/sku-1.jpg",
+          "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/source/7.png",
+          "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/source/1.jpg"
+        ],
+        "transparent_background": false,
+        "prompt": "Use case: product-mockup. Create one polished square English e-commerce hero for the EXACT red cylindrical firework-shaped bubble machine in these reference images. Image1 and Image2 are strict product identity references; Image3 supports the bubble and lighting atmosphere only. Keep identical textured red cylinder, proportions (15.5 cm tall, 6.7 cm wide), black vent cutouts, side red round button below a red star, removable front reservoir cover, and the exact festive lantern, crescent, firecracker and cute red character stickers. Do not redesign or simplify hardware, invent handles or new controls. Show ONE complete machine on a warm softly lit red/gold tabletop, gentle dark red backdrop, a visible column of soap bubbles with cool ambient glow above its top as in the references. Product is main focus and fully within frame, not oversized relative to background. No people, dragons, real fire, smoke, sparks, fireworks or pyrotechnics. Professional restrained typography in uncluttered areas, EXACT English only: \"NEW FOR 2026\" small top badge; \"FIREWORK BUBBLE MACHINE\" headline; \"Fully automatic • Electric • Ambient lights\" footer line. Avoid performance counts, certification claims, prices, logos or supplier watermarks. This is a soap bubble machine; preserve all reference product details. Output a single square image, not a collage."
+      }
+    },
+    {
+      "key": "bubble_single",
+      "args": {
+        "referenced_image_paths": [
+          "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/source/sku-1.jpg"
+        ],
+        "transparent_background": false,
+        "prompt": "Use case: text-localization. Edit this exact square source SKU image into a clear English product bundle card. Preserve the same red cylindrical machine, exact vent patterns, side red round button and star, festive stickers, full machine count ONE, bubbles, warm red/gold scene and all depicted accessory categories. Keep the source's product and accessory design faithful. Remove all Chinese promotional text and replace with polished readable English. No price. Header EXACT \"SINGLE MACHINE SET\"; small badge \"2026 • BATTERY EDITION\". Included contents list, EXACT: \"1 × Bubble machine\", \"4 × AA batteries\", \"1 × Bubble solution bottle\", \"10 × Concentrate sachets\", \"1 × Sticker sheet\". Existing battery and bottle images are pictorial examples; do not add battery-brand guarantees; use generic unbranded AA battery illustrations if necessary. Visually present one machine and one bottle; no phantom second machine. For the ten sachets, retain an overlapping group labeled 10, do not require ten individual separated packets. Keep content labels associated with correct accessories. Footer EXACT \"Fully automatic • Ambient lights\". Do not depict lithium cells, USB cables, chargers, real fireworks, fire, smoke or sparks. No unsupported bubble-per-second or non-toxic claims. Single square image."
+      }
+    },
+    {
+      "key": "bubble_double",
+      "args": {
+        "referenced_image_paths": [
+          "/Users/dodo/Documents/wordpress-sites/trovesia-shop/product-assets/2026-firework-bubble-machine/source/sku-2pcs.jpg"
+        ],
+        "transparent_background": false,
+        "prompt": "Use case: text-localization. Edit this exact square source SKU image into a clear English product bundle card. Preserve the same TWO red cylindrical machines, their exact vent patterns, side red round button and star, festive stickers, soap bubbles and warm red/gold scene. Keep physical product details faithful, no redesign. Replace Chinese copy with readable English. No prices. Header EXACT \"TWO-MACHINE SET\"; small badge \"2026 • BATTERY EDITION\". Included contents list EXACT: \"2 × Bubble machines\", \"8 × AA batteries\", \"2 × Bubble solution bottles\", \"20 × Concentrate sachets\", \"2 × Sticker sheets\". Correct visible quantities where the source uses a sample illustration: show two solution bottles and two sticker sheets, with compact clearly labeled groups for 8 AA batteries and 20 concentrate sachets. Use generic unbranded AA batteries. This is the doubled version of the pictured battery set; no lithium cells or USB chargers. Footer EXACT \"Fully automatic • Ambient lights\". Do not invent hardware, benefits, certifications or brand guarantees. No real fire, smoke, sparks or pyrotechnics. Single square image."
+      }
+    },
+    {
+      "key": "bubble_controls",
+      "file": "5.jpg",
+      "prompt": "Use case: text-localization. Edit this image, preserving the EXACT red machine, closeup side round power button below the star decoration, textured body, vent cutouts, hand pressing the button, lantern sticker, bubbles, background and perspective. Replace only the large Chinese promotional heading at top with clean readable English \"ONE-TOUCH START\" and a smaller line \"Fully automatic bubble play\". Keep short English text entirely within frame with safe margins. The hand and all product geometry must remain unchanged. No new controls or cables, no Chinese promotional copy, no prices, no quantitative claims, no claims of non-toxicity. Retain portrait composition and sharp product detail."
+    },
+    {
+      "key": "bubble_outlets",
+      "file": "3.jpg",
+      "prompt": "Use case: text-localization. Edit this exact image preserving its top-down close-up of the red firework bubble machine, white multi-opening bubble wheel and outlets, soap bubbles, original cool ambient light glow, hardware, textures, colors and original setting. Replace only the Chinese heading at bottom with \"MULTI-OPENING BUBBLE DESIGN\" and smaller line \"Bubbles with ambient light\". Use clean readable English typography, keep all words within the frame. Do not change the number or shape of visible bubble openings, add sparks, fire, waterjets, new hardware, bubble-per-second claims, performance guarantees or certifications. Single portrait image."
+    },
+    {
+      "key": "bubble_reservoir",
+      "file": "4.jpg",
+      "prompt": "Use case: text-localization. Translate only the top-right Chinese marketing heading into clean English \"REFILLABLE RESERVOIR\" and smaller line \"Refill for more bubble fun\". Preserve the EXACT open red bubble-machine body, empty front cavity, removable cover on the table, clear tube inserted into the depicted bottle, bottle shape, original perspective and scene. This is a faithful localization: no redesign, no added parts, no invented reservoir capacity or runtime, no quantitative or non-toxic claims. Keep readable text within frame, matching the warm original colors. Single portrait image."
+    },
+    {
+      "key": "bubble_dimensions",
+      "file": "7.png",
+      "prompt": "Use case: text-localization. Faithfully edit this product-size image. Preserve EXACT machine appearance, red cylindrical shape, festive stickers, vent cutouts, star and side round button, original dimension arrows and red background. Keep the dimension numbers EXACTLY \"15.5 cm\" height and \"6.7 cm\" width. Translate bottom Chinese note to EXACT English \"Approximate measurements. Actual size may vary slightly.\" Use a small but readable line safely inside the image border. Add a small top header \"PRODUCT DIMENSIONS\" if space permits without obscuring product. Do not alter proportions, measurements or geometry, add features, claim battery charging or remove product stickers. Single square image."
+    }
+  ]
+}

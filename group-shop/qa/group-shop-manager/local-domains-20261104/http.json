@@ -1,0 +1,178 @@
+{
+  "hosts": [
+    "www.main.local",
+    "www.branda.local",
+    "www.brandb.local",
+    "www.brandc.local",
+    "www.brande.local",
+    "www.brandf.local",
+    "www.brandg.local"
+  ],
+  "passed": 41,
+  "checks": [
+    {
+      "check": "www.main.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.main.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.main.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.main.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.main.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local: frontend",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local: separate login",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local: login action",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local: authenticated admin",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local: host-only authentication",
+      "passed": true
+    },
+    {
+      "check": "manager: all seven domains",
+      "passed": true
+    },
+    {
+      "check": "manager: no old localhost links",
+      "passed": true
+    },
+    {
+      "check": "store A: authorized media query",
+      "passed": true
+    },
+    {
+      "check": "store A: own media host and directory",
+      "passed": true
+    },
+    {
+      "check": "store A: image accessible",
+      "passed": true
+    },
+    {
+      "check": "shared categories: canonical main admin",
+      "passed": true
+    }
+  ]
+}

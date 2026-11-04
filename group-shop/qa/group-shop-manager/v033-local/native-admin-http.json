@@ -1,0 +1,16 @@
+{
+  "version": "0.3.3",
+  "passed": 10,
+  "checks": [
+    "Native category list adds type and ownership columns",
+    "Highlighted collection is explicitly owned by the main store",
+    "Native row links to the correct store collection editor",
+    "Native screen explains its current-site scope",
+    "Ordinary native category is labeled network shared",
+    "Native edit form also displays collection ownership and management link",
+    "Product tag list clearly identifies its global scope",
+    "Existing child taxonomy redirect remains unchanged",
+    "Central collection list remains available at local v0.3.3",
+    "Only the temporary read-only HTTP verification session was logged out"
+  ]
+}

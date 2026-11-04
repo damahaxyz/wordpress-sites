@@ -1,0 +1,57 @@
+{
+    "version": "0.3.4",
+    "passed": 31,
+    "checks": [
+        "Native link uses destination storage mode: 1",
+        "Native creation stamps store ID and UUID: 1",
+        "Current-store order remains visible: 1",
+        "Stamp preserves existing origin snapshot: 1",
+        "Native CRUD status and internal notes remain available: 1",
+        "Native link uses destination storage mode: 6",
+        "Native creation stamps store ID and UUID: 6",
+        "Current-store order remains visible: 6",
+        "Stamp preserves existing origin snapshot: 6",
+        "Native CRUD status and internal notes remain available: 6",
+        "Native link uses destination storage mode: 7",
+        "Native creation stamps store ID and UUID: 7",
+        "Current-store order remains visible: 7",
+        "Stamp preserves existing origin snapshot: 7",
+        "Native CRUD status and internal notes remain available: 7",
+        "Native links and order operations restore original context",
+        "Native link supports storage option admin.php?page=wc-orders",
+        "Native link supports storage option edit.php?post_type=shop_order",
+        "Mismatched origin is rejected by visibility protection",
+        "Customer cannot access mismatched origin: view_order",
+        "Customer cannot access mismatched origin: pay_for_order",
+        "Customer cannot access mismatched origin: order_again",
+        "Restoring correct origin restores ownership",
+        "Customer cannot resolve central native-order entry",
+        "Manager no longer contains central order tab or links",
+        "Overview links to correct store native orders: 1",
+        "Overview links to correct store native orders: 6",
+        "Overview links to correct store native orders: 7",
+        "Old central URL safely falls back to overview",
+        "Native HPOS source column remains registered",
+        "All origin and permission checks restore main context"
+    ],
+    "fixtures": {
+        "1": {
+            "id": 60,
+            "url": "http://localhost:18087/wp-admin/admin.php?page=wc-orders",
+            "hpos": true,
+            "path": "/"
+        },
+        "6": {
+            "id": 138,
+            "url": "http://localhost:18087/brand-a/wp-admin/edit.php?post_type=shop_order",
+            "hpos": false,
+            "path": "/brand-a/"
+        },
+        "7": {
+            "id": 40,
+            "url": "http://localhost:18087/brand-b/wp-admin/edit.php?post_type=shop_order",
+            "hpos": false,
+            "path": "/brand-b/"
+        }
+    }
+}

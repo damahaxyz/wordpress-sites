@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+printf 'ssh %s\n' "$*" >> "${TROVESIA_DEPLOY_TEST_LOG}"
+if [[ "${TROVESIA_DEPLOY_TEST_FAIL:-0}" == 1 && "$*" == *'security-baseline.sh check'* ]]; then
+    exit 31
+fi

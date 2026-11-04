@@ -171,6 +171,12 @@
   padding-right: 68px !important;
 }
 
+/* WooCommerce also enhances these inputs on catalogue/account pages.
+   The modal already provides its own Show/Hide control. */
+.trovesia-account-modal .show-password-input {
+  display: none !important;
+}
+
 .trovesia-password-field button {
   position: absolute;
   top: 50%;

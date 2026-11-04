@@ -1,0 +1,591 @@
+.trovesia-product-content-stack {
+  display: grid;
+  clear: both;
+  margin: 0 0 90px;
+  gap: 22px;
+}
+
+.trovesia-featured-reviews,
+.trovesia-direct-description,
+.trovesia-all-reviews {
+  min-width: 0;
+  padding: clamp(34px, 5vw, 68px);
+  border: 1px solid var(--shop-line, #dfe3dc);
+  border-radius: var(--shop-radius, 24px);
+  background: var(--shop-white, #fffefb);
+}
+
+.trovesia-featured-reviews {
+  color: var(--shop-white, #fffefb);
+  border-color: transparent;
+  background: var(--shop-brand-dark, #183c33);
+}
+
+.trovesia-review-section__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 34px;
+}
+
+.trovesia-review-section__header p,
+.trovesia-section-kicker {
+  margin: 0 0 9px;
+  color: var(--shop-accent, #c6965c);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.trovesia-review-section__header h2,
+.trovesia-direct-description > h2,
+.trovesia-review-modal h2 {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 62px);
+}
+
+.trovesia-featured-reviews .trovesia-review-section__header h2 {
+  color: var(--shop-white, #fffefb);
+}
+
+.trovesia-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.trovesia-review-grid--featured {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  scroll-behavior: smooth;
+  scroll-padding-left: 2px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.trovesia-review-grid--featured::-webkit-scrollbar {
+  display: none;
+}
+
+.trovesia-review-grid--featured .trovesia-review-card {
+  flex: 0 0 calc((100% - 32px) / 3);
+  scroll-snap-align: start;
+}
+
+.trovesia-review-carousel__controls {
+  display: flex;
+  gap: 8px;
+}
+
+.trovesia-review-carousel__controls button {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 50%;
+  color: var(--shop-white, #fffefb);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.trovesia-review-carousel__controls button:hover:not(:disabled) {
+  color: var(--shop-brand-dark, #183c33);
+  background: var(--shop-white, #fffefb);
+}
+
+.trovesia-review-carousel__controls button:disabled {
+  opacity: 0.34;
+  cursor: not-allowed;
+}
+
+.trovesia-review-card {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--shop-line, #dfe3dc);
+  border-radius: 18px;
+  background: var(--shop-paper, #f8f7f2);
+  box-shadow: 0 14px 34px rgba(31, 48, 40, 0.06);
+}
+
+.trovesia-review-card--featured {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--shop-ink, #17211d);
+  background: var(--shop-white, #fffefb);
+}
+
+.trovesia-review-card__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eeeae0;
+}
+
+.trovesia-review-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  object-fit: cover;
+  transition: transform 400ms ease;
+}
+
+.trovesia-review-card__media:hover img {
+  transform: scale(1.025);
+}
+
+.trovesia-review-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.trovesia-review-card__rating {
+  margin-bottom: 14px;
+  color: var(--shop-accent, #c6965c);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.trovesia-review-card blockquote {
+  padding: 0;
+  margin: 0 0 26px;
+  color: var(--shop-ink, #17211d);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.trovesia-review-card blockquote p {
+  margin: 0;
+}
+
+.trovesia-review-card footer {
+  display: grid;
+  align-items: center;
+  margin-top: auto;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.trovesia-review-card__avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--shop-white, #fffefb);
+  background: var(--shop-brand, #315f4f);
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 17px;
+}
+
+.trovesia-review-card footer > span:nth-child(2) {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.trovesia-review-card footer strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trovesia-review-card footer small {
+  color: var(--shop-muted, #67716b);
+  font-size: 9px;
+}
+
+.trovesia-review-card__verified {
+  padding: 5px 7px;
+  border-radius: 999px;
+  color: var(--shop-brand, #315f4f);
+  background: var(--shop-soft, #eef2eb);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.trovesia-direct-description__content {
+  max-width: 960px;
+  margin-top: 30px;
+  color: var(--shop-muted, #67716b);
+  font-size: 17px;
+}
+
+.trovesia-direct-description__content h2,
+.trovesia-direct-description__content h3 {
+  color: var(--shop-ink, #17211d);
+}
+
+.trovesia-review-modal-open,
+.trovesia-review-submit {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border: 1px solid var(--shop-brand, #315f4f);
+  border-radius: 999px;
+  color: var(--shop-white, #fffefb);
+  background: var(--shop-brand, #315f4f);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.trovesia-review-modal-open:hover,
+.trovesia-review-submit:hover {
+  border-color: var(--shop-brand-dark, #183c33);
+  color: var(--shop-white, #fffefb);
+  background: var(--shop-brand-dark, #183c33);
+  transform: translateY(-1px);
+}
+
+.trovesia-all-reviews--empty {
+  display: flex;
+  min-height: 152px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: clamp(30px, 4vw, 46px);
+  gap: 16px;
+  background: linear-gradient(135deg, var(--shop-white, #fffefb), var(--shop-soft, #eef2eb));
+}
+
+.trovesia-all-reviews--empty .trovesia-review-modal-open {
+  width: min(100%, 240px);
+  min-height: 58px;
+  box-shadow: 0 12px 28px rgba(24, 60, 51, 0.18);
+}
+
+.trovesia-all-reviews--empty .trovesia-review-notice {
+  width: 100%;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.trovesia-review-pagination {
+  margin-top: 36px;
+}
+
+.trovesia-review-pagination ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.trovesia-review-pagination a,
+.trovesia-review-pagination span {
+  display: grid;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 11px;
+  place-items: center;
+  border: 1px solid var(--shop-line, #dfe3dc);
+  border-radius: 999px;
+  background: var(--shop-white, #fffefb);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.trovesia-review-pagination .current,
+.trovesia-review-pagination a:hover {
+  color: var(--shop-white, #fffefb);
+  border-color: var(--shop-brand, #315f4f);
+  background: var(--shop-brand, #315f4f);
+}
+
+.trovesia-review-notice {
+  padding: 13px 16px;
+  margin: 0 0 24px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trovesia-review-notice--success {
+  color: #24543f;
+  background: #e5f0e8;
+}
+
+.trovesia-review-notice--error {
+  color: #87382f;
+  background: #f8e8e4;
+}
+
+.trovesia-review-modal {
+  width: min(620px, calc(100% - 36px));
+  max-width: none;
+  max-height: calc(100vh - 36px);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 22px;
+  color: var(--shop-ink, #17211d);
+  background: var(--shop-white, #fffefb);
+  box-shadow: 0 40px 120px rgba(16, 44, 37, 0.28);
+}
+
+.trovesia-review-modal::backdrop {
+  background: rgba(16, 44, 37, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.trovesia-review-modal__panel {
+  position: relative;
+  padding: clamp(28px, 5vw, 52px);
+}
+
+.trovesia-review-modal__panel > p:nth-of-type(2) {
+  margin: 8px 0 28px;
+  color: var(--shop-muted, #67716b);
+  font-size: 13px;
+}
+
+.trovesia-review-modal__close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--shop-line, #dfe3dc);
+  border-radius: 50%;
+  color: var(--shop-ink, #17211d);
+  background: transparent;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.trovesia-review-modal form,
+.trovesia-review-modal form > label {
+  display: grid;
+  gap: 8px;
+}
+
+.trovesia-review-modal form {
+  gap: 20px;
+}
+
+.trovesia-review-modal label,
+.trovesia-review-rating legend {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.trovesia-review-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.trovesia-review-form__row label {
+  display: grid;
+  gap: 8px;
+}
+
+.trovesia-review-modal input[type="text"],
+.trovesia-review-modal input[type="email"],
+.trovesia-review-modal textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cfd7d1;
+  border-radius: 10px;
+  outline: 0;
+  color: var(--shop-ink, #17211d);
+  background: var(--shop-white, #fffefb);
+  font: inherit;
+}
+
+.trovesia-review-modal input:focus,
+.trovesia-review-modal textarea:focus {
+  border-color: var(--shop-brand, #315f4f);
+  box-shadow: 0 0 0 3px rgba(49, 95, 79, 0.12);
+}
+
+.trovesia-review-rating {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.trovesia-review-rating > div {
+  display: flex;
+  width: fit-content;
+  flex-direction: row-reverse;
+  margin-top: 8px;
+}
+
+.trovesia-review-rating input {
+  position: absolute;
+  opacity: 0;
+}
+
+.trovesia-review-rating label {
+  padding-right: 5px;
+  color: #d7dcd8;
+  cursor: pointer;
+  font-size: 31px;
+  line-height: 1;
+}
+
+.trovesia-review-rating input:checked ~ label,
+.trovesia-review-rating label:hover,
+.trovesia-review-rating label:hover ~ label {
+  color: var(--shop-accent, #c6965c);
+}
+
+.trovesia-review-rating input:focus-visible + label {
+  outline: 2px solid var(--shop-brand, #315f4f);
+  outline-offset: 2px;
+}
+
+.trovesia-review-upload {
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px dashed #bfc9c2;
+  border-radius: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  background: var(--shop-paper, #f8f7f2);
+}
+
+.trovesia-review-upload > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.trovesia-review-upload small {
+  color: var(--shop-muted, #67716b);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.trovesia-review-upload input {
+  max-width: 220px;
+  font-size: 11px;
+}
+
+.trovesia-review-upload-preview {
+  width: 118px;
+  height: 118px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.trovesia-review-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trovesia-review-submit {
+  width: 100%;
+}
+
+.trovesia-review-honeypot {
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+body.trovesia-review-modal-opened {
+  overflow: hidden;
+}
+
+.trovesia-admin-featured-review {
+  color: #c6965c;
+  font-size: 20px;
+}
+
+@media (max-width: 900px) {
+  .trovesia-review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trovesia-review-grid--featured .trovesia-review-card {
+    flex-basis: calc((100% - 16px) / 2);
+  }
+}
+
+@media (max-width: 600px) {
+  .trovesia-product-content-stack {
+    margin-bottom: 64px;
+  }
+
+  .trovesia-featured-reviews,
+  .trovesia-direct-description,
+  .trovesia-all-reviews {
+    padding: 28px 20px;
+    margin-right: -18px;
+    margin-left: -18px;
+    border-radius: 0;
+  }
+
+  .trovesia-review-section__header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 26px;
+  }
+
+  .trovesia-review-grid,
+  .trovesia-review-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .trovesia-featured-reviews .trovesia-review-section__header {
+    flex-direction: row;
+  }
+
+  .trovesia-review-carousel__controls button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .trovesia-review-grid--featured {
+    margin-right: -20px;
+  }
+
+  .trovesia-review-grid--featured .trovesia-review-card {
+    flex-basis: 86%;
+  }
+
+  .trovesia-review-modal-open {
+    width: 100%;
+  }
+
+  .trovesia-review-upload {
+    grid-template-columns: 1fr;
+  }
+
+  .trovesia-review-upload input {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trovesia-review-card__media img {
+    transition: none;
+  }
+}

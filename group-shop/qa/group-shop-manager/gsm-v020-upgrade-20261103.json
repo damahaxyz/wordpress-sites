@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "passed": 19,
+    "checks": [
+        "Store 1: product names/prices/statuses, order/user counts and permanent identity preserved",
+        "Store 1: every product and variation has native unlimited stock with synchronized lookup",
+        "Store 2: product names/prices/statuses, order/user counts and permanent identity preserved",
+        "Store 2: every product and variation has native unlimited stock with synchronized lookup",
+        "Second store remains noindex with mail blocked",
+        "Mapped second-store domain preserved",
+        "Production admin screen: overview",
+        "Production admin screen: stores",
+        "Production admin screen: templates",
+        "Production admin screen: categories",
+        "Production admin screen: collections",
+        "Production admin screen: catalog",
+        "Production admin screen: products",
+        "Production admin screen: orders",
+        "Production admin screen: customers",
+        "Production admin screen: reviews",
+        "Production admin screen: audit",
+        "Production admin screen: help",
+        "Production blog context restored"
+    ],
+    "migrated_products_and_variations": {
+        "1": 27,
+        "2": 3
+    },
+    "mail_sent": false,
+    "payments_executed": false,
+    "orders_created": false
+}

@@ -1,0 +1,30 @@
+{
+    "version": "0.3.0",
+    "passed": 19,
+    "checks": [
+        "Store-level logo is selected from its own media library",
+        "Native custom-logo output uses the local selected attachment",
+        "Discourage setting updates native blog_public and Multisite visibility",
+        "Native robots output contains noindex when discouraged",
+        "Allow setting updates native WordPress visibility",
+        "Allow mode removes WordPress default noindex",
+        "Visibility changes are isolated to the selected store",
+        "Omitted fields preserve existing logo and visibility",
+        "Invalid attachment is rejected",
+        "Invalid visibility mode is rejected",
+        "Switching themes retains the shop logo",
+        "Native logo removal updates the shared shop setting",
+        "Native custom-logo editing updates the same source",
+        "Media target validates explicit shop nonce",
+        "Invalid media nonce rejected",
+        "Destructive or unsupported media action cannot fall back to the main store",
+        "Customer cannot access cross-store media",
+        "Store UI provides native media selection and visibility modes",
+        "Store-setting operations restore original context"
+    ],
+    "store": 6,
+    "image": 20,
+    "main_image": 31,
+    "child_title": "GSM child logo f446dc",
+    "main_title": "GSM main logo f446dc"
+}

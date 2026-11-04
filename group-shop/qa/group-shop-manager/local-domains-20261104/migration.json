@@ -1,0 +1,95 @@
+{
+    "mapping": {
+        "1": "www.main.local",
+        "6": "www.branda.local",
+        "7": "www.brandb.local",
+        "9": "www.brandc.local",
+        "11": "www.brande.local",
+        "12": "www.brandf.local",
+        "13": "www.brandg.local"
+    },
+    "existing_store_invariants": "PASS",
+    "shared_user_count": 4,
+    "catalog_preserved": true,
+    "changed_url_rows": {
+        "1": 10,
+        "6": 7,
+        "7": 8,
+        "9": 6,
+        "11": 6,
+        "12": 6,
+        "13": 6
+    },
+    "after": {
+        "1": {
+            "uuid": "744151e7-c370-476f-a16f-159992ffde08",
+            "product_media_hash": "81485ec4dcff8c3e3c69d9291e7f0ccf1c258ec01e7f10478b0c305075ac423f",
+            "prices_media_hash": "1b8060bf475267c0858019bc24fc7726058390d6f0eaf54f9a6ae68c4d984b4f",
+            "collections_hash": "20b2664943fa91d0475bc0ac7da101789728f72decd735f14f1eba24398b41b5",
+            "relationships_hash": "44df4da359dbd8dd0fe0a3a1a51ed58436a034a300c6c025f8d5e4e7b4227417",
+            "order_count": 1,
+            "legacy_order_count": 0,
+            "public": "1"
+        },
+        "6": {
+            "uuid": "8ad59397-ad1e-4042-81da-46a3acb61436",
+            "product_media_hash": "bfd54726117b541d706e25c1c9747ec9938417629b96e21c02a52594b0d5d7ec",
+            "prices_media_hash": "2707e632a2986243093319739d652220b6d625b715c3fd51218f8c8945bc9a4c",
+            "collections_hash": "3d1be1babdcbbc439afff1b5343e8d8e65fcc8e77c4c92293c7109e35e979470",
+            "relationships_hash": "e8e34eb562ba1523d0123c55be61247c9bcdfac09bd4c250bf74fc211fcb19cf",
+            "order_count": 0,
+            "legacy_order_count": 2,
+            "public": "0"
+        },
+        "7": {
+            "uuid": "daf6f6b1-45e7-471e-944f-dc8fdd14b0f3",
+            "product_media_hash": "805ff59bdd747478447fc43aec75d6b56b0b6ea8c5d03aae04d6d0e60435e95d",
+            "prices_media_hash": "c7cc05436d3100b3378669cef8a49eb4ef682189597dd8b3689a7f68e99d6995",
+            "collections_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "relationships_hash": "8db176af4ecbcfa64bbb7b8333802b889e81e46bbcefdcfa8fc368e87803b0c7",
+            "order_count": 0,
+            "legacy_order_count": 2,
+            "public": "0"
+        },
+        "9": {
+            "uuid": "08b53778-273f-491c-87e5-529b236a7d99",
+            "product_media_hash": "f0c027ed02c4b504a1c7bbca2a63d3f8aad8ee988b3249ec2ad4dc20c2264949",
+            "prices_media_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "collections_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "relationships_hash": "aa0791020c1c02f8d11b140670c7a78e4bf48613c91af8ee0890d015038d9061",
+            "order_count": 0,
+            "legacy_order_count": 0,
+            "public": "0"
+        },
+        "11": {
+            "uuid": "4e02e05f-27a6-4867-86e6-1b9f3894c84d",
+            "product_media_hash": "dec1cdb8f870b4a26039200ba845e994405bef18d47c45393c47c1cebafba37f",
+            "prices_media_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "collections_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "relationships_hash": "aa0791020c1c02f8d11b140670c7a78e4bf48613c91af8ee0890d015038d9061",
+            "order_count": 0,
+            "legacy_order_count": 0,
+            "public": "0"
+        },
+        "12": {
+            "uuid": "45850c93-643f-4ff4-adc0-fe3d732b5ec0",
+            "product_media_hash": "dec1cdb8f870b4a26039200ba845e994405bef18d47c45393c47c1cebafba37f",
+            "prices_media_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "collections_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "relationships_hash": "aa0791020c1c02f8d11b140670c7a78e4bf48613c91af8ee0890d015038d9061",
+            "order_count": 0,
+            "legacy_order_count": 0,
+            "public": "0"
+        },
+        "13": {
+            "uuid": "40e2e0c5-aa5a-479a-9b42-bfb12de12a6b",
+            "product_media_hash": "dec1cdb8f870b4a26039200ba845e994405bef18d47c45393c47c1cebafba37f",
+            "prices_media_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "collections_hash": "35786c7117b4e38d0f169239752ce71158266ae2f6e4aa230fbbb87bd699c0e3",
+            "relationships_hash": "aa0791020c1c02f8d11b140670c7a78e4bf48613c91af8ee0890d015038d9061",
+            "order_count": 0,
+            "legacy_order_count": 0,
+            "public": "0"
+        }
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "version": "0.4.0",
+    "plan": {
+        "sources": [
+            {
+                "user": 1,
+                "kind": "staff",
+                "home": 0,
+                "customer_stores": [],
+                "staff_stores": [
+                    1,
+                    6,
+                    7,
+                    9,
+                    11,
+                    12,
+                    13
+                ],
+                "done": false
+            },
+            {
+                "user": 2,
+                "kind": "customer",
+                "home": 1,
+                "customer_stores": [
+                    1
+                ],
+                "staff_stores": [],
+                "done": false
+            },
+            {
+                "user": 3,
+                "kind": "customer",
+                "home": 1,
+                "customer_stores": [
+                    1
+                ],
+                "staff_stores": [],
+                "done": false
+            },
+            {
+                "user": 4,
+                "kind": "customer",
+                "home": 1,
+                "customer_stores": [
+                    1,
+                    6,
+                    7
+                ],
+                "staff_stores": [],
+                "done": false
+            }
+        ],
+        "blocked": []
+    },
+    "result": {
+        "sources": 4,
+        "customer_accounts": 5,
+        "orders": 2,
+        "reviews": 1
+    }
+}

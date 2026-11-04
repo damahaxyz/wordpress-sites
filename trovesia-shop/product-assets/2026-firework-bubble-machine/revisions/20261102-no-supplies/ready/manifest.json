@@ -1,0 +1,18 @@
+{
+  "firework-bubble-machine-double-no-supplies-en.webp": {
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 2388205,
+    "after_bytes": 301800,
+    "sha256": "3923931682bb9cc2746ba18cb666b20b5db080cceba0d3dae6e3cc1757ebb4d0"
+  },
+  "firework-bubble-machine-single-no-supplies-en.webp": {
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 2201981,
+    "after_bytes": 248878,
+    "sha256": "9d61fb7082a8765f7a06b0c34c16c78581568dd34177311522852c85b5e8d411"
+  }
+}

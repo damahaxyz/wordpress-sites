@@ -1,0 +1,15 @@
+{
+    "version": "0.4.0",
+    "passed": 9,
+    "checks": [
+        "Foreign-shop native profile save does not verify or link a customer in main shop",
+        "Native employee creation stores immutable staff identity",
+        "Native grant save persists the requested roles",
+        "Native grant save gives no implicit access to other shops",
+        "Concurrent requests persist exactly one native user and one identity row",
+        "Concurrent registration leaves customer without privileged membership",
+        "REST rejects foreign customer by ID: \/wc\/v3\/customers\/",
+        "REST rejects foreign customer by ID: \/wp\/v2\/users\/",
+        "Temporary native employee and race customer are removed cleanly"
+    ]
+}

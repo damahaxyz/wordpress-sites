@@ -1,0 +1,16 @@
+{
+    "stores": {
+        "1": {
+            "public": "0",
+            "logo": 0,
+            "theme": "trovesia"
+        },
+        "2": {
+            "public": "0",
+            "logo": 0,
+            "theme": "twentytwentyfive"
+        }
+    },
+    "users": 6,
+    "orders": 4
+}

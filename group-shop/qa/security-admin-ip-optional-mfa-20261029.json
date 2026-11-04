@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Asia/Taipei",
+  "security_module_version": "1.1.0",
+  "deployment": "20261029T105741Z",
+  "pre_change_backup": "/root/trovesia-backups/20261029T105529Z",
+  "final_check": "/root/wordpress-sites/trovesia-shop/security-reports/check-20261029T110652Z-2567431.log",
+  "policy": {
+    "allowed_admin_ips": ["152.175.28.90", "94.72.127.120", "85.239.238.111"],
+    "two_factor_required": false,
+    "damaha_enabled_methods": [],
+    "damaha_two_factor_active": false
+  },
+  "verification": {
+    "independent_account_state_query": "pass: no enabled providers, no forced 2FA",
+    "internal_gateway_http_checks": "13 passed using root-controlled simulated source headers",
+    "password_rate_limit": "attempt 7 blocked after six failures using a random nonexistent account",
+    "public_native_login": "403 from actual non-allowlisted server egress, including spoofed X-Real-IP/CF-Connecting-IP headers",
+    "mixed_logout_query_and_login_post": "403",
+    "administrator_ajax_and_rest": "non-allowlisted source 403; approved REST source 200",
+    "public_logout_and_password_recovery": "normal WordPress redirects retained",
+    "channel_portal_and_guest_cart_api": "200",
+    "customer_login_handler": "normal invalid-credentials response; not rejected by administrator IP policy",
+    "permissions_manifest_and_health": "pass",
+    "session_cleanup": "disposable test administrator sessions destroyed; no real passwords or recovery tokens used"
+  },
+  "notes": [
+    "Two Factor remains installed; users can opt in to email or an enrolled authenticator.",
+    "Administrator sessions were invalidated during policy deployment; sign in again from an approved address.",
+    "Cloudflare and security/admin-access.json must both be updated when administrator IP addresses change."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+    "stores": {
+        "1": {
+            "products": 31,
+            "product_digest": "dcdd3f1f843d163a6ac493debca62f626ad719b36f1a3cfd4791d87c680ce7cc",
+            "attachments": 9,
+            "media_digest": "fd3892b9d676e5e12b88ffd3309c94209d4aa7af4712befe80a7533f7b9c5eac"
+        },
+        "6": {
+            "products": 105,
+            "product_digest": "bd9766bb91ccc2e15f204145314b6bc37fce7f42a3d39460c5c498a02a71d4e7",
+            "attachments": 12,
+            "media_digest": "0a5b97e8729747b5f39fc3724df891ca936a6f83f10cb6c5864efdf568a97e6e"
+        },
+        "7": {
+            "products": 20,
+            "product_digest": "4480cc4a590ec97ddcbdcce84770db394f5bb2e93113c0d108189bc0144749ae",
+            "attachments": 5,
+            "media_digest": "3ede270aae5a1ce9a033c2e9ea505d83ae4239f17665296b043f16a7f09cfc1d"
+        },
+        "9": {
+            "products": 0,
+            "product_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "attachments": 4,
+            "media_digest": "685737af7942285dcb9e60cbd44ff54cfb1905f3f44f46b79552f3b085a0ea5f"
+        },
+        "11": {
+            "products": 0,
+            "product_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "attachments": 2,
+            "media_digest": "9caf631f5391787efa75da1d3e48598df24fa4ea367faeb222d2e9d72d9fc0a9"
+        },
+        "12": {
+            "products": 0,
+            "product_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "attachments": 2,
+            "media_digest": "72ca18d95291cb5931040582e535a0a4de4d557e54d3c46a2df5f8c282e74936"
+        },
+        "13": {
+            "products": 0,
+            "product_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "attachments": 2,
+            "media_digest": "64b8947ff843bbafab5b6d61d0efc3f6dd3b87f7c42b233dcc6b79ce6f173588"
+        }
+    },
+    "mappings": 35,
+    "mapping_digest": "d3b830d7e81d393ff3cba41cc6aecad962d684d5e958a240ac8ea22377af4ea9"
+}

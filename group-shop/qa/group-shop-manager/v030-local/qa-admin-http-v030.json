@@ -1,0 +1,30 @@
+{
+  "version": "0.3.0",
+  "passed": 24,
+  "checks": [
+    "Retired classification tabs are absent in the authenticated manager",
+    "Exactly ten active manager tabs remain",
+    "Authenticated admin screen: overview",
+    "Authenticated admin screen: stores",
+    "Authenticated admin screen: collections",
+    "Authenticated admin screen: catalog",
+    "Authenticated admin screen: products",
+    "Authenticated admin screen: orders",
+    "Authenticated admin screen: customers",
+    "Authenticated admin screen: reviews",
+    "Authenticated admin screen: audit",
+    "Authenticated admin screen: help",
+    "Collection selectors use the current store native taxonomy",
+    "Collection page links to the correct store native product categories",
+    "Native admin-post saves a collection using local classification IDs",
+    "Native WooCommerce category management is accessible with existing terms",
+    "Retired write handler rejected: template_save",
+    "Retired write handler rejected: template_tag",
+    "Retired write handler rejected: taxonomy_sync",
+    "Retired write handler rejected: category_save",
+    "Rejected old handlers do not modify native category records",
+    "Retired URL safely falls back to overview: templates",
+    "Retired URL safely falls back to overview: categories",
+    "Only the temporary HTTP test session was logged out"
+  ]
+}

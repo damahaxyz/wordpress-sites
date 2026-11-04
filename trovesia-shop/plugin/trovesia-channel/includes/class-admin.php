@@ -15,6 +15,8 @@ if (! defined('ABSPATH')) {
 
 final class Admin
 {
+    private const MANAGER_ERRORS = ['manager_password_required', 'manager_password_invalid', 'manager_email_in_use', 'manager_username_locked', 'manager_already_assigned'];
+
     private static ?self $instance = null;
 
     private bool $booted = false;
@@ -120,7 +122,7 @@ final class Admin
         $selected_channel_id = isset($_GET['channel_id']) ? absint($_GET['channel_id']) : 0;
         $channels = Database::get_channels();
         $notice = isset($_GET['trovesia_notice']) ? sanitize_key(wp_unslash((string) $_GET['trovesia_notice'])) : '';
-        $auto_open_modal = in_array($notice, ['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager', 'manager_password_required', 'manager_password_invalid'], true);
+        $auto_open_modal = in_array($notice, array_merge(['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager'], self::MANAGER_ERRORS), true);
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Trovesia Channels', 'trovesia-channel'); ?></h1>
@@ -220,19 +222,9 @@ final class Admin
             $this->redirect_with_notice('invalid_channel', $channel_id);
         }
         if ($manager_email !== '') {
-            if (! is_email($manager_email)) {
-                $this->redirect_with_notice('invalid_manager', $channel_id);
-            }
-            $manager_user = get_user_by('email', $manager_email);
-            $password_error = $this->manager_password_error($manager_password, ! $manager_user instanceof \WP_User);
-            if ($password_error) {
-                $this->redirect_with_notice($password_error->get_error_code(), $channel_id);
-            }
-            if (! $manager_user instanceof \WP_User) {
-                $candidate_username = $manager_username !== '' ? $manager_username : sanitize_user(strstr($manager_email, '@', true) ?: '', true);
-                if ($candidate_username === '' || username_exists($candidate_username)) {
-                    $this->redirect_with_notice('invalid_manager', $channel_id);
-                }
+            $manager_error = $this->validate_manager_details($channel_id, $manager_email, $manager_username, $manager_password);
+            if ($manager_error) {
+                $this->redirect_with_notice($this->manager_error_notice($manager_error), $channel_id);
             }
         }
 
@@ -265,7 +257,7 @@ final class Admin
         if ($manager_email !== '') {
             $manager_result = $this->upsert_manager($channel_id, $manager_email, $manager_username, $manager_password);
             if (is_wp_error($manager_result)) {
-                $this->redirect_with_notice(in_array($manager_result->get_error_code(), ['manager_password_required', 'manager_password_invalid'], true) ? $manager_result->get_error_code() : 'invalid_manager', $channel_id);
+                $this->redirect_with_notice($this->manager_error_notice($manager_result), $channel_id);
             }
 
             $this->redirect_with_notice($manager_result);
@@ -306,7 +298,7 @@ final class Admin
         $initial_password = isset($_POST['manager_password']) ? (string) wp_unslash($_POST['manager_password']) : '';
         $result = $this->upsert_manager($channel_id, $email, $username, $initial_password);
 
-        $this->redirect_with_notice(is_wp_error($result) ? (in_array($result->get_error_code(), ['manager_password_required', 'manager_password_invalid'], true) ? $result->get_error_code() : 'invalid_manager') : $result, $channel_id);
+        $this->redirect_with_notice(is_wp_error($result) ? $this->manager_error_notice($result) : $result, $channel_id);
     }
 
     public function register_order_meta_box(): void
@@ -570,8 +562,8 @@ final class Admin
                         <h3><?php esc_html_e('Channel manager', 'trovesia-channel'); ?></h3>
                         <p class="description"><?php esc_html_e('Manager details are optional. Leave the email empty to save only the channel.', 'trovesia-channel'); ?></p>
                         <table class="form-table" role="presentation">
-                            <tr><th scope="row"><label for="manager-email"><?php esc_html_e('Login email', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="email" id="manager-email" name="manager_email" autocomplete="off" value="<?php echo esc_attr($manager?->user_email ?? ''); ?>"><p class="description"><?php esc_html_e('The channel manager can use this email address to sign in. An existing user with the same email will be assigned without changing that user’s password.', 'trovesia-channel'); ?></p></td></tr>
-                            <tr><th scope="row"><label for="manager-username"><?php esc_html_e('Username', 'trovesia-channel'); ?></label></th><td><input class="regular-text" id="manager-username" name="manager_username" autocomplete="off" value="<?php echo esc_attr($manager?->user_login ?? ''); ?>"><p class="description"><?php esc_html_e('For a new account, leave this empty to derive a username from the email. An existing username cannot be changed here.', 'trovesia-channel'); ?></p></td></tr>
+                            <tr><th scope="row"><label for="manager-email"><?php esc_html_e('Login email', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="email" id="manager-email" name="manager_email" autocomplete="off" value="<?php echo esc_attr($manager?->user_email ?? ''); ?>"><p class="description"><?php esc_html_e('For a linked manager, changing this email updates the same account and preserves its channel history. For an unassigned channel, an existing account with this email can be linked.', 'trovesia-channel'); ?></p></td></tr>
+                            <tr><th scope="row"><label for="manager-username"><?php esc_html_e('Username', 'trovesia-channel'); ?></label></th><td><input class="regular-text" id="manager-username" name="manager_username" autocomplete="off" value="<?php echo esc_attr($manager?->user_login ?? ''); ?>" <?php echo $manager instanceof \WP_User ? 'readonly' : ''; ?>><p class="description"><?php esc_html_e('An existing username is read-only. You can change the login email without creating another account. For a new account, leave this empty to derive a username from the email.', 'trovesia-channel'); ?></p></td></tr>
                             <tr><th scope="row"><label for="manager-password"><?php esc_html_e('Initial / new password', 'trovesia-channel'); ?></label></th><td><input class="regular-text" type="password" id="manager-password" name="manager_password" autocomplete="new-password" minlength="6" maxlength="4096" aria-describedby="manager-password-help"><p class="description" id="manager-password-help"><?php esc_html_e('For a new account, enter an initial password of at least 6 characters and share it with the manager. No password setup email is sent. For an existing account, leave this empty to keep its password or enter a new one to reset it.', 'trovesia-channel'); ?></p></td></tr>
                         </table>
                     </div>
@@ -594,11 +586,12 @@ final class Admin
             return new \WP_Error('invalid_manager');
         }
 
-        $user = get_user_by('email', $email);
-        $password_error = $this->manager_password_error($initial_password, ! $user instanceof \WP_User);
-        if ($password_error) {
-            return $password_error;
+        $error = $this->validate_manager_details($channel_id, $email, $username, $initial_password);
+        if ($error) {
+            return $error;
         }
+        $bound_user = $this->channel_manager($channel_id);
+        $user = $bound_user ?? get_user_by('email', $email);
         $created = false;
         if (! $user instanceof \WP_User) {
             if ($username === '') {
@@ -620,6 +613,28 @@ final class Admin
             return new \WP_Error('invalid_manager');
         }
 
+        if (! $bound_user) {
+            // Serialize assignments for this channel, without deleting an existing binding.
+            $wpdb->query('START TRANSACTION');
+            $locked_channel = $wpdb->get_var($wpdb->prepare('SELECT id FROM ' . Database::table('channels') . ' WHERE id = %d FOR UPDATE', $channel_id));
+            $binding_exists = $wpdb->get_var($wpdb->prepare('SELECT user_id FROM ' . Database::table('users') . ' WHERE channel_id = %d OR user_id = %d LIMIT 1 FOR UPDATE', $channel_id, $user->ID));
+            $assigned = $locked_channel && ! $binding_exists ? $wpdb->insert(
+                Database::table('users'),
+                ['user_id' => $user->ID, 'channel_id' => $channel_id, 'created_at' => gmdate('Y-m-d H:i:s')],
+                ['%d', '%d', '%s']
+            ) : false;
+            if (false === $assigned) {
+                $wpdb->query('ROLLBACK');
+                return new \WP_Error($binding_exists ? 'manager_already_assigned' : 'invalid_manager');
+            }
+            $wpdb->query('COMMIT');
+        } elseif ($user->user_email !== $email) {
+            $updated = wp_update_user(['ID' => $user->ID, 'user_email' => $email]);
+            if (is_wp_error($updated)) {
+                return new \WP_Error($updated->get_error_code() === 'existing_user_email' ? 'manager_email_in_use' : 'invalid_manager');
+            }
+        }
+
         $password_updated = false;
         if (! $created && $initial_password !== '') {
             wp_set_password($initial_password, $user->ID);
@@ -631,25 +646,43 @@ final class Admin
             $user->add_role('trovesia_channel_manager');
         }
 
-        $wpdb->query(
-            $wpdb->prepare(
-                'DELETE FROM ' . Database::table('users') . ' WHERE channel_id = %d OR user_id = %d',
-                $channel_id,
-                $user->ID
-            )
-        );
-        $assigned = $wpdb->insert(
-            Database::table('users'),
-            ['user_id' => $user->ID, 'channel_id' => $channel_id, 'created_at' => gmdate('Y-m-d H:i:s')],
-            ['%d', '%d', '%s']
-        );
-        if (false === $assigned) {
+        Database::audit($bound_user ? 'manager_updated' : 'manager_assigned', 'channel', $channel_id, ['user_id' => $user->ID, 'password_updated' => $password_updated]);
+
+        return $created ? 'manager_created' : ($password_updated ? 'manager_password_updated' : ($bound_user ? 'manager_updated' : 'manager_assigned'));
+    }
+
+    private function manager_error_notice(\WP_Error $error): string
+    {
+        return in_array($error->get_error_code(), self::MANAGER_ERRORS, true) ? $error->get_error_code() : 'invalid_manager';
+    }
+
+    private function validate_manager_details(int $channel_id, string $email, string $username, string $password): ?\WP_Error
+    {
+        if (! is_email($email)) {
             return new \WP_Error('invalid_manager');
         }
-
-        Database::audit('manager_assigned', 'channel', $channel_id, ['user_id' => $user->ID, 'password_updated' => $password_updated]);
-
-        return $created ? 'manager_created' : ($password_updated ? 'manager_password_updated' : 'manager_assigned');
+        $bound_user = $this->channel_manager($channel_id);
+        $email_user = get_user_by('email', $email);
+        if ($bound_user) {
+            if ($username !== '' && $username !== $bound_user->user_login) {
+                return new \WP_Error('manager_username_locked');
+            }
+            if ($email_user instanceof \WP_User && $email_user->ID !== $bound_user->ID) {
+                return new \WP_Error('manager_email_in_use');
+            }
+            return $this->manager_password_error($password, false);
+        }
+        if ($email_user instanceof \WP_User) {
+            if (Database::get_user_channel($email_user->ID)) {
+                return new \WP_Error('manager_already_assigned');
+            }
+        } else {
+            $candidate = $username !== '' ? $username : sanitize_user(strstr($email, '@', true) ?: '', true);
+            if ($candidate === '' || username_exists($candidate)) {
+                return new \WP_Error('invalid_manager');
+            }
+        }
+        return $this->manager_password_error($password, ! $email_user instanceof \WP_User);
     }
 
     private function manager_password_error(string $password, bool $creating): ?\WP_Error
@@ -767,6 +800,7 @@ final class Admin
             'saved' => __('Saved.', 'trovesia-channel'),
             'manager_created' => __('The manager account was created with the initial password you entered. Share the login details with the manager; no password setup email was sent.', 'trovesia-channel'),
             'manager_assigned' => __('The existing account was assigned.', 'trovesia-channel'),
+            'manager_updated' => __('Manager details updated. The same account remains linked to this channel.', 'trovesia-channel'),
             'manager_password_updated' => __('The existing account was assigned and its password was reset.', 'trovesia-channel'),
             'invalid_channel' => __('Enter a valid channel name and code.', 'trovesia-channel'),
             'invalid_commission_rate' => __('Enter a commission rate between 0 and 1, with up to four decimal places.', 'trovesia-channel'),
@@ -774,12 +808,15 @@ final class Admin
             'invalid_manager' => __('Enter a valid manager email and an available username when creating an account.', 'trovesia-channel'),
             'manager_password_required' => __('Enter an initial password for the new manager account. No password setup email will be sent.', 'trovesia-channel'),
             'manager_password_invalid' => __('Use a password of at least 6 characters and no more than 4096 bytes.', 'trovesia-channel'),
+            'manager_email_in_use' => __('This email belongs to another account. The channel manager was not changed.', 'trovesia-channel'),
+            'manager_username_locked' => __('An existing username cannot be changed here. Update the login email to keep the same manager account.', 'trovesia-channel'),
+            'manager_already_assigned' => __('This account is already linked to a channel. Its existing assignment was not changed.', 'trovesia-channel'),
         ];
         if (! isset($messages[$notice])) {
             return;
         }
 
-        $error = in_array($notice, ['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager', 'manager_password_required', 'manager_password_invalid'], true);
+        $error = in_array($notice, array_merge(['invalid_channel', 'invalid_commission_rate', 'duplicate_code', 'invalid_manager'], self::MANAGER_ERRORS), true);
         printf('<div class="notice %s is-dismissible"><p>%s</p></div>', $error ? 'notice-error' : 'notice-success', esc_html($messages[$notice]));
     }
 }

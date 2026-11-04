@@ -50,6 +50,7 @@
         fields.commissionRate.value = '0.2';
         fields.email.value = '';
         fields.username.value = '';
+        fields.username.readOnly = false;
         fields.password.value = '';
         title.textContent = trovesiaChannelAdmin.addTitle;
         submitButton.textContent = trovesiaChannelAdmin.createLabel;
@@ -64,6 +65,7 @@
         fields.commissionRate.value = button.dataset.commissionRate || '0.2';
         fields.email.value = button.dataset.managerEmail || '';
         fields.username.value = button.dataset.managerUsername || '';
+        fields.username.readOnly = fields.username.value !== '';
         fields.password.value = '';
         title.textContent = trovesiaChannelAdmin.editTitle;
         submitButton.textContent = trovesiaChannelAdmin.updateLabel;

@@ -1,0 +1,29 @@
+{
+  "initial": {
+    "imagesLoaded": true,
+    "overflow": false,
+    "pack": "",
+    "pressed": 0
+  },
+  "selections": [
+    {
+      "pack": "10 Sachets",
+      "price": "$12.90",
+      "quantity": "1"
+    },
+    {
+      "pack": "30 Sachets",
+      "price": "$19.90",
+      "quantity": "1"
+    },
+    {
+      "pack": "50 Sachets",
+      "price": "$29.90",
+      "quantity": "1"
+    }
+  ],
+  "cart": {
+    "table": "Products in cart\nPRODUCT\t\nDETAILS\n\tTOTAL\n\n\t\nBubble Machine Refill Concentrate Sachets\n$12.90\n\n10 individual bubble solution concentrate sachets. Refill liquid only; bubble machine not included. Dilute as…\n\nPack: 10 Sachets\n−\n+\n\t\n$12.90\n\n\n\t\nBubble Machine Refill Concentrate Sachets\n$19.90\n\n30 individual bubble solution concentrate sachets. Refill liquid only; bubble machine not included. Dilute as…\n\nPack: 30 Sachets\n−\n+\n\t\n$19.90\n\n\n\t\nBubble Machine Refill Concentrate Sachets\n$29.90\n\n50 individual bubble solution concentrate sachets. Refill liquid only; bubble machine not included. Dilute as…\n\nPack: 50 Sachets\n−\n+\n\t\n$29.90",
+    "totalPresent": true
+  }
+}

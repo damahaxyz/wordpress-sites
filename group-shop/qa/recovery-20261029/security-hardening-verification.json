@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Asia/Taipei",
+  "security_deployment": "20261029T094047Z",
+  "final_baseline_report": "/root/wordpress-sites/trovesia-shop/security-reports/check-20261029T095859Z-2503848.log",
+  "final_backup": "/root/trovesia-backups/20261029T095917Z",
+  "checks": {
+    "permissions_and_read_only_mounts": "pass",
+    "code_manifest": "pass",
+    "unknown_read_only_code_file_rejected": "pass; disposable probe removed",
+    "web_writable_code_file_rejected": "pass; disposable probe removed",
+    "failed_predeploy_check_blocks_sync_and_restart": "pass; isolated deployment stubs",
+    "admin_mfa_and_plugin_allowlist": "pass",
+    "encrypted_mail_settings": "pass after re-encryption with new login salts",
+    "public_failed_login_attempt_7_throttled": "pass; random nonexistent account, no real password used",
+    "real_dynamic_fpm_homepage": "pass",
+    "dangerous_php_and_xmlrpc_routes": "404",
+    "wp_media_folder": "5.5.2 restored and active at owner's explicit instruction",
+    "media_folder_create_import_assign": "pass as UID 33; temporary image and term deleted",
+    "public_https_home_product_login": "pass",
+    "guest_cart_checkout_html": "pass; temporary cart emptied; no order/payment submitted",
+    "registered_payment_gateways": ["ppcp-card-button-gateway", "ppcp-gateway", "stripe"],
+    "official_plugin_checksums": "5 of 5 strict checks passed",
+    "mail_test": "accepted by Gmail transport; inbox delivery requires owner confirmation"
+  },
+  "official_patch_updates": {
+    "akismet": "5.7.2",
+    "fluent-smtp": "2.4.1",
+    "woocommerce": "11.1.2",
+    "woocommerce-google-analytics-integration": "2.4.4"
+  },
+  "limitations": [
+    "Browser tool unavailable; post-patch visual rendering and real payment completion were not tested.",
+    "Static WP Media Folder review is not a clean-package attestation.",
+    "Original password-compromise method and possible data exfiltration remain unknown.",
+    "Owner must rotate administrator password and third-party payment/SMTP credentials.",
+    "Backups and monitoring are server-local per owner's choice; no offsite backup or independent external uptime monitor."
+  ]
+}

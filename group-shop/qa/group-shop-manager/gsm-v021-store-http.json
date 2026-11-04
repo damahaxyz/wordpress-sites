@@ -1,0 +1,14 @@
+{
+  "version": "0.2.1",
+  "passed": 8,
+  "checks": [
+    "Store 1: native image picker and search visibility controls render",
+    "Store 1: original media query returns only the owning store images",
+    "Store 1: invalid media authorization rejected",
+    "Store 1: unsupported destructive media operation rejected without touching an attachment",
+    "Store 2: native image picker and search visibility controls render",
+    "Store 2: original media query returns only the owning store images",
+    "Store 2: invalid media authorization rejected",
+    "Store 2: unsupported destructive media operation rejected without touching an attachment"
+  ]
+}

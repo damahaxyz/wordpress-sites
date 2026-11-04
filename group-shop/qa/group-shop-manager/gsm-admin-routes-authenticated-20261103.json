@@ -1,0 +1,82 @@
+{
+  "authenticated": true,
+  "passed": 16,
+  "checks": [
+    {
+      "path": "/wp-admin/",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/wp-admin/index.php",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/wp-admin/admin.php?page=group-shop-manager",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/wp-admin/network/",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/wp-login.php",
+      "status": 200,
+      "redirects": 1
+    },
+    {
+      "path": "/wp-admin/css/common.min.css",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/wp-content/plugins/woocommerce/woocommerce.php",
+      "status": 404
+    },
+    {
+      "path": "/wp-content/uploads/security-probe.php",
+      "status": 404
+    },
+    {
+      "path": "/demo-store/wp-admin/",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/demo-store/wp-admin/index.php",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/demo-store/wp-admin/edit.php?post_type=product",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/demo-store/wp-admin/network/",
+      "status": 200,
+      "redirects": 1
+    },
+    {
+      "path": "/demo-store/wp-login.php",
+      "status": 200,
+      "redirects": 1
+    },
+    {
+      "path": "/demo-store/wp-admin/css/common.min.css",
+      "status": 200,
+      "redirects": 0
+    },
+    {
+      "path": "/demo-store/wp-content/plugins/woocommerce/woocommerce.php",
+      "status": 404
+    },
+    {
+      "path": "/demo-store/wp-content/uploads/security-probe.php",
+      "status": 404
+    }
+  ]
+}

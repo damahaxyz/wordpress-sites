@@ -1,0 +1,68 @@
+<?php
+use GroupShop\Manager\{Stores,Identities,Customers,UserAdmin,UserMigration};
+if (!defined('WP_CLI')||!WP_CLI||wp_get_environment_type()!=='local'||get_home_url(Stores::main_id())!=='http://www.main.local'||!Identities::ready()) { throw new RuntimeException('Migrated mapped local QA only'); }
+$root=get_user_by('login','gsm-admin')->ID; wp_set_current_user($root);
+$checks=[]; $assert=static function ($ok,$name) use (&$checks): void { if (!$ok) { throw new RuntimeException('FAIL: '.$name); } $checks[]=$name; };
+$main=Stores::main_id(); $a=6; $b=7; $c=9; $suffix=bin2hex(random_bytes(3));
+$alias='isolated-'.$suffix; $email='isolated-'.$suffix.'@example.invalid'; $pa=wp_generate_password(24,false); $pb=wp_generate_password(24,false); $ps=wp_generate_password(24,false);
+$ua=Stores::within($a,static fn()=>wc_create_new_customer($email,$alias,$pa));
+$ub=Stores::within($b,static fn()=>wc_create_new_customer($email,$alias,$pb));
+$assert(is_int($ua)&&is_int($ub)&&$ua!==$ub,'Same username and real email create independent customer IDs in two shops');
+$assert(get_userdata($ua)->user_email===$email&&get_userdata($ub)->user_email===$email,'Both native customer records retain the real delivery email');
+$assert(get_userdata($ua)->user_login!==get_userdata($ub)->user_login&&Identities::alias($ua)===$alias&&Identities::alias($ub)===$alias,'Internal usernames are globally unique while visible aliases match');
+$dup=Stores::within($a,static fn()=>wc_create_new_customer($email,$alias,$pa)); $assert(is_wp_error($dup),'Same-shop duplicate registration remains rejected');
+foreach ([$a=>$ua,$b=>$ub] as $store=>$id) {
+    $pass=$store===$a?$pa:$pb;
+    $auth=Stores::within($store,static fn()=>wp_authenticate($alias,$pass));
+    $assert($auth instanceof WP_User&&$auth->ID===$id,'Username login resolves this shop: '.$store);
+    $auth=Stores::within($store,static fn()=>wp_authenticate($email,$pass));
+    $assert($auth instanceof WP_User&&$auth->ID===$id,'Email login resolves this shop: '.$store);
+}
+$assert(is_wp_error(Stores::within($b,static fn()=>wp_authenticate($email,$pa))),'A password cannot authenticate the independent B account');
+$assert(is_wp_error(Stores::within($c,static fn()=>wp_authenticate($alias,$pa))),'Unregistered third shop cannot use another shop account');
+$assert(is_wp_error(Stores::within($b,static fn()=>wp_authenticate(get_userdata($ua)->user_login,$pa))),'Canonical customer username cannot bypass shop isolation');
+$assert(Stores::within($a,static fn()=>Customers::session_user($ua))===$ua&&Stores::within($b,static fn()=>Customers::session_user($ua))===false,'Foreign cookie/user ID is rejected at session resolution');
+update_user_meta($ua,'billing_city','City A'); update_user_meta($ub,'billing_city','City B');
+$assert(get_user_meta($ua,'billing_city',true)==='City A'&&get_user_meta($ub,'billing_city',true)==='City B','Default customer addresses are independent');
+$key=Stores::within($a,static fn()=>get_password_reset_key(get_userdata($ua)));
+$assert(is_string($key),'Password-reset key can be issued in the owning shop');
+$assert(is_wp_error(Stores::within($b,static fn()=>get_password_reset_key(get_userdata($ua)))),'Foreign shop cannot issue a reset key');
+$errors=new WP_Error(); Stores::within($b,static fn()=>Customers::validate_reset($errors,get_userdata($ua)));
+$assert($errors->has_errors(),'Foreign reset confirmation is rejected');
+$session=WP_Session_Tokens::get_instance($ub)->create(time()+600);
+$new=wp_generate_password(24,false); Stores::within($a,static fn()=>reset_password(get_userdata($ua),$new)); $pa=$new;
+$assert(wp_check_password($pb,get_userdata($ub)->user_pass,$ub)&&WP_Session_Tokens::get_instance($ub)->verify($session),'Changing A password preserves B password and session');
+$assert(!is_super_admin($ua)&&!current_user_can('promote_user',$ua),'Even network role controls cannot promote a customer');
+$r=add_user_to_blog($b,$ua,'customer'); $assert(is_wp_error($r),'Customer cannot be added to another shop');
+$r=add_user_to_blog($a,$ua,'administrator'); $assert(is_wp_error($r),'Customer cannot be promoted through native membership API');
+global $wpdb; $caps=$wpdb->get_blog_prefix($a).'capabilities';
+$assert(update_user_meta($ua,$caps,['administrator'=>true])===false,'Direct role metadata overwrite is blocked');
+$assert((new WP_User($ua,'',$a))->roles===['customer'],'Customer native role stays locked');
+$staff=Identities::create_staff(['user_login'=>$alias,'user_email'=>$email,'user_pass'=>$ps,'display_name'=>'QA scoped staff '.$suffix]);
+$assert(is_int($staff)&&Identities::get($staff)['kind']==='staff','Separate employee can share the visible alias/email with customers');
+$assert(!Identities::accessible($staff,$a)&&count(get_blogs_of_user($staff))===0,'New employee receives no automatic shop access or empty membership');
+UserAdmin::grant($staff,[$a=>'shop_manager',$b=>'administrator']);
+$assert(Identities::accessible($staff,$a)&&Identities::accessible($staff,$b)&&!Identities::accessible($staff,$c),'Employee accesses exactly the authorized shops');
+$oldpage=$GLOBALS['pagenow']??null; $GLOBALS['pagenow']='wp-login.php';
+$auth=Stores::within($a,static fn()=>wp_authenticate($email,$ps));
+$assert($auth instanceof WP_User&&$auth->ID===$staff,'Backend entry selects employee identity when alias/email overlaps');
+$GLOBALS['pagenow']=$oldpage;
+$auth=Stores::within($a,static fn()=>wp_authenticate($email,$pa));
+$assert($auth instanceof WP_User&&$auth->ID===$ua,'Storefront entry selects local customer identity when employee email overlaps');
+wp_set_current_user($staff);
+$assert(!current_user_can('promote_user',$ua),'Shop manager cannot promote a customer');
+$r=add_user_to_blog($c,$staff,'administrator'); $assert(is_wp_error($r),'Employee cannot grant itself another shop');
+$assert(Stores::within($a,static fn()=>!current_user_can('manage_network')),'Shop manager is not a network administrator');
+wp_set_current_user($root);
+$original_email=get_userdata($ua)->user_email; $changed='changed-'.$suffix.'@example.invalid';
+$r=Identities::scoped($a,static fn()=>wp_update_user(['ID'=>$ua,'user_email'=>$changed]));
+$assert(is_int($r)&&Identities::find($a,$changed,true)['user_id']==$ua&&Identities::find($a,$original_email,true)===null,'Email edit updates only the owning identity index');
+$assert(Identities::find($b,$original_email,true)['user_id']==$ub,'A email edit leaves B email identity intact');
+Identities::scoped($a,static fn()=>wp_update_user(['ID'=>$ua,'user_email'=>$email]));
+$assert(!apply_filters('wp_is_application_passwords_available_for_user',true,get_userdata($ua)),'Customer application passwords are disabled');
+$assert(UserMigration::run()['sources']===0,'Completed legacy migration is idempotent');
+$assert(get_current_blog_id()===$main,'Authentication and invalid operations restore initial store context');
+$fixture=['alias'=>$alias,'email'=>$email,'a'=>$ua,'b'=>$ub,'staff'=>$staff,'password_a'=>$pa,'password_b'=>$pb,'password_staff'=>$ps,'stores'=>['a'=>$a,'b'=>$b,'c'=>$c]];
+if (!is_dir('/gsm-private')) { throw new RuntimeException('Private fixture mount required'); }
+file_put_contents('/gsm-private/fixtures.json',wp_json_encode($fixture)); chmod('/gsm-private/fixtures.json',0600);
+echo wp_json_encode(['version'=>GSM_VERSION,'passed'=>count($checks),'checks'=>$checks,'fixtures'=>['a'=>$ua,'b'=>$ub,'staff'=>$staff,'alias'=>$alias]],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)."\n";

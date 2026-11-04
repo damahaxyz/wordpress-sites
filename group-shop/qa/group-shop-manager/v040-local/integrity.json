@@ -1,0 +1,29 @@
+{
+    "version": "0.4.0",
+    "passed": 23,
+    "checks": [
+        "Legacy customer splits into one ID per owning store",
+        "One-time migration preserves existing password hash without plaintext synchronization",
+        "Legacy shared session is revoked",
+        "Both legacy and HPOS-compatible order CRUD retain correct local owner",
+        "Migration preserves historical order status, total and address snapshot",
+        "Existing default address is copied as each independent starting value",
+        "Persistent cart moves only to the matching store identity",
+        "Local download permission follows migrated customer ID",
+        "Existing local token ownership follows migrated customer ID without sharing tokens",
+        "Migrated original no longer belongs to the second shop",
+        "Real-email privacy exports resolve only this shop customer",
+        "Scoped token exports cannot pick another shop identity by duplicate email",
+        "Scoped download exports use local owner",
+        "Native privacy address erasure affects only this shop identity",
+        "Email confirmation cannot link guest orders to staff or a foreign customer",
+        "Native confirmed-email guest order linking affects only the owning store",
+        "Customer cannot become network super administrator through native API",
+        "Registration cannot inject another store role through meta_input",
+        "New order cannot bind a foreign-shop customer ID",
+        "Scope denial cannot log the full native order object",
+        "Native privacy registry uses scoped customer adapter",
+        "Deleted temporary account leaves no identity-index row",
+        "Integrity tests restore main store context"
+    ]
+}

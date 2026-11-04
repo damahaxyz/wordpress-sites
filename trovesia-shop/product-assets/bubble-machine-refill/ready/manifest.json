@@ -1,0 +1,38 @@
+{
+  "bubble-machine-refill-10-en.webp": {
+    "source": "bubble-machine-refill-10-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 1674375,
+    "after_bytes": 123964,
+    "sha256": "6d217c248a2d3d1019e7dc1ae83656b87a111726993c1ed098651038b4c26f6d"
+  },
+  "bubble-machine-refill-30-en.webp": {
+    "source": "bubble-machine-refill-30-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 1647599,
+    "after_bytes": 120532,
+    "sha256": "c467363d7e8d4bc9e8a62d657e282e5e774cee8b63ffbc02c51af8aa1579f2aa"
+  },
+  "bubble-machine-refill-50-en.webp": {
+    "source": "bubble-machine-refill-50-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 1735137,
+    "after_bytes": 136582,
+    "sha256": "2831c31db6b384363087c4cad7be9d60cd0f69c8510b84806e07607d7915afba"
+  },
+  "bubble-machine-refill-hero-en.webp": {
+    "source": "bubble-machine-refill-hero-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 1785288,
+    "after_bytes": 146616,
+    "sha256": "4dcbd4d2654a209f49d3d998a9c9456f21de7fb5bd689540cd649502cc1e15dd"
+  }
+}

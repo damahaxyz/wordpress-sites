@@ -1,0 +1,65 @@
+{
+  "firework-bubble-machine-2026-hero-en.webp": {
+    "source": "firework-bubble-machine-2026-hero-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 2337073,
+    "after_bytes": 258464,
+    "sha256": "3748e55098405da6b06186dc570bdcec8a1ea297fea154f816fcee5ea4e5db12"
+  },
+  "firework-bubble-machine-dimensions-en.webp": {
+    "source": "firework-bubble-machine-dimensions-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 1718751,
+    "after_bytes": 106910,
+    "sha256": "673f626f0eacf03d383dc6b3239d7e4f6b321acf8ccd672656905b119215ee2f"
+  },
+  "firework-bubble-machine-double-set-en.webp": {
+    "source": "firework-bubble-machine-double-set-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 2346753,
+    "after_bytes": 271874,
+    "sha256": "ac0d3e898fb2e785515adab8f7768583f1d2427405ed0d79e11b29a4b4574df2"
+  },
+  "firework-bubble-machine-one-touch-en.webp": {
+    "source": "firework-bubble-machine-one-touch-en.png",
+    "width": 1086,
+    "height": 1448,
+    "quality": 86,
+    "before_bytes": 2520669,
+    "after_bytes": 271630,
+    "sha256": "c29ae3b02dce0103adf546bf7a309c584fc898751f5405b2bf23fdfba5eefcff"
+  },
+  "firework-bubble-machine-outlets-en.webp": {
+    "source": "firework-bubble-machine-outlets-en.png",
+    "width": 1086,
+    "height": 1448,
+    "quality": 86,
+    "before_bytes": 2604959,
+    "after_bytes": 292372,
+    "sha256": "ff465432d5409335a05de4793209ef7a9ca8cc76c12307c6e83834e317c8e836"
+  },
+  "firework-bubble-machine-reservoir-en.webp": {
+    "source": "firework-bubble-machine-reservoir-en.png",
+    "width": 1086,
+    "height": 1448,
+    "quality": 86,
+    "before_bytes": 2174813,
+    "after_bytes": 155524,
+    "sha256": "bf0dd6b72e4c8cc0a9c71f3d9772abcb1b3dffd3b86252ebb4c665d16b5602a0"
+  },
+  "firework-bubble-machine-single-set-en.webp": {
+    "source": "firework-bubble-machine-single-set-en.png",
+    "width": 1254,
+    "height": 1254,
+    "quality": 86,
+    "before_bytes": 2218709,
+    "after_bytes": 239844,
+    "sha256": "a351d55fad2c49aed6dbfd6de9d3541f683b3cab48d4376c0c48187c44519fab"
+  }
+}

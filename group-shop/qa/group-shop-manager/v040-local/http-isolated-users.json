@@ -1,0 +1,31 @@
+{
+  "version": "0.4.0",
+  "passed": 25,
+  "checks": [
+    "AJAX same-email registration succeeds in www.branda.local",
+    "AJAX same-email registration succeeds in www.brandb.local",
+    "Same-shop duplicate registration is rejected",
+    "B frontend same-email independent password succeeds",
+    "Password-reset link is rejected on another shop domain",
+    "Owning-shop native reset changes the A password",
+    "B password still works after A reset",
+    "B existing session survives A password reset",
+    "A frontend email/password login succeeds",
+    "A password does not log into B",
+    "Customer cannot log into an unregistered shop",
+    "Copied customer cookie does not establish a foreign-shop session",
+    "Native account editor shows real email and store-isolation notice",
+    "Native Woo billing address saves in A",
+    "A address change does not affect B",
+    "Native forgot-password accepts this-shop email lookup",
+    "Employee backend login uses shared employee identity in A",
+    "Employee cannot log into an unauthorized shop",
+    "Shop manager cannot edit another shop customer by numeric ID",
+    "Native network users distinguishes customer scope and employee identities",
+    "Customer profile locks role and exposes no employee grants",
+    "Native foreign-shop profile save cannot enable local email-confirmation linking",
+    "Forged native customer-to-administrator update is rejected",
+    "Employee profile exposes explicit per-shop grant controls",
+    "Manager describes new identity policy"
+  ]
+}

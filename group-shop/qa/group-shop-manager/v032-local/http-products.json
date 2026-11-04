@@ -1,0 +1,31 @@
+{
+  "version": "0.3.2",
+  "passed": 25,
+  "checks": [
+    "Real list includes thumbnails and no stock column",
+    "Real list has quick native status forms",
+    "HTTP quick disable succeeds",
+    "Disabled product is hidden from public Store API",
+    "Sibling edition remains public after disable",
+    "Main original remains public after disable",
+    "Stale HTTP action is rejected",
+    "HTTP enable restores public visibility",
+    "Real editor loads native rich text and authorized store media",
+    "Real editor has no classification controls",
+    "Truncated form is rejected before writing",
+    "Native admin-post persists rich HTML and returns to editor",
+    "Invalid save retains entered form values for correction",
+    "Corrected save clears the retained error form",
+    "Real HTTP saves variation rows with the parent",
+    "Native AJAX queries the target store media without early context switching",
+    "Target media query excludes main and sibling attachments",
+    "Native rich-text image insertion resolves the attachment in the selected store",
+    "Invalid target-media authorization rejects the request",
+    "Child taxonomy management redirects to the main native authority",
+    "Native main-site AJAX can create a shared product tag",
+    "A native taxonomy AJAX creation appears in sibling-store collection choices",
+    "Native category edit submits successfully",
+    "Native category editing propagates to sibling-store choices",
+    "Temporary HTTP acceptance session logged out"
+  ]
+}

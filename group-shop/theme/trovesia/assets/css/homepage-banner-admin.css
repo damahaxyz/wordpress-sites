@@ -1,0 +1,95 @@
+.trovesia-banner-settings {
+  padding: 4px 2px 12px;
+}
+
+.trovesia-banner-intro {
+  max-width: 920px;
+  color: #50575e;
+}
+
+.trovesia-banner-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.trovesia-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.trovesia-banner-grid--style {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.trovesia-banner-field {
+  margin: 0 0 16px;
+}
+
+.trovesia-banner-field > label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.trovesia-banner-field input[type="text"],
+.trovesia-banner-field input[type="url"],
+.trovesia-banner-field input[type="number"],
+.trovesia-banner-field select,
+.trovesia-banner-field textarea {
+  width: 100%;
+}
+
+.trovesia-banner-image-field {
+  padding: 16px;
+  border: 1px solid #dcdcde;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.trovesia-banner-image-preview {
+  display: flex;
+  min-height: 120px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f0f0f1;
+}
+
+.trovesia-banner-image-preview img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.trovesia-banner-image-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.trovesia-products-grid {
+  grid-template-columns: minmax(0, 3fr) minmax(140px, 1fr);
+}
+
+.trovesia-products-settings .select2-container,
+.trovesia-products-settings .selectWoo-container {
+  width: 100% !important;
+}
+
+.trovesia-products-settings .description {
+  display: block;
+  margin-top: 6px;
+}
+
+@media (max-width: 782px) {
+  .trovesia-banner-grid,
+  .trovesia-banner-grid--style {
+    grid-template-columns: 1fr;
+  }
+}

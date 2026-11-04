@@ -1,0 +1,53 @@
+{
+    "version": "0.3.5",
+    "passed": 18,
+    "checks": [
+        "Native review/reply column uses current store: 1 comment 9",
+        "Native review/reply column uses current store: 1 comment 10",
+        "Display column leaves approval and rating unchanged: 1",
+        "Native review/reply column uses current store: 6 comment 12",
+        "Native review/reply column uses current store: 6 comment 13",
+        "Display column leaves approval and rating unchanged: 6",
+        "Native review/reply column uses current store: 7 comment 6",
+        "Native review/reply column uses current store: 7 comment 7",
+        "Display column leaves approval and rating unchanged: 7",
+        "Rendering columns across stores restores original blog",
+        "Native columns remain intact with one store column",
+        "Ordinary WordPress comments table is unaffected",
+        "Invalid row is ignored",
+        "Column never infers main-store ownership from a numeric comment ID",
+        "Retired review tab falls back to overview without old links/forms",
+        "Retired central review form is absent",
+        "Eight current manager tabs remain",
+        "All checks preserve original blog"
+    ],
+    "fixtures": {
+        "1": {
+            "review": 9,
+            "reply": 10,
+            "product": 58,
+            "name": "Group Shop QA",
+            "host": "www.main.local",
+            "url": "http://www.main.local/wp-admin/edit.php?post_type=product&page=product-reviews",
+            "label": "Group Shop QA (#1)"
+        },
+        "6": {
+            "review": 12,
+            "reply": 13,
+            "product": 132,
+            "name": "Brand A renamed",
+            "host": "www.branda.local",
+            "url": "http://www.branda.local/wp-admin/edit.php?post_type=product&page=product-reviews",
+            "label": "Brand A renamed (#6)"
+        },
+        "7": {
+            "review": 6,
+            "reply": 7,
+            "product": 34,
+            "name": "Brand B",
+            "host": "www.brandb.local",
+            "url": "http://www.brandb.local/wp-admin/edit.php?post_type=product&page=product-reviews",
+            "label": "Brand B (#7)"
+        }
+    }
+}

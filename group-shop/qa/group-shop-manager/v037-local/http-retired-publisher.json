@@ -1,0 +1,23 @@
+{
+  "version": "0.3.7",
+  "passed": 17,
+  "checks": [
+    "Manager renders six tabs",
+    "Manager exposes no cross-store publication UI",
+    "Old publisher bookmark falls back to overview",
+    "Local product editor keeps rich text and completeness protection",
+    "Local product editor keeps native media controls",
+    "Valid-nonce retired publish POST is rejected",
+    "Retired return tab falls back without publication success",
+    "Native target-store media query still works after copy/import removal",
+    "Native media query keeps target-store ownership",
+    "Remaining manager tab renders: overview",
+    "Remaining manager tab renders: stores",
+    "Remaining manager tab renders: collections",
+    "Remaining manager tab renders: products",
+    "Remaining manager tab renders: audit",
+    "Remaining manager tab renders: help",
+    "Help describes retired cross-store publication",
+    "Only temporary acceptance session was logged out"
+  ]
+}

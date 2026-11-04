@@ -1,0 +1,10 @@
+{
+  "version": "0.4.0",
+  "passed": 4,
+  "checks": [
+    "Native network Add User creates a shared employee identity",
+    "New native employee profile exposes store grants",
+    "Native profile saves A manager and B administrator grants",
+    "Concurrent same-shop registration creates exactly one successful account"
+  ]
+}

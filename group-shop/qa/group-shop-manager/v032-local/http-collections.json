@@ -1,0 +1,39 @@
+{
+  "version": "0.3.2",
+  "passed": 30,
+  "checks": [
+    "Authenticated landing page is a collection list with create/edit/delete actions",
+    "Landing page does not mix the list with an always-open editor",
+    "Dedicated create screen contains title, description and local media selection",
+    "Create screen asks for no URL slug or category hierarchy",
+    "Product chooser searches the entire current-store catalog by ID",
+    "Product chooser returns visual names, thumbnails and publication status",
+    "Product chooser nonce cannot be reused for another store",
+    "Anonymous visitors cannot query admin product selection",
+    "Real admin-post creates a titled, described and illustrated manual collection",
+    "Saved collection provides reusable homepage/topic insertion instructions",
+    "Real HTTP edits the existing collection in its dedicated page",
+    "Native public Store API reads the edited collection membership",
+    "Invalid rule submission retains entered fields for correction",
+    "Incomplete form is rejected before changing collection data",
+    "Published topic page renders collection title and description",
+    "First topic page shows the first manually prioritized public product",
+    "Collection-scoped topic pagination returns the next product",
+    "Real native Shop filters to exactly the selected collection",
+    "Native Shop automatically renders opted-in collection choices",
+    "Real Shop intersects collection membership with native Woo attribute filters",
+    "Empty filtered Shop still offers controls to change or clear collection selection",
+    "Invalid collection ID never expands to the entire catalog",
+    "Existing native archive remains compatible with collection contents",
+    "Real HTTP delete moves a collection into a recoverable trash list",
+    "Trashed collection disappears from topic modules",
+    "Trashed native collection archive is no longer public",
+    "Trashed collection cannot bypass Shop filters",
+    "Restore rebuilds public module membership",
+    "Deleting the HTTP fixture clears only its derived members",
+    "Temporary HTTP acceptance session logged out"
+  ],
+  "fixtures": {
+    "created": 96
+  }
+}

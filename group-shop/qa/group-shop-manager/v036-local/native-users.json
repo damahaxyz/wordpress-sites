@@ -1,0 +1,54 @@
+{
+    "version": "0.3.6",
+    "passed": 26,
+    "checks": [
+        "Native network columns and Sites remain with one origin column",
+        "Site user list and generic column output are not extended",
+        "Other plugin columns retain their output",
+        "Native registration still records initial store",
+        "Origin resolves correct network store: 1",
+        "Rendering does not mutate user metadata: 1",
+        "Origin resolves correct network store: 6",
+        "Rendering does not mutate user metadata: 6",
+        "Origin resolves correct network store: 7",
+        "Rendering does not mutate user metadata: 7",
+        "Store labels are escaped",
+        "Missing or malformed origin is not inferred: ''",
+        "Missing or malformed origin is not inferred: 'bad'",
+        "Missing or malformed origin is not inferred: -6",
+        "Unavailable origin retains ID without falling back to main",
+        "Origin success and failure restore current store",
+        "Existing store role is not downgraded on login",
+        "New store login still joins with customer role",
+        "Later logins preserve origin and record historical store visits",
+        "Default billing and shipping metadata remain network-shared",
+        "Password change still revokes existing shared-user sessions",
+        "Non-network user cannot use origin display extension",
+        "Retired customer tab falls back to overview without old list",
+        "Overview links to native network users",
+        "Seven current manager tabs remain",
+        "Shared-user lifecycle tests restore original context"
+    ],
+    "fixtures": [
+        {
+            "id": 1,
+            "origin": "1",
+            "label": "Group Shop QA (#1)"
+        },
+        {
+            "id": 2,
+            "origin": "1",
+            "label": "Group Shop QA (#1)"
+        },
+        {
+            "id": 3,
+            "origin": "1",
+            "label": "Group Shop QA (#1)"
+        },
+        {
+            "id": 4,
+            "origin": "1",
+            "label": "Group Shop QA (#1)"
+        }
+    ]
+}
