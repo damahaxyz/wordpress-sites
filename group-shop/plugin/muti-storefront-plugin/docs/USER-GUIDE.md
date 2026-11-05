@@ -1,8 +1,8 @@
-# 使用说明：单站多品牌（0.5.9，本地）
+# 使用说明：单站多品牌（0.5.10，本地）
 
 ## 后台与品牌选择
 
-打开 http://www.main.local/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0 。现在是普通单站后台，没有网络管理。总管理员通过顶部“品牌”选择全部或某个品牌，原生产品、订单、用户、评论等列表跟随选择。品牌员工只看到授权范围，独立域名仍需分别登录。
+打开 http://www.main.local/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0 。现在是普通单站后台，没有网络管理。总管理员通过顶部“品牌”选择全部或某个品牌，原生产品、订单、用户、评论等列表跟随选择。品牌员工只看到授权范围，独立域名仍需分别登录。
 
 多品牌管理保留概览、品牌设置、商品集合、操作日志、文档与限制五个标签；商品统一使用原生 Products。统一订单、独立评论、共享客户和主商品发布标签不恢复；旧链接回概览，旧写请求拒绝。
 
@@ -111,7 +111,7 @@ Shop Manager 管理本品牌商品、订单、优惠券、顾客和评论；品�
 
 Product presentation 默认动态继承公共商品，涵盖Eyebrow、Key benefits、退货说明、配送说明、Order activity文案及原有配送天数元数据；公共修改即时生效，不向品牌批量复制文案。在该面板勾选“单独设置本店展示信息”后可独立编辑，取消勾选并保存恢复当前公共值。留空仍使用Trovesia原有默认文案；自动订单数的查询与缓存均按当前店铺计算，不继承另一店的数量。继承模式字段不可编辑，服务端忽略伪造字段并阻止直接元数据覆盖；覆盖选择沿用 `_gsm_overrides` 的presentation项。
 
-Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
+muti-storefront-plugin 0.5.8、product-addon-plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
 
 本轮开始只读盘点为72公共＋72品牌版本，已有展示及加购元数据均为0；没有自动改写这些业务商品、建立版本或设置营销规则。29项运行、5项订单统计和23项真实HTTP检查，以及浏览器实际覆盖保存／恢复继承通过；合成资料清理与原商品／元数据／品牌设置快照核对见 `qa/group-shop-manager/v058-local/LOCAL-v058.md`。仅本地，未连接或发布生产。
 
@@ -125,3 +125,8 @@ Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基�
 菜单只使用本店资源。正文、摘要、商品短描述若留有另一注册店铺的业务链接或iframe，前台移除其href／src，不自动跳到另一店，也不修改编辑器中保存的原文；外店oEmbed不加载。图片、CSS、JS及其他wp-content素材可继续来自共用域名。
 
 当前验收基于原生WordPress／Woo与本项目主题。安装第三方SEO、搜索、页面编辑器或自定义接口后，需重新运行SEO隔离套件；不能把本次原生入口通过等同任意插件已自动兼容。
+
+
+## 插件名称（0.5.10）
+
+插件列表现显示muti-storefront-plugin与product-addon-plugin，功能及现有配置沿用。多品牌管理入口为admin.php?page=muti-storefront-plugin；旧书签可安全跳转。trovesia-channel当前本地禁用，默认页脚渠道登录入口隐藏，源码／数据保留供后续恢复。不要因改名重新运行旧安装器或批量导入。

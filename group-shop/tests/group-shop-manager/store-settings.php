@@ -48,7 +48,7 @@ try {
 }
 $customer=get_users(['role'=>'customer','number'=>1,'blog_id'=>$a]);
 if ($customer) { wp_set_current_user($customer[0]->ID); $throws(fn()=>Media::target($request),'Customer cannot access cross-store media'); wp_set_current_user($admin->ID); }
-$_GET=['page'=>'group-shop-manager','tab'=>'stores','store'=>$a,'gsm_dialog'=>'edit']; ob_start(); Admin::render(); $html=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'stores','store'=>$a,'gsm_dialog'=>'edit']; ob_start(); Admin::render(); $html=ob_get_clean();
 $assert(str_contains($html,'从媒体库选择图片')&&str_contains($html,'name="blog_public"')&&!str_contains($html,'Logo 附件编号'),'Store UI provides native media selection and visibility modes');
 $assert(get_current_blog_id()===Stores::main_id(),'Store-setting operations restore original context');
 echo wp_json_encode(['version'=>GSM_VERSION,'passed'=>count($checks),'checks'=>$checks,'store'=>$a,'image'=>$image,'main_image'=>$master_image,'child_title'=>'GSM child logo '.$suffix,'main_title'=>'GSM main logo '.$suffix],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)."\n";

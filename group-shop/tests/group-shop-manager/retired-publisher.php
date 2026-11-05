@@ -47,7 +47,7 @@ try {
     Stores::within($store,static function () use ($created): void { foreach (array_reverse($created) as $id) { $p=wc_get_product($id); if ($p) { $p->delete(true); } } });
 }
 $assert($wpdb->get_results('SELECT * FROM '.Schema::table('catalog').' ORDER BY id',ARRAY_A)===$before,'Local edits create no publication mapping');
-$_GET=['page'=>'group-shop-manager','tab'=>'catalog','store'=>$store]; ob_start(); Admin::render(); $html=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'catalog','store'=>$store]; ob_start(); Admin::render(); $html=ob_get_clean();
 $assert(!str_contains($html,'主商品发布') && !str_contains($html,'catalog_publish') && !str_contains($html,'tab=catalog') && str_contains($html,'<h2>店铺入口</h2>'),'Old catalog tab falls back to overview with no publication UI');
 $assert(substr_count($html,'class="nav-tab ')===6,'Six manager tabs remain');
 $assert(get_current_blog_id()===$main,'Local edits and failures restore original context');

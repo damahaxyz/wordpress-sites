@@ -39,14 +39,14 @@ def check(ok,name):
     checks.append(name)
 try:
     get('/wp-login.php')
-    status,body=req('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=group-shop-manager','testcookie':'1'})
+    status,body=req('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=muti-storefront-plugin','testcookie':'1'})
     assert status==200 and 'v0.3.7' in body and 'id="loginform"' not in body
     logout=html.unescape(re.search(r'href=[\'"]([^\'"]*wp-login\.php\?action=logout[^\'"]*)[\'"]',body).group(1))
     check(body.count('class="nav-tab ')==6,'Manager renders six tabs')
     check('主商品发布' not in body and 'tab=catalog' not in body and 'catalog_publish' not in body,'Manager exposes no cross-store publication UI')
-    old=get('/wp-admin/admin.php?page=group-shop-manager&tab=catalog&store='+str(f['target_store']))
+    old=get('/wp-admin/admin.php?page=muti-storefront-plugin&tab=catalog&store='+str(f['target_store']))
     check('<h2>店铺入口</h2>' in old and 'catalog_publish' not in old,'Old publisher bookmark falls back to overview')
-    editor='/wp-admin/admin.php?page=group-shop-manager&tab=products&store='+str(f['target_store'])+'&product='+str(f['edit_product'])
+    editor='/wp-admin/admin.php?page=muti-storefront-plugin&tab=products&store='+str(f['target_store'])+'&product='+str(f['edit_product'])
     body=get(editor)
     token=re.search(r'name="_wpnonce" value="([^"]+)"',body).group(1)
     check('wp-gsm_description-wrap' in body and 'wp-gsm_short_description-wrap' in body and 'gsm_product_complete' in body,'Local product editor keeps rich text and completeness protection')
@@ -61,7 +61,7 @@ try:
     check(status==200 and result['success'] and bool(result['data']),'Native target-store media query still works after copy/import removal')
     check(all(urlsplit(item['url']).hostname=='www.branda.local' and '/sites/6/' in item['url'] for item in result['data']),'Native media query keeps target-store ownership')
     for tab in ['overview','stores','collections','products','audit','help']:
-        body=get('/wp-admin/admin.php?page=group-shop-manager&tab='+tab+'&store='+str(f['target_store']))
+        body=get('/wp-admin/admin.php?page=muti-storefront-plugin&tab='+tab+'&store='+str(f['target_store']))
         check('v0.3.7' in body and 'notice-error' not in body,'Remaining manager tab renders: '+tab)
     check('主商品跨店复制或字段覆盖' in body,'Help describes retired cross-store publication')
 finally:

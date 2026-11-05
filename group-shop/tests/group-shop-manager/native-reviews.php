@@ -33,7 +33,7 @@ $assert($invalid==='','Invalid row is ignored');
 $object=get_comment($fixtures[$main]['review']);
 $foreign=Stores::within(6,static function () use ($object): string { ob_start(); ReviewAdmin::column($object); return ob_get_clean(); });
 $assert(!str_contains($foreign,'(#'.$main.')'),'Column never infers main-store ownership from a numeric comment ID');
-$_GET=['page'=>'group-shop-manager','tab'=>'reviews','store'=>6];
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'reviews','store'=>6];
 ob_start(); Admin::render(); $html=ob_get_clean();
 $assert(!str_contains($html,'独立评论') && !str_contains($html,'tab=reviews') && str_contains($html,'<h2>店铺入口</h2>'),'Retired review tab falls back to overview without old links/forms');
 $assert(!str_contains($html,'review_status'),'Retired central review form is absent');

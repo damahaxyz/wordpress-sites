@@ -69,10 +69,10 @@ try:
     check('column-gsm_first_store' not in site,'Main site user list is not extended with network-only origin')
     site_edit=get(main+'/wp-admin/user-edit.php?user_id='+str(fixtures[-1]['id']))
     check('name="billing_city"' in site_edit and 'name="shipping_city"' in site_edit,'Woo native user editor retains shared billing and shipping fields')
-    overview=get(main+'/wp-admin/admin.php?page=group-shop-manager')
+    overview=get(main+'/wp-admin/admin.php?page=muti-storefront-plugin')
     check('v0.3.6' in overview and 'tab=customers' not in overview and '共享客户' not in overview,'Manager no longer exposes shared customer tab')
     check(overview.count('class="nav-tab ')==7 and main+'/wp-admin/network/users.php' in html.unescape(overview),'Overview has seven tabs and native network user entry')
-    old=get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=customers')
+    old=get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=customers')
     check('<h2>店铺入口</h2>' in old and '首次来源</th>' not in old,'Old customer bookmark falls back to overview')
     child='http://www.branda.local'
     child_users=login(child,child+'/wp-admin/users.php')

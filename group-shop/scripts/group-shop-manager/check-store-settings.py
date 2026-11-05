@@ -29,7 +29,7 @@ def request(path, data=None, authenticated=True):
     finally: conn.close()
 
 for store in (1,2):
-    status,html=request('/wp-admin/admin.php?page=group-shop-manager&tab=stores&gsm_dialog=edit&store='+str(store))
+    status,html=request('/wp-admin/admin.php?page=muti-storefront-plugin&tab=stores&gsm_dialog=edit&store='+str(store))
     assert status==200 and 'gsm-store-editor' in html and '从媒体库选择图片' in html and 'Logo 附件编号' not in html
     assert 'name="blog_public"' in html and 'name="logo_id"' in html
     match=re.search(r'var gsmMedia = (\{[^;]+\});',html)

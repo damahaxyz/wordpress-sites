@@ -1,6 +1,18 @@
-# 当前接手状态：0.5.9 单站多品牌
+# 当前接手状态：0.5.10 单站多品牌
 
-2026-11-06，Asia/Taipei。**源码 0.5.9，当前本地已关闭 Multisite 并完成迁移；生产未发布、未连接。** 线上只沿用历史 0.2.2 记录，本次未核实线上运行状态。后续发布仍等用户明确通知。
+2026-11-06，Asia/Taipei。**源码 0.5.10，当前本地已关闭 Multisite 并完成迁移；生产未发布、未连接。** 线上只沿用历史 0.2.2 记录，本次未核实线上运行状态。后续发布仍等用户明确通知。
+
+## 0.5.10 插件更名与渠道停用（2026-11-06，仅本地）
+
+本插件原名Group Shop Manager／group-shop-manager，现统一为`muti-storefront-plugin`，目录`plugin/muti-storefront-plugin/`，入口`muti-storefront-plugin.php`，翻译域同名；源码版本0.5.10。`trovesia-plugin`同时更名为`product-addon-plugin`，入口`product-addon-plugin.php`，版本3.8.5。两个插件的WordPress启用记录、资源路径、Compose挂载、维护脚本与文档路径均已更新。
+
+后台入口改为`/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0`。旧`page=group-shop-manager`以相同权限注册隐藏兼容入口，GET安全跳转并保留tab／店铺等参数；旧直接POST拒绝410，已有admin-post nonce处理器不变。WordPress在admin_init前检查注册页面权限，因此不能只加一个未注册页面的重定向。
+
+保留GroupShop\Manager、GSM_*、Trovesia\Plugin、TROVESIA_PLUGIN_*、gsm_*／trovesia_*数据键、现有hooks／短代码／动态区块及PHP主题接口，不做业务数据迁移或重新初始化。私有QA目录、Compose项目名及scripts／tests／qa的group-shop-manager分组继续保留，不能把它们误改为新的数据库或数据卷。
+
+`trovesia-channel`在当前本地原本未启用，本轮明确保持禁用且不加载，保留源码与原数据；默认主题仅在该插件实际加载时显示渠道登录入口。未删除渠道业务表、角色或配置，未连接生产核实其状态。
+
+27项运行／数据检查与43项真实HTTP检查通过；45个插件PHP文件及页脚语法、脚本语法、Compose配置和diff格式通过。九张业务／身份表哈希与改名前一致；用户元数据仅正常测试登录更新wc_last_active，其他资料／权限／会话一致，七品牌注册及业务bank保持，144件父商品保留。没有调用业务插件的激活／停用初始化钩子，没有新建商品、用户或政策页面。报告`qa/plugin-renames-20261106/README.md`；备份与切换细节见OPERATIONS。生产未发布。
 
 ## 0.5.9 当前 SEO 隔离验收
 
@@ -24,7 +36,7 @@ Sitemap的产品／页面／文章及Feed继续通过原生受限查询，分类
 
 Product presentation 默认动态继承公共商品，涵盖Eyebrow、Key benefits、退货说明、配送说明、Order activity文案及原有配送天数元数据；公共修改即时生效，不向品牌批量复制文案。在该面板勾选“单独设置本店展示信息”后可独立编辑，取消勾选并保存恢复当前公共值。留空仍使用Trovesia原有默认文案；自动订单数的查询与缓存均按当前店铺计算，不继承另一店的数量。继承模式字段不可编辑，服务端忽略伪造字段并阻止直接元数据覆盖；覆盖选择沿用 `_gsm_overrides` 的presentation项。
 
-Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
+muti-storefront-plugin 0.5.8、product-addon-plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
 
 本轮开始只读盘点为72公共＋72品牌版本，已有展示及加购元数据均为0；没有自动改写这些业务商品、建立版本或设置营销规则。29项运行、5项订单统计和23项真实HTTP检查，以及浏览器实际覆盖保存／恢复继承通过；合成资料清理与原商品／元数据／品牌设置快照核对见 `qa/group-shop-manager/v058-local/LOCAL-v058.md`。仅本地，未连接或发布生产。
 
@@ -114,7 +126,7 @@ Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基�
 
 ## 已完成的架构基础
 
-用户最终明确“一套商城多个品牌门面”。当前一套原生 WordPress／WooCommerce，品牌 ID 保留 1／6／7／9／11／12／13，原生 blog_id 恒 1。七个既有 HTTP .local 域名不变，主入口 http://www.main.local/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0 。新代码不运行旧跨站词表同步或用户拆分写入器；Multisite 开启时网页进入维护保护，未初始化单站不自动迁移。
+用户最终明确“一套商城多个品牌门面”。当前一套原生 WordPress／WooCommerce，品牌 ID 保留 1／6／7／9／11／12／13，原生 blog_id 恒 1。七个既有 HTTP .local 域名不变，主入口 http://www.main.local/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0 。新代码不运行旧跨站词表同步或用户拆分写入器；Multisite 开启时网页进入维护保护，未初始化单站不自动迁移。
 
 Brands／BrandScope 负责品牌 option bank、原生查询／直接编辑／REST 数字 ID 归属、后台全部／单品牌选择及签名 REST 上下文；BrandSession 隔离顾客／游客 Cookie 和 Store API cart token。员工使用品牌能力白名单，品牌管理员不能安装插件、改全局设置／主题、推广员工权限或读取跨品牌报表。
 

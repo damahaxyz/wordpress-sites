@@ -134,7 +134,7 @@ try:
     check(status==403,'Combined selection cannot grant access to an unauthorized brand')
     page=staff.get(a+'/wp-admin/edit.php?'+urlencode({'post_type':'product','gsm_brand':7,'s':x['suffix']}))
     check(ids(page)=={x['b']},'Staff selector can switch to its separately authorized Brand B')
-    legacy=r.get(main+'/wp-admin/admin.php?'+urlencode({'page':'group-shop-manager','tab':'products','store':6,'product':x['a'],'gsm_brand':0}))
+    legacy=r.get(main+'/wp-admin/admin.php?'+urlencode({'page':'muti-storefront-plugin','tab':'products','store':6,'product':x['a'],'gsm_brand':0}))
     check('品牌商品统一在原生编辑器维护继承与差异' in legacy and 'name="gsm_product_complete"' not in legacy,'Central product tab no longer exposes a standalone editor')
 finally:
     xfile=root/'.identity-private/products-v053.json';xfile.write_text(json.dumps(x));xfile.chmod(0o600)

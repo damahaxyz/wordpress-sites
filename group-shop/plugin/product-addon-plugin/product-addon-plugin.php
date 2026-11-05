@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Trovesia Shop Plugin
- * Description: Site-specific business functionality for the Trovesia shop.
- * Version: 3.8.4
+ * Plugin Name: product-addon-plugin
+ * Description: Product add-ons and storefront functionality for WooCommerce.
+ * Version: 3.8.5
  * Requires at least: 6.8
  * Requires PHP: 8.3
- * Text Domain: trovesia-plugin
+ * Text Domain: product-addon-plugin
  */
 
 declare(strict_types=1);
@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('TROVESIA_PLUGIN_VERSION', '3.8.4');
+define('TROVESIA_PLUGIN_VERSION', '3.8.5');
 define('TROVESIA_PLUGIN_FILE', __FILE__);
 define('TROVESIA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TROVESIA_PLUGIN_URL', plugin_dir_url(__FILE__));

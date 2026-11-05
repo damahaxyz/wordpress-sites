@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: Group Shop Manager
+ * Plugin Name: muti-storefront-plugin
  * Description: Store-isolated customers, shared authorized staff and central administration for WooCommerce with one shared catalog and multiple brand storefronts.
- * Version: 0.5.9
+ * Version: 0.5.10
  * Requires at least: 6.8
  * Requires PHP: 8.3
  * Requires Plugins: woocommerce
- * Text Domain: group-shop-manager
+ * Text Domain: muti-storefront-plugin
  */
 declare(strict_types=1);
 if (!defined('ABSPATH')) { exit; }
-define('GSM_VERSION', '0.5.9');
+define('GSM_VERSION', '0.5.10');
 define('GSM_FILE', __FILE__);
 define('GSM_DIR', plugin_dir_path(__FILE__));
 foreach (['brands', 'schema', 'stores', 'media', 'availability', 'collections', 'collection-display', 'collection-admin', 'category-migration', 'shared-taxonomies', 'taxonomy-admin', 'identities', 'identity-privacy', 'user-migration', 'brand-scope', 'product-versions', 'product-experience', 'native-products', 'bulk-products', 'native-pages', 'native-menus', 'single-migration', 'customers', 'user-admin', 'orders', 'review-admin', 'mail', 'admin'] as $module) {

@@ -1,4 +1,4 @@
-# 本地运行、迁移与回滚（0.5.9）
+# 本地运行、迁移与回滚（0.5.10）
 
 用户要求后续改动只在本地验证，收到新的明确发布通知前不得部署、连接生产执行转换或清理旧站点表。线上版本仅沿用此前记录 0.2.2，本次未连接核实或变更；根目录 DEPLOYMENT.md 为历史生产记录，不能当作本次执行授权。
 
@@ -16,7 +16,7 @@
 | 12 | www.brandf.local |
 | 13 | www.brandg.local |
 
-宿主 hosts 精确指向 127.0.0.1；Apache 80 端口只将这些主机代理到 127.0.0.1:18087。七个 Docker DNS 别名指向 QA Nginx，不访问公网同名主机。没有改系统代理、其他站点、生产、独立 trovesia-shop。主入口 http://www.main.local/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0 。旧 `/wp-admin/network/` 书签在 Nginx 跳到单站后台。
+宿主 hosts 精确指向 127.0.0.1；Apache 80 端口只将这些主机代理到 127.0.0.1:18087。七个 Docker DNS 别名指向 QA Nginx，不访问公网同名主机。没有改系统代理、其他站点、生产、独立 trovesia-shop。主入口 http://www.main.local/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0 。旧 `/wp-admin/network/` 书签在 Nginx 跳到单站后台。
 
 启动现有卷：
 
@@ -170,3 +170,16 @@ WP-CLI继续使用当前compose、gsm-admin、--url=http://www.main.local及.ide
 4. cleanup-seo-isolation-v059.php：校验随机前缀、私有ID、订单引用和并发配置差异；只删除本轮记录并恢复A／B索引及菜单、集合配置，逐行比较八表和七品牌业务bank。失败时检查私有清单，不用SQL快照覆盖用户测试期间的新工作。
 
 本轮46运行检查、141 HTTP请求中的315检查通过；清理24内容／商品／菜单项、7词条、3评论，八表和原业务bank核对一致，仍144父商品。复验可重复但必须新fixture，并在完成后清理；禁止清理用户后来创建的版本。作者Sitemap关闭属于当前SEO行为；回退源码不删除业务数据，生产发布仍需新的明确授权和实际环境验收。
+
+
+## 0.5.10 更名运行记录（2026-11-06）
+
+仅本地：Group Shop Manager更名muti-storefront-plugin 0.5.10，Trovesia Shop Plugin更名product-addon-plugin 3.8.5。新路径为plugin/muti-storefront-plugin/muti-storefront-plugin.php及plugin/product-addon-plugin/product-addon-plugin.php。主Compose与QA Compose挂载、组件部署／安全基线脚本仅更新本地源码，未执行任何远程部署命令。QA项目／私有目录／named volumes保持group-shop-manager-qa，不重建数据库卷。
+
+私有备份/private/tmp/group-shop-manager-qa/.identity-private/rename-v0510/：before.sql完整数据库、source-before.tgz原管理插件及Compose／脚本、addon-channel-before.tgz原附加／渠道插件源码、before.json十表／品牌bank校验值与原启用列表，权限600，不提交或公开。短暂停止wordpress/nginx后更名源目录；使用--skip-plugins --skip-themes的受控WP-CLI只切换active_plugins及必要的uninstall_plugins／recently_activated路径，不运行任一插件激活／停用初始化；随后按新挂载重建wordpress/nginx，保留DB及卷。迁移私有migrate.php为一次性本地操作，旧启用记录不存在时拒绝重跑。
+
+当前active_plugins含muti-storefront-plugin/muti-storefront-plugin.php与product-addon-plugin/product-addon-plugin.php，不含trovesia-channel/trovesia-channel.php。渠道插件原先即未启用，保持禁用且不挂入当前QA容器，保留仓库源码及旧业务资料。默认页脚按插件是否实际加载隐藏渠道入口。
+
+运行核对九张业务／身份表哈希、用户资料／权限／会话元数据及七品牌注册／业务bank一致（测试登录仅正常更新wc_last_active活动日期），仍72公共＋72主店销售商品；两个新头信息／翻译域／PHP API正常，45个插件PHP及页脚通过语法检查，43项真实HTTP含七店首页、资源、原目录、SEO隔离与后台新入口／旧书签／插件列表通过。本次测试管理员会话已退出，不撤销用户其他会话。
+
+回滚需匹配恢复SQL、两个源码包、Compose和脚本及对应active_plugins，再重建本地Web容器；不要只恢复旧文件名或重新激活业务插件来替代切换记录。生产的现有旧插件及渠道启用状态未核实；未来必须另获发布授权，成套切换挂载、启用路径、缓存和回滚方案，不能直接把本次本地更名当成已上线。

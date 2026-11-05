@@ -1,6 +1,8 @@
-# Trovesia Shop Plugin
+# product-addon-plugin
 
-Local version 3.8.4. Group Shop Manager 0.5.8 adds store-scoped add-on configuration and public-product presentation inheritance. Add-ons remain separate native product/cart/order lines and are configured only on brand sale versions; rules are not inherited from public products. Each form supports up to 20 rules. Invalid or rebound cart children are removed with a notice; ordinary mini-cart quantity controls remain available.
+Renamed locally on 2026-11-06 from Trovesia Shop Plugin (`trovesia-plugin`). Directory and entry point are `plugin/product-addon-plugin/product-addon-plugin.php`; the text domain is `product-addon-plugin`. Existing `Trovesia\Plugin` classes, `TROVESIA_PLUGIN_*` constants, data keys, hooks and shortcodes are retained for compatibility. The active plugin record was switched without running activation installers or modifying business content. No production deployment. Local channel plugin is disabled and its source is retained.
+
+Local version 3.8.5. muti-storefront-plugin 0.5.10 adds store-scoped add-on configuration and public-product presentation inheritance. Add-ons remain separate native product/cart/order lines and are configured only on brand sale versions; rules are not inherited from public products. Each form supports up to 20 rules. Invalid or rebound cart children are removed with a notice; ordinary mini-cart quantity controls remain available.
 
 Presentation inherits by default. Select “单独设置本店展示信息” to edit the brand copy independently; unchecking restores the current public copy. Automatic order counts remain store-specific. This local revision does not deploy, seed marketing rules, or migrate existing product data.
 

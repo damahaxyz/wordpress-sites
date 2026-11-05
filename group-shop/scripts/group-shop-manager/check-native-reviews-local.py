@@ -74,12 +74,12 @@ try:
         check('unapproved' not in re.search(r'<tr[^>]+>',row(current,f['review'])).group(0),'Native approve action restores review: '+store)
         restore.remove(approve)
     main='http://www.main.local'
-    overview=get(main+'/wp-admin/admin.php?page=group-shop-manager')
+    overview=get(main+'/wp-admin/admin.php?page=muti-storefront-plugin')
     check('v0.3.5' in overview and '独立评论' not in overview and 'tab=reviews' not in overview,'Manager removes independent reviews tab and links')
     check(overview.count('class="nav-tab ')==8,'Manager has eight active tabs')
-    old=get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=reviews&store=6')
+    old=get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=reviews&store=6')
     check('<h2>店铺入口</h2>' in old and 'review_status' not in old,'Old review bookmark safely falls back to overview')
-    edit=get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=collections&collection=new')
+    edit=get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&collection=new')
     token=re.search(r'name="_wpnonce" value="([^"]+)"',edit).group(1)
     for store,f in fixtures.items():
         _,result=req(main+'/wp-admin/admin-post.php',{'action':'gsm_action','kind':'review_status','store':store,'review':f['review'],'status':'spam','return_tab':'reviews','_wpnonce':token})

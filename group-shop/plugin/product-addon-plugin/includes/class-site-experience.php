@@ -52,12 +52,12 @@ final class Site_Experience
     {
         self::ensure_page(
             'track-order',
-            __('Track your order', 'trovesia-plugin'),
+            __('Track your order', 'product-addon-plugin'),
             '[trovesia_tracking_form]'
         );
         self::ensure_page(
             'contact-us',
-            __('Contact us', 'trovesia-plugin'),
+            __('Contact us', 'product-addon-plugin'),
             '[trovesia_contact_form]'
         );
     }
@@ -170,8 +170,8 @@ final class Site_Experience
     {
         add_submenu_page(
             'woocommerce',
-            __('Trovesia checkout settings', 'trovesia-plugin'),
-            __('Trovesia settings', 'trovesia-plugin'),
+            __('Trovesia checkout settings', 'product-addon-plugin'),
+            __('Trovesia settings', 'product-addon-plugin'),
             'manage_woocommerce',
             'trovesia-settings',
             [$this, 'render_checkout_settings_page']
@@ -203,20 +203,20 @@ final class Site_Experience
 
         add_settings_section(
             'trovesia_site_announcement',
-            __('Site announcement', 'trovesia-plugin'),
+            __('Site announcement', 'product-addon-plugin'),
             [$this, 'render_announcement_settings_intro'],
             'trovesia-checkout-settings'
         );
         add_settings_field(
             self::ANNOUNCEMENT_TEXT_OPTION,
-            __('Announcement text', 'trovesia-plugin'),
+            __('Announcement text', 'product-addon-plugin'),
             [$this, 'render_announcement_text_field'],
             'trovesia-checkout-settings',
             'trovesia_site_announcement'
         );
         add_settings_field(
             self::ANNOUNCEMENT_URL_OPTION,
-            __('Announcement link', 'trovesia-plugin'),
+            __('Announcement link', 'product-addon-plugin'),
             [$this, 'render_announcement_url_field'],
             'trovesia-checkout-settings',
             'trovesia_site_announcement'
@@ -224,20 +224,20 @@ final class Site_Experience
 
         add_settings_section(
             'trovesia_checkout_delivery',
-            __('Checkout delivery message', 'trovesia-plugin'),
+            __('Checkout delivery message', 'product-addon-plugin'),
             [$this, 'render_checkout_delivery_settings_intro'],
             'trovesia-checkout-settings'
         );
         add_settings_field(
             self::CHECKOUT_DELIVERY_TITLE_OPTION,
-            __('Delivery title', 'trovesia-plugin'),
+            __('Delivery title', 'product-addon-plugin'),
             [$this, 'render_checkout_delivery_title_field'],
             'trovesia-checkout-settings',
             'trovesia_checkout_delivery'
         );
         add_settings_field(
             self::CHECKOUT_DELIVERY_DESCRIPTION_OPTION,
-            __('Delivery description', 'trovesia-plugin'),
+            __('Delivery description', 'product-addon-plugin'),
             [$this, 'render_checkout_delivery_description_field'],
             'trovesia-checkout-settings',
             'trovesia_checkout_delivery'
@@ -251,7 +251,7 @@ final class Site_Experience
         }
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Trovesia settings', 'trovesia-plugin'); ?></h1>
+            <h1><?php esc_html_e('Trovesia settings', 'product-addon-plugin'); ?></h1>
             <form action="options.php" method="post">
                 <?php
                 settings_fields('trovesia_checkout_settings');
@@ -265,7 +265,7 @@ final class Site_Experience
 
     public function render_announcement_settings_intro(): void
     {
-        echo '<p>' . esc_html__('Shown in the slim bar above the site header. Leave the announcement text empty to hide the entire bar.', 'trovesia-plugin') . '</p>';
+        echo '<p>' . esc_html__('Shown in the slim bar above the site header. Leave the announcement text empty to hide the entire bar.', 'product-addon-plugin') . '</p>';
     }
 
     public function render_announcement_text_field(): void
@@ -274,7 +274,7 @@ final class Site_Experience
             '<input class="large-text" name="%1$s" type="text" value="%2$s" placeholder="%3$s">',
             esc_attr(self::ANNOUNCEMENT_TEXT_OPTION),
             esc_attr(self::announcement_text()),
-            esc_attr__('Complimentary shipping · 30-day returns · Secure checkout', 'trovesia-plugin')
+            esc_attr__('Complimentary shipping · 30-day returns · Secure checkout', 'product-addon-plugin')
         );
     }
 
@@ -285,7 +285,7 @@ final class Site_Experience
             esc_attr(self::ANNOUNCEMENT_URL_OPTION),
             esc_attr(self::announcement_url()),
             esc_attr(home_url('/shop/')),
-            esc_html__('Optional. When provided, clicking the announcement opens this URL.', 'trovesia-plugin')
+            esc_html__('Optional. When provided, clicking the announcement opens this URL.', 'product-addon-plugin')
         );
     }
 
@@ -302,7 +302,7 @@ final class Site_Experience
         if (false === get_option(self::ANNOUNCEMENT_TEXT_OPTION, false)) {
             update_option(
                 self::ANNOUNCEMENT_TEXT_OPTION,
-                __('Complimentary shipping · 30-day returns · Secure checkout', 'trovesia-plugin')
+                __('Complimentary shipping · 30-day returns · Secure checkout', 'product-addon-plugin')
             );
         }
 
@@ -321,7 +321,7 @@ final class Site_Experience
 
     public function render_checkout_delivery_settings_intro(): void
     {
-        echo '<p>' . esc_html__('These two lines appear in the assurance panel above the checkout form.', 'trovesia-plugin') . '</p>';
+        echo '<p>' . esc_html__('These two lines appear in the assurance panel above the checkout form.', 'product-addon-plugin') . '</p>';
     }
 
     public function render_checkout_delivery_title_field(): void
@@ -344,12 +344,12 @@ final class Site_Experience
 
     private static function default_checkout_delivery_title(): string
     {
-        return __('Tracked delivery in 7–12 days', 'trovesia-plugin');
+        return __('Tracked delivery in 7–12 days', 'product-addon-plugin');
     }
 
     private static function default_checkout_delivery_description(): string
     {
-        return __('Orders are processed within 24–72 hours. Tracking is emailed when your parcel ships.', 'trovesia-plugin');
+        return __('Orders are processed within 24–72 hours. Tracking is emailed when your parcel ships.', 'product-addon-plugin');
     }
 
     private static function checkout_delivery_title(): string
@@ -396,18 +396,18 @@ final class Site_Experience
         ob_start();
         ?>
         <section class="trovesia-form-card trovesia-form-card--tracking">
-            <p class="trovesia-form-card__eyebrow"><?php esc_html_e('Delivery updates', 'trovesia-plugin'); ?></p>
-            <h2><?php esc_html_e('Track your order', 'trovesia-plugin'); ?></h2>
-            <p><?php esc_html_e('Enter the tracking number from your shipping confirmation email.', 'trovesia-plugin'); ?></p>
+            <p class="trovesia-form-card__eyebrow"><?php esc_html_e('Delivery updates', 'product-addon-plugin'); ?></p>
+            <h2><?php esc_html_e('Track your order', 'product-addon-plugin'); ?></h2>
+            <p><?php esc_html_e('Enter the tracking number from your shipping confirmation email.', 'product-addon-plugin'); ?></p>
             <?php if ($status === 'invalid') : ?>
-                <p class="trovesia-form-notice trovesia-form-notice--error"><?php esc_html_e('Please check the tracking number and try again.', 'trovesia-plugin'); ?></p>
+                <p class="trovesia-form-notice trovesia-form-notice--error"><?php esc_html_e('Please check the tracking number and try again.', 'product-addon-plugin'); ?></p>
             <?php endif; ?>
             <form class="trovesia-inline-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
                 <input type="hidden" name="action" value="trovesia_track_order">
                 <?php wp_nonce_field('trovesia_track_order', 'trovesia_tracking_nonce'); ?>
-                <label class="screen-reader-text" for="trovesia-tracking-number"><?php esc_html_e('Tracking number', 'trovesia-plugin'); ?></label>
-                <input id="trovesia-tracking-number" name="tracking_number" type="text" minlength="5" maxlength="50" placeholder="<?php esc_attr_e('Tracking number', 'trovesia-plugin'); ?>" autocomplete="off" required>
-                <button type="submit"><?php esc_html_e('Track parcel', 'trovesia-plugin'); ?></button>
+                <label class="screen-reader-text" for="trovesia-tracking-number"><?php esc_html_e('Tracking number', 'product-addon-plugin'); ?></label>
+                <input id="trovesia-tracking-number" name="tracking_number" type="text" minlength="5" maxlength="50" placeholder="<?php esc_attr_e('Tracking number', 'product-addon-plugin'); ?>" autocomplete="off" required>
+                <button type="submit"><?php esc_html_e('Track parcel', 'product-addon-plugin'); ?></button>
             </form>
         </section>
         <?php
@@ -444,40 +444,40 @@ final class Site_Experience
         ob_start();
         ?>
         <section class="trovesia-form-card trovesia-form-card--contact">
-            <p class="trovesia-form-card__eyebrow"><?php esc_html_e('Customer care', 'trovesia-plugin'); ?></p>
-            <h2><?php esc_html_e('How can we help?', 'trovesia-plugin'); ?></h2>
-            <p><?php esc_html_e('Questions about a product or an existing order? Send us a note and our team will get back to you.', 'trovesia-plugin'); ?></p>
+            <p class="trovesia-form-card__eyebrow"><?php esc_html_e('Customer care', 'product-addon-plugin'); ?></p>
+            <h2><?php esc_html_e('How can we help?', 'product-addon-plugin'); ?></h2>
+            <p><?php esc_html_e('Questions about a product or an existing order? Send us a note and our team will get back to you.', 'product-addon-plugin'); ?></p>
             <?php if ($status === 'sent') : ?>
-                <p class="trovesia-form-notice trovesia-form-notice--success"><?php esc_html_e('Thank you. Your message has been sent.', 'trovesia-plugin'); ?></p>
+                <p class="trovesia-form-notice trovesia-form-notice--success"><?php esc_html_e('Thank you. Your message has been sent.', 'product-addon-plugin'); ?></p>
             <?php elseif ($status === 'error') : ?>
-                <p class="trovesia-form-notice trovesia-form-notice--error"><?php esc_html_e('We could not send your message. Please check the fields and try again.', 'trovesia-plugin'); ?></p>
+                <p class="trovesia-form-notice trovesia-form-notice--error"><?php esc_html_e('We could not send your message. Please check the fields and try again.', 'product-addon-plugin'); ?></p>
             <?php endif; ?>
             <form class="trovesia-contact-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
                 <input type="hidden" name="action" value="trovesia_contact">
                 <?php wp_nonce_field('trovesia_contact', 'trovesia_contact_nonce'); ?>
                 <div class="trovesia-contact-form__grid">
                     <p>
-                        <label for="trovesia-contact-name"><?php esc_html_e('Name', 'trovesia-plugin'); ?></label>
+                        <label for="trovesia-contact-name"><?php esc_html_e('Name', 'product-addon-plugin'); ?></label>
                         <input id="trovesia-contact-name" name="name" type="text" maxlength="100" autocomplete="name" required>
                     </p>
                     <p>
-                        <label for="trovesia-contact-email"><?php esc_html_e('Email', 'trovesia-plugin'); ?></label>
+                        <label for="trovesia-contact-email"><?php esc_html_e('Email', 'product-addon-plugin'); ?></label>
                         <input id="trovesia-contact-email" name="email" type="email" maxlength="190" autocomplete="email" required>
                     </p>
                 </div>
                 <p>
-                    <label for="trovesia-contact-phone"><?php esc_html_e('Phone number (optional)', 'trovesia-plugin'); ?></label>
+                    <label for="trovesia-contact-phone"><?php esc_html_e('Phone number (optional)', 'product-addon-plugin'); ?></label>
                     <input id="trovesia-contact-phone" name="phone" type="tel" maxlength="40" autocomplete="tel">
                 </p>
                 <p>
-                    <label for="trovesia-contact-message"><?php esc_html_e('Message', 'trovesia-plugin'); ?></label>
+                    <label for="trovesia-contact-message"><?php esc_html_e('Message', 'product-addon-plugin'); ?></label>
                     <textarea id="trovesia-contact-message" name="message" rows="6" maxlength="3000" required></textarea>
                 </p>
                 <p class="trovesia-contact-form__website" aria-hidden="true">
                     <label for="trovesia-contact-website">Website</label>
                     <input id="trovesia-contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
                 </p>
-                <button type="submit"><?php esc_html_e('Send message', 'trovesia-plugin'); ?></button>
+                <button type="submit"><?php esc_html_e('Send message', 'product-addon-plugin'); ?></button>
             </form>
         </section>
         <?php
@@ -529,7 +529,7 @@ final class Site_Experience
         update_post_meta((int) $inquiry_id, '_trovesia_contact_email', $email);
         update_post_meta((int) $inquiry_id, '_trovesia_contact_phone', $phone);
 
-        $subject = sprintf(__('Trovesia enquiry from %s', 'trovesia-plugin'), $name);
+        $subject = sprintf(__('Trovesia enquiry from %s', 'product-addon-plugin'), $name);
         $body = sprintf(
             "Name: %s\nEmail: %s\nPhone: %s\n\n%s",
             $name,
@@ -564,9 +564,9 @@ final class Site_Experience
             'capabilities'       => $capabilities,
             'has_archive'        => false,
             'labels'             => [
-                'name'          => __('Customer inquiries', 'trovesia-plugin'),
-                'singular_name' => __('Customer inquiry', 'trovesia-plugin'),
-                'menu_name'     => __('Inquiries', 'trovesia-plugin'),
+                'name'          => __('Customer inquiries', 'product-addon-plugin'),
+                'singular_name' => __('Customer inquiry', 'product-addon-plugin'),
+                'menu_name'     => __('Inquiries', 'product-addon-plugin'),
             ],
             'map_meta_cap'       => false,
             'menu_icon'          => 'dashicons-email-alt',
@@ -581,7 +581,7 @@ final class Site_Experience
     {
         add_meta_box(
             'trovesia-product-story',
-            __('Trovesia product presentation', 'trovesia-plugin'),
+            __('Trovesia product presentation', 'product-addon-plugin'),
             [$this, 'render_product_meta_box'],
             'product',
             'normal',
@@ -603,26 +603,26 @@ final class Site_Experience
         ?>
         <div class="trovesia-presentation-fields">
         <p>
-            <label for="trovesia-eyebrow"><strong><?php esc_html_e('Eyebrow', 'trovesia-plugin'); ?></strong></label><br>
+            <label for="trovesia-eyebrow"><strong><?php esc_html_e('Eyebrow', 'product-addon-plugin'); ?></strong></label><br>
             <input class="widefat" id="trovesia-eyebrow" name="trovesia_eyebrow" type="text" value="<?php echo esc_attr($eyebrow); ?>">
         </p>
         <p>
-            <label for="trovesia-benefits"><strong><?php esc_html_e('Key benefits', 'trovesia-plugin'); ?></strong></label><br>
+            <label for="trovesia-benefits"><strong><?php esc_html_e('Key benefits', 'product-addon-plugin'); ?></strong></label><br>
             <textarea class="widefat" id="trovesia-benefits" name="trovesia_benefits" rows="5"><?php echo esc_textarea($benefits); ?></textarea>
-            <span class="description"><?php esc_html_e('Enter one concise benefit per line. Avoid medical claims.', 'trovesia-plugin'); ?></span>
+            <span class="description"><?php esc_html_e('Enter one concise benefit per line. Avoid medical claims.', 'product-addon-plugin'); ?></span>
         </p>
         <p>
-            <label for="trovesia-guarantee"><strong><?php esc_html_e('Returns and guarantee note', 'trovesia-plugin'); ?></strong></label><br>
+            <label for="trovesia-guarantee"><strong><?php esc_html_e('Returns and guarantee note', 'product-addon-plugin'); ?></strong></label><br>
             <textarea class="widefat" id="trovesia-guarantee" name="trovesia_guarantee" rows="3"><?php echo esc_textarea($guarantee); ?></textarea>
         </p>
         <p>
-            <label for="trovesia-shipping"><strong><?php esc_html_e('Shipping note', 'trovesia-plugin'); ?></strong></label><br>
+            <label for="trovesia-shipping"><strong><?php esc_html_e('Shipping note', 'product-addon-plugin'); ?></strong></label><br>
             <textarea class="widefat" id="trovesia-shipping" name="trovesia_shipping" rows="3"><?php echo esc_textarea($shipping); ?></textarea>
         </p>
         <p>
-            <label for="trovesia-order-activity"><strong><?php esc_html_e('Order activity notice', 'trovesia-plugin'); ?></strong></label><br>
-            <input class="widefat" id="trovesia-order-activity" name="trovesia_order_activity" type="text" value="<?php echo esc_attr($order_activity); ?>" placeholder="<?php esc_attr_e('Orders are processed daily', 'trovesia-plugin'); ?>">
-            <span class="description"><?php esc_html_e('Optional. When filled, this text replaces the automatic past-24-hours order message on the product page. Leave blank to keep the automatic count and its default fallback.', 'trovesia-plugin'); ?></span>
+            <label for="trovesia-order-activity"><strong><?php esc_html_e('Order activity notice', 'product-addon-plugin'); ?></strong></label><br>
+            <input class="widefat" id="trovesia-order-activity" name="trovesia_order_activity" type="text" value="<?php echo esc_attr($order_activity); ?>" placeholder="<?php esc_attr_e('Orders are processed daily', 'product-addon-plugin'); ?>">
+            <span class="description"><?php esc_html_e('Optional. When filled, this text replaces the automatic past-24-hours order message on the product page. Leave blank to keep the automatic count and its default fallback.', 'product-addon-plugin'); ?></span>
         </p>
         </div>
         <?php
@@ -718,22 +718,22 @@ final class Site_Experience
                 <?php if ($order_activity !== '') : ?>
                     <?php echo esc_html($order_activity); ?>
                 <?php elseif ($order_count > 0) : ?>
-                    <?php printf(esc_html__('%d orders placed in the past 24 hours', 'trovesia-plugin'), esc_html($order_count)); ?>
+                    <?php printf(esc_html__('%d orders placed in the past 24 hours', 'product-addon-plugin'), esc_html($order_count)); ?>
                 <?php else : ?>
-                    <?php esc_html_e('Orders are processed daily', 'trovesia-plugin'); ?>
+                    <?php esc_html_e('Orders are processed daily', 'product-addon-plugin'); ?>
                 <?php endif; ?>
             </strong>
         </div>
-        <div class="trovesia-assurance-grid" aria-label="<?php esc_attr_e('Purchase assurances', 'trovesia-plugin'); ?>">
-            <div><span aria-hidden="true">◇</span><strong><?php esc_html_e('Thoughtfully selected', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Clear product guidance', 'trovesia-plugin'); ?></small></div>
-            <div><span aria-hidden="true">↺</span><strong><?php esc_html_e('30-day returns', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Simple support', 'trovesia-plugin'); ?></small></div>
-            <div><span aria-hidden="true">⌁</span><strong><?php esc_html_e('Secure checkout', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Protected payment', 'trovesia-plugin'); ?></small></div>
+        <div class="trovesia-assurance-grid" aria-label="<?php esc_attr_e('Purchase assurances', 'product-addon-plugin'); ?>">
+            <div><span aria-hidden="true">◇</span><strong><?php esc_html_e('Thoughtfully selected', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Clear product guidance', 'product-addon-plugin'); ?></small></div>
+            <div><span aria-hidden="true">↺</span><strong><?php esc_html_e('30-day returns', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Simple support', 'product-addon-plugin'); ?></small></div>
+            <div><span aria-hidden="true">⌁</span><strong><?php esc_html_e('Secure checkout', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Protected payment', 'product-addon-plugin'); ?></small></div>
         </div>
         <p class="trovesia-delivery-estimate">
             <span aria-hidden="true">→</span>
             <?php
             printf(
-                esc_html__('Estimated delivery: %1$s–%2$s', 'trovesia-plugin'),
+                esc_html__('Estimated delivery: %1$s–%2$s', 'product-addon-plugin'),
                 esc_html($start),
                 esc_html($end)
             );
@@ -741,12 +741,12 @@ final class Site_Experience
         </p>
         <div class="trovesia-product-accordions">
             <details>
-                <summary><?php esc_html_e('Returns & care promise', 'trovesia-plugin'); ?></summary>
-                <p><?php echo esc_html($guarantee !== '' ? $guarantee : __('If you are not satisfied within 30 days, contact us for return instructions and a full refund. Return shipping is covered.', 'trovesia-plugin')); ?></p>
+                <summary><?php esc_html_e('Returns & care promise', 'product-addon-plugin'); ?></summary>
+                <p><?php echo esc_html($guarantee !== '' ? $guarantee : __('If you are not satisfied within 30 days, contact us for return instructions and a full refund. Return shipping is covered.', 'product-addon-plugin')); ?></p>
             </details>
             <details>
-                <summary><?php esc_html_e('Shipping & delivery', 'trovesia-plugin'); ?></summary>
-                <p><?php echo esc_html($shipping !== '' ? $shipping : __('Orders are processed within 24–72 hours and delivered in 7–12 days. Tracking details are emailed when the parcel ships.', 'trovesia-plugin')); ?></p>
+                <summary><?php esc_html_e('Shipping & delivery', 'product-addon-plugin'); ?></summary>
+                <p><?php echo esc_html($shipping !== '' ? $shipping : __('Orders are processed within 24–72 hours and delivered in 7–12 days. Tracking details are emailed when the parcel ships.', 'product-addon-plugin')); ?></p>
             </details>
         </div>
         <?php
@@ -792,8 +792,8 @@ final class Site_Experience
         }
 
         $heading = $is_bundle
-            ? __('Choose your bundle', 'trovesia-plugin')
-            : sprintf(__('Choose your %s', 'trovesia-plugin'), strtolower($attribute_label));
+            ? __('Choose your bundle', 'product-addon-plugin')
+            : sprintf(__('Choose your %s', 'product-addon-plugin'), strtolower($attribute_label));
 
         ?>
         <section class="trovesia-variant-picker" data-attribute-name="<?php echo esc_attr($select_name); ?>" data-default-value="<?php echo esc_attr($default_value); ?>">
@@ -822,8 +822,8 @@ final class Site_Experience
                         preg_match_all('/\d+/', $value, $bundle_quantities);
                         $bottle_count = array_sum(array_map('intval', $bundle_quantities[0] ?? []));
                         $variation_description = $bottle_count > 0
-                            ? sprintf(_n('%d bottle bundle', '%d bottle bundle', $bottle_count, 'trovesia-plugin'), $bottle_count)
-                            : __('Bundle option', 'trovesia-plugin');
+                            ? sprintf(_n('%d bottle bundle', '%d bottle bundle', $bottle_count, 'product-addon-plugin'), $bottle_count)
+                            : __('Bundle option', 'product-addon-plugin');
                     }
                     $image_id = $variation_product instanceof \WC_Product_Variation && $variation_product->get_image_id()
                         ? $variation_product->get_image_id()
@@ -837,7 +837,7 @@ final class Site_Experience
                             <?php if ($variation_description !== '') : ?><small><?php echo esc_html($variation_description); ?></small><?php endif; ?>
                         </span>
                         <span class="trovesia-variant-card__price">
-                            <?php if ($saving > 0) : ?><span class="trovesia-variant-card__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
+                            <?php if ($saving > 0) : ?><span class="trovesia-variant-card__save"><?php printf(esc_html__('Save %d%%', 'product-addon-plugin'), esc_html($saving)); ?></span><?php endif; ?>
                             <strong><?php echo wp_kses_post(wc_price($display_price)); ?></strong>
                             <?php if ($regular_price > $display_price) : ?><del><?php echo wp_kses_post(wc_price($regular_price)); ?></del><?php endif; ?>
                         </span>
@@ -924,7 +924,7 @@ final class Site_Experience
             $groups[$group_key]['items'][] = $item;
         }
         ?>
-        <div class="trovesia-addon-heading"><?php esc_html_e('Complete your order', 'trovesia-plugin'); ?></div>
+        <div class="trovesia-addon-heading"><?php esc_html_e('Complete your order', 'product-addon-plugin'); ?></div>
         <div class="trovesia-product-addons">
             <?php foreach ($groups as $group_key => $group) : ?>
                 <fieldset class="trovesia-product-addon-group">
@@ -934,7 +934,7 @@ final class Site_Experience
                     </legend>
                     <label class="trovesia-addon-group__none">
                         <input class="trovesia-addon-group__none-input" name="trovesia_addons[<?php echo esc_attr($group_key); ?>]" type="radio" value="" <?php checked(! $group['has_default']); ?>>
-                        <span><?php esc_html_e('No extra pack', 'trovesia-plugin'); ?></span>
+                        <span><?php esc_html_e('No extra pack', 'product-addon-plugin'); ?></span>
                     </label>
                     <div class="trovesia-product-addon-group__options">
                         <?php foreach ($group['items'] as $item) : ?>
@@ -972,10 +972,10 @@ final class Site_Experience
             <span class="trovesia-roller-addon__image"><?php echo $linked->get_image('woocommerce_thumbnail', ['loading' => 'lazy']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
             <span class="trovesia-roller-addon__copy">
                 <strong><?php echo esc_html($title); ?></strong>
-                <small><?php esc_html_e('Add this pack to your order', 'trovesia-plugin'); ?></small>
+                <small><?php esc_html_e('Add this pack to your order', 'product-addon-plugin'); ?></small>
             </span>
             <span class="trovesia-roller-addon__price">
-                <?php if ($saving > 0) : ?><span class="trovesia-product-addon__save"><?php printf(esc_html__('Save %d%%', 'trovesia-plugin'), esc_html($saving)); ?></span><?php endif; ?>
+                <?php if ($saving > 0) : ?><span class="trovesia-product-addon__save"><?php printf(esc_html__('Save %d%%', 'product-addon-plugin'), esc_html($saving)); ?></span><?php endif; ?>
                 <strong>+<?php echo wp_kses_post(wc_price($price)); ?></strong>
                 <?php if ($saving > 0) : ?><del><?php echo wp_kses_post(wc_price($regular_price)); ?></del><?php endif; ?>
             </span>
@@ -1007,8 +1007,8 @@ final class Site_Experience
         $delivery_title = self::checkout_delivery_title();
         $delivery_description = self::checkout_delivery_description();
         ?>
-        <aside class="trovesia-checkout-assurance" aria-label="<?php esc_attr_e('Returns and delivery', 'trovesia-plugin'); ?>">
-            <div><span aria-hidden="true">♡</span><p><strong><?php esc_html_e('30-day satisfaction guarantee', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Contact us within 30 days for return instructions and a full refund. Return shipping is covered.', 'trovesia-plugin'); ?></small></p></div>
+        <aside class="trovesia-checkout-assurance" aria-label="<?php esc_attr_e('Returns and delivery', 'product-addon-plugin'); ?>">
+            <div><span aria-hidden="true">♡</span><p><strong><?php esc_html_e('30-day satisfaction guarantee', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Contact us within 30 days for return instructions and a full refund. Return shipping is covered.', 'product-addon-plugin'); ?></small></p></div>
             <div><span aria-hidden="true">▱</span><p><strong><?php echo esc_html($delivery_title); ?></strong><small><?php echo nl2br(esc_html($delivery_description)); ?></small></p></div>
         </aside>
         <?php
@@ -1089,7 +1089,7 @@ final class Site_Experience
 
         return sprintf(
             '<span class="onsale">%s</span>',
-            esc_html(sprintf(__('Save %d%%', 'trovesia-plugin'), max($percentages)))
+            esc_html(sprintf(__('Save %d%%', 'product-addon-plugin'), max($percentages)))
         );
     }
 
@@ -1108,7 +1108,7 @@ final class Site_Experience
      */
     public function add_admin_review_media_column(array $columns): array
     {
-        $media_column = ['trovesia_media' => __('Review media', 'trovesia-plugin')];
+        $media_column = ['trovesia_media' => __('Review media', 'product-addon-plugin')];
 
         if (isset($columns['date'])) {
             $date = ['date' => $columns['date']];
@@ -1162,7 +1162,7 @@ final class Site_Experience
         printf(
             '<a class="trovesia-admin-review-media" href="%1$s" target="_blank" rel="noopener" aria-label="%2$s">%3$s</a>',
             esc_url($full),
-            esc_attr__('Open review image', 'trovesia-plugin'),
+            esc_attr__('Open review image', 'product-addon-plugin'),
             wp_get_attachment_image($attachment_id, [72, 72], false, ['loading' => 'lazy']) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         );
     }
@@ -1189,7 +1189,7 @@ final class Site_Experience
             && get_comment_meta($comment_id, '_trovesia_loox_review_id', true) !== ''
             && get_comment_meta($comment_id, '_trovesia_source_date_known', true) !== '1'
         ) {
-            return __('Imported review', 'trovesia-plugin');
+            return __('Imported review', 'product-addon-plugin');
         }
 
         return $date;
@@ -1202,7 +1202,7 @@ final class Site_Experience
         }
 
         echo '<div class="notice notice-warning"><p>';
-        esc_html_e('Trovesia Shop Plugin is active. Install and activate WooCommerce to enable the product catalogue and checkout.', 'trovesia-plugin');
+        esc_html_e('product-addon-plugin is active. Install and activate WooCommerce to enable the product catalogue and checkout.', 'product-addon-plugin');
         echo '</p></div>';
     }
 

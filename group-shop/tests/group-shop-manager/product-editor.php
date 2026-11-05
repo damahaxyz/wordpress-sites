@@ -47,7 +47,7 @@ $throws(fn()=>Catalog::save_edition($a,$va,['variations'=>[$foreign=>['regular_p
 $throws(fn()=>Catalog::save_edition($a,$pa,['regular_price'=>'12abc']),'Malformed prices rejected');
 $throws(fn()=>Catalog::save_edition($a,$pa,['regular_price'=>'-1']),'Negative prices rejected');
 $throws(fn()=>Catalog::save_edition($a,$pa,['name'=>'']),'Empty product name rejected');
-$_GET=['page'=>'group-shop-manager','tab'=>'products','store'=>$a]; ob_start(); ProductAdmin::render($a); $list=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'products','store'=>$a]; ob_start(); ProductAdmin::render($a); $list=ob_get_clean();
 $assert(str_contains($list,'gsm-product-thumb')&&!str_contains($list,'<th>库存</th>'),'List displays thumbnails without a stock column');
 $assert(str_contains($list,'edition_status')&&str_contains($list,'expected_status'),'List includes nonce-protected scoped quick status actions');
 $_GET['product']=$va; ob_start(); ProductAdmin::render($a); $html=ob_get_clean();

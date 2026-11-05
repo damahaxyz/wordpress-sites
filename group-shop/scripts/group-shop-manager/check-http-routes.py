@@ -47,15 +47,15 @@ def follow(path):
 
 prefixes = ('', '/' + args.store.strip('/')) if args.store.strip('/') else ('',)
 for prefix in prefixes:
-    management = '/wp-admin/admin.php?page=group-shop-manager' if not prefix and not args.subsite else '/wp-admin/edit.php?post_type=product'
+    management = '/wp-admin/admin.php?page=muti-storefront-plugin' if not prefix and not args.subsite else '/wp-admin/edit.php?post_type=product'
     for suffix in ('/wp-admin/', '/wp-admin/index.php', management, '/wp-admin/network/', '/wp-login.php'):
         path = prefix + suffix
         final, status, _, body, hops = follow(path)
         assert status == 200, f'{path}: HTTP {status}'
         if cookie and suffix != '/wp-login.php':
             assert b'id="wpbody"' in body, f'{path}: not an authenticated admin page'
-            if 'group-shop-manager' in suffix:
-                assert b'Group Shop Manager' in body, f'{path}: manager page missing'
+            if 'muti-storefront-plugin' in suffix:
+                assert b'muti-storefront-plugin' in body, f'{path}: manager page missing'
         elif not cookie:
             assert '/wp-login.php' in final and b'id="loginform"' in body, f'{path}: login page missing'
         results.append({'path': path, 'status': status, 'redirects': hops})

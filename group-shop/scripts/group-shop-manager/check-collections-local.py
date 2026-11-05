@@ -33,7 +33,7 @@ def post(kind,**data):
     status,body=request('/wp-admin/admin-post.php',{'action':'gsm_action','kind':kind,'store':f['a'],'return_tab':'collections','_wpnonce':token,**data})
     assert status==200,(kind,status); return body
 def ids(body): return set(map(int,re.findall(r'<li\s+class="[^"]*\bpost-(\d+)\b[^"]*"',body)))
-list_url=f'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store={f["a"]}'
+list_url=f'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store={f["a"]}'
 shop='/brand-a/shop/'
 try:
     get('/wp-login.php')

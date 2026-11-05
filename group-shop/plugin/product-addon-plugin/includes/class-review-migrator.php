@@ -353,7 +353,7 @@ final class Review_Migrator
                 'tmp_name' => $temporary_file,
             ],
             $product_id,
-            __('Imported customer review photo', 'trovesia-plugin')
+            __('Imported customer review photo', 'product-addon-plugin')
         );
 
         if (is_wp_error($attachment_id)) {
@@ -363,7 +363,7 @@ final class Review_Migrator
         }
 
         update_post_meta((int) $attachment_id, '_trovesia_loox_media_url', $source_url);
-        update_post_meta((int) $attachment_id, '_wp_attachment_image_alt', __('Customer review photo', 'trovesia-plugin'));
+        update_post_meta((int) $attachment_id, '_wp_attachment_image_alt', __('Customer review photo', 'product-addon-plugin'));
         update_comment_meta($comment_id, '_trovesia_loox_media_attachment_id', (int) $attachment_id);
 
         return true;

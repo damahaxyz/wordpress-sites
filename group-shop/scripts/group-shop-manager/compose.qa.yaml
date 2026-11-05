@@ -38,8 +38,8 @@ services:
         }
     volumes: &qa_volumes
       - qa_wordpress:/var/www/html
-      - ./plugin/group-shop-manager:/var/www/html/wp-content/plugins/group-shop-manager:ro
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
+      - ./plugin/muti-storefront-plugin:/var/www/html/wp-content/plugins/muti-storefront-plugin:ro
+      - ./plugin/product-addon-plugin:/var/www/html/wp-content/plugins/product-addon-plugin:ro
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
       - ./tests/group-shop-manager/qa-mail-guard.php:/var/www/html/wp-content/mu-plugins/qa-mail-guard.php:ro
       - ./tests/group-shop-manager:/gsm-tests:ro
@@ -62,8 +62,8 @@ services:
       - 127.0.0.1:${GSM_QA_PORT:-18086}:80
     volumes:
       - qa_wordpress:/var/www/html:ro
-      - ./plugin/group-shop-manager:/var/www/html/wp-content/plugins/group-shop-manager:ro
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
+      - ./plugin/muti-storefront-plugin:/var/www/html/wp-content/plugins/muti-storefront-plugin:ro
+      - ./plugin/product-addon-plugin:/var/www/html/wp-content/plugins/product-addon-plugin:ro
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
       - ./scripts/group-shop-manager/nginx.qa.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:

@@ -1,9 +1,10 @@
 # Group Shop 自定义开发
 
-> 当前 Group Shop Manager 本地已升级 0.5.9 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+> 当前 muti-storefront-plugin 本地已升级 0.5.10 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/muti-storefront-plugin/docs/HANDOFF.md) 与 [OPERATIONS](plugin/muti-storefront-plugin/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
 
+> 2026-11-06 本地插件已更名为 muti-storefront-plugin 0.5.10 与 product-addon-plugin 3.8.5；trovesia-channel 保持禁用、源码保留。目录／入口／后台／挂载及维护引用已更新，生产未发布。
 
-多店铺插件开发先读 `AGENTS.md` 与 `plugin/group-shop-manager/docs/HANDOFF.md`。新增功能、数据、配置、限制、权限或部署变更必须同时更新对应文档和 CHANGELOG。原有 Trovesia 主题及业务插件说明保留如下。
+多店铺插件开发先读 `AGENTS.md` 与 `plugin/muti-storefront-plugin/docs/HANDOFF.md`。新增功能、数据、配置、限制、权限或部署变更必须同时更新对应文档和 CHANGELOG。原有 Trovesia 主题及业务插件说明保留如下。
 
 ## 目录职责
 
@@ -17,8 +18,8 @@ theme/trovesia/
 ├── style.css              全站样式
 └── assets/                 额外 CSS 与 JavaScript
 
-plugin/trovesia-plugin/
-├── trovesia-plugin.php        插件入口与常量
+plugin/product-addon-plugin/
+├── product-addon-plugin.php        插件入口与常量
 ├── includes/class-plugin.php
 ├── includes/class-site-experience.php
 ├── includes/class-catalog-migrator.php
@@ -26,7 +27,7 @@ plugin/trovesia-plugin/
 ├── data/catalog.php
 └── uninstall.php           卸载时清理插件自己的设置
 
-plugin/group-shop-manager/    多店铺中央管理，详见本插件 docs/
+plugin/muti-storefront-plugin/    多店铺中央管理，详见本插件 docs/
 
 plugin/trovesia-channel/
 ├── trovesia-channel.php    渠道插件入口与 HPOS 兼容声明
@@ -51,7 +52,7 @@ plugin/trovesia-channel/
 ## 本地检查
 
 ```bash
-find theme/trovesia plugin/trovesia-plugin plugin/trovesia-channel \
+find theme/trovesia plugin/product-addon-plugin plugin/trovesia-channel \
   -type f -name '*.php' -exec php -l {} \;
 
 docker compose config --quiet
@@ -129,6 +130,6 @@ DEPLOY_URL=https://shop.example.com/ \
 `rsync --delete-delay` 只作用于当前自定义主题或插件目录，不会删除上传文件、
 数据库、`.env` 或其他 WordPress 组件。
 
-## Group Shop Manager 0.2.0
+## muti-storefront-plugin 0.2.0
 
-分类/集合与无限库存由 `plugin/group-shop-manager` 管理。当前网络商品与变体统一不管理库存、始终有货；不要沿用历史 Trovesia 模块的有限库存假设。分类模板是主店原生分类/标签，分店保留自己的原生 term 并建立来源映射，集合成员物化为原生分类关系。新增逻辑和发布规则以插件 ARCHITECTURE/HANDOFF 为准。
+分类/集合与无限库存由 `plugin/muti-storefront-plugin` 管理。当前网络商品与变体统一不管理库存、始终有货；不要沿用历史 Trovesia 模块的有限库存假设。分类模板是主店原生分类/标签，分店保留自己的原生 term 并建立来源映射，集合成员物化为原生分类关系。新增逻辑和发布规则以插件 ARCHITECTURE/HANDOFF 为准。

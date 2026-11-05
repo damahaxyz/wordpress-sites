@@ -73,7 +73,7 @@ $_GET=['filter_gsm-qa-color'=>'red','query_type_gsm-qa-color'=>'and','min_price'
 $form=Stores::within($a,fn()=>CollectionDisplay::filter_form());
 $assert(str_contains($form,'name="filter_gsm-qa-color"')&&str_contains($form,'name="min_price"')&&str_contains($form,'name="orderby"'),'Shop filter form preserves native attribute, price and sorting selections');
 $assert(!str_contains($form,'secret_token')&&!str_contains($form,'name="paged"'),'Shop filter resets pagination and excludes unrelated query data');
-$_GET=['page'=>'group-shop-manager','tab'=>'collections','store'=>$a]; ob_start(); CollectionAdmin::collections($a); $list=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'collections','store'=>$a]; ob_start(); CollectionAdmin::collections($a); $list=ob_get_clean();
 $assert(str_contains($list,'创建集合')&&str_contains($list,'collection_trash')&&!str_contains($list,'name="mode"'),'Collection default is a list with CRUD actions rather than an always-open editor');
 $_GET['collection']='new'; ob_start(); CollectionAdmin::collections($a); $editor=ob_get_clean();
 $assert(str_contains($editor,'集合标题')&&str_contains($editor,'gsm_collection_description')&&str_contains($editor,'gsm-image-picker'),'Dedicated editor provides title, rich description and native image picker');

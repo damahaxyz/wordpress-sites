@@ -157,7 +157,7 @@ try:
     status,body=rootc.req(main+'/wp-admin/post.php',fields)
     check(status==200 and 'QA Native A '+x['suffix'] in client().get(x['a_url']),'Native product editor saves the A title override through actual POST')
     check('QA common updated '+x['suffix'] in client().get(x['b_url']),'Native A title edit leaves B public title unchanged')
-    manager=rootc.get(main+'/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0')
+    manager=rootc.get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0')
     check('v0.5.0' in manager and '单站多品牌' in manager and all(host in manager for host in ['www.branda.local','www.brandb.local','www.brandg.local']),'Manager shows single-site architecture and all seven correct brand domains')
     users=rootc.get(main+'/wp-admin/users.php?gsm_brand=0')
     check('账户类型／范围' in users and '品牌用户名' in users,'Native single-site users exposes identity scope and public aliases')

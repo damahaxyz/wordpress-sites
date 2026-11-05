@@ -24,10 +24,10 @@ def get(host, path):
         connection.close()
 
 for tab in ['overview', 'stores', 'templates', 'categories', 'collections', 'catalog', 'products', 'orders', 'customers', 'reviews', 'audit', 'help']:
-    body = get('www.animecats.online', '/wp-admin/admin.php?page=group-shop-manager&store=2&tab=' + tab)
+    body = get('www.animecats.online', '/wp-admin/admin.php?page=muti-storefront-plugin&store=2&tab=' + tab)
     assert ('v'+args.version) in body and 'notice-error' not in body and '批量库存' not in body, tab
     checks.append('Authenticated production UI: ' + tab)
-body = get('www.animecats.online', '/wp-admin/admin.php?page=group-shop-manager&store=2&tab=products&product=18')
+body = get('www.animecats.online', '/wp-admin/admin.php?page=muti-storefront-plugin&store=2&tab=products&product=18')
 assert 'name="category_ids[]"' in body and 'name="tag_ids[]"' in body and '分类编号' not in body
 checks.append('Production draft product editor uses category/tag pickers')
 products = json.loads(get('www.animecats.online', '/wp-json/wc/store/v1/products?per_page=100'))

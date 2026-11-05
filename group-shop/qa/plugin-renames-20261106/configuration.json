@@ -1,0 +1,38 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "Shell syntax",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Main Compose configuration",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Local QA Compose configuration",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Diff formatting",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Python syntax for 28 maintenance scripts",
+      "passed": true
+    },
+    {
+      "check": "Old source directories removed; renamed source entries present",
+      "passed": true
+    },
+    {
+      "check": "Channel source retained",
+      "passed": true
+    }
+  ]
+}

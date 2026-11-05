@@ -68,10 +68,10 @@ try:
         logouts.append(html.unescape(logout.group(1)))
 
     main = 'http://' + HOSTS[0]
-    _, _, body = request(main + '/wp-admin/admin.php?page=group-shop-manager')
+    _, _, body = request(main + '/wp-admin/admin.php?page=muti-storefront-plugin')
     check('manager: all seven domains', all('http://' + h in body for h in HOSTS))
     check('manager: no old localhost links', 'localhost:18087' not in body)
-    _, _, body = request(main + '/wp-admin/admin.php?page=group-shop-manager&tab=products&store=6&product=32')
+    _, _, body = request(main + '/wp-admin/admin.php?page=muti-storefront-plugin&tab=products&store=6&product=32')
     config = re.search(r'var gsmMedia\s*=\s*(\{[^;]+\});', body)
     assert config, 'Missing authorized store-media configuration'
     media = json.loads(config.group(1))

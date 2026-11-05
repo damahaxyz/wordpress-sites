@@ -65,7 +65,7 @@ final class Addon_Pricing
     {
         add_meta_box(
             'trovesia-addon-pricing',
-            __('Trovesia product add-ons', 'trovesia-plugin'),
+            __('Trovesia product add-ons', 'product-addon-plugin'),
             [$this, 'render_meta_box'],
             'product',
             'normal',
@@ -119,13 +119,13 @@ final class Addon_Pricing
 
         wp_nonce_field('trovesia_addon_rules', 'trovesia_addon_rules_nonce');
         ?>
-        <p><?php esc_html_e('Attach a simple product or one specific variation as an optional purchase. To offer several variations, add one linked-product rule for each variation. Every linked item remains a separate cart and order line, so its stock, tax and shipping settings continue to work normally.', 'trovesia-plugin'); ?></p>
+        <p><?php esc_html_e('Attach a simple product or one specific variation as an optional purchase. To offer several variations, add one linked-product rule for each variation. Every linked item remains a separate cart and order line, so its stock, tax and shipping settings continue to work normally.', 'product-addon-plugin'); ?></p>
         <div class="trovesia-addon-rules" data-next-index="<?php echo esc_attr((string) count($rules)); ?>">
             <?php foreach ($rules as $index => $rule) : ?>
                 <?php $this->render_rule_row((string) $index, $rule, $products, $variation_values); ?>
             <?php endforeach; ?>
         </div>
-        <p><button class="button trovesia-add-addon" type="button"><?php esc_html_e('Add linked product', 'trovesia-plugin'); ?></button></p>
+        <p><button class="button trovesia-add-addon" type="button"><?php esc_html_e('Add linked product', 'product-addon-plugin'); ?></button></p>
         <template id="trovesia-addon-rule-template">
             <?php $this->render_rule_row('__INDEX__', self::empty_rule(), $products, $variation_values); ?>
         </template>
@@ -177,9 +177,9 @@ final class Addon_Pricing
         <fieldset class="trovesia-addon-rule">
             <input name="trovesia_addons[<?php echo esc_attr($index); ?>][id]" type="hidden" value="<?php echo esc_attr((string) $rule['id']); ?>">
             <p class="trovesia-addon-rule__wide">
-                <label><?php esc_html_e('Linked product', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Linked product', 'product-addon-plugin'); ?></label>
                 <select class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][product_id]">
-                    <option value="0"><?php esc_html_e('Select a product', 'trovesia-plugin'); ?></option>
+                    <option value="0"><?php esc_html_e('Select a product', 'product-addon-plugin'); ?></option>
                     <?php foreach ($products as $candidate) : ?>
                         <option value="<?php echo esc_attr((string) $candidate->get_id()); ?>" <?php selected((int) $rule['product_id'], $candidate->get_id()); ?>><?php echo esc_html(self::linked_product_label($candidate)); ?></option>
                     <?php endforeach; ?>
@@ -188,61 +188,61 @@ final class Addon_Pricing
                 $selected_product = wc_get_product((int) $rule['product_id']);
                 if ($selected_product instanceof \WC_Product && ($selected_product->get_status() !== 'publish' || $selected_product->get_price() === '')) :
                     ?>
-                    <small style="color:#b32d2e"><?php esc_html_e('This add-on will be hidden until the linked product is published and has a price.', 'trovesia-plugin'); ?></small>
+                    <small style="color:#b32d2e"><?php esc_html_e('This add-on will be hidden until the linked product is published and has a price.', 'product-addon-plugin'); ?></small>
                 <?php endif; ?>
             </p>
             <p class="trovesia-addon-rule__wide">
-                <label><?php esc_html_e('Display title (optional)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Display title (optional)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][title]" type="text" value="<?php echo esc_attr((string) $rule['title']); ?>">
             </p>
             <p>
-                <label><?php esc_html_e('Selection group (optional)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Selection group (optional)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][selection_group]" type="text" value="<?php echo esc_attr((string) $rule['selection_group']); ?>" placeholder="refill-chambers">
-                <small><?php esc_html_e('Rules with the same group key become a single-choice set.', 'trovesia-plugin'); ?></small>
+                <small><?php esc_html_e('Rules with the same group key become a single-choice set.', 'product-addon-plugin'); ?></small>
             </p>
             <p>
-                <label><?php esc_html_e('Group heading (optional)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Group heading (optional)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][group_title]" type="text" value="<?php echo esc_attr((string) $rule['group_title']); ?>">
             </p>
             <p class="trovesia-addon-rule__wide">
-                <label><?php esc_html_e('Group description (optional)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Group description (optional)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][group_description]" type="text" value="<?php echo esc_attr((string) $rule['group_description']); ?>">
             </p>
             <p>
-                <label><?php esc_html_e('Pricing mode', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Pricing mode', 'product-addon-plugin'); ?></label>
                 <select class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][pricing_mode]">
-                    <option value="follow" <?php selected($rule['pricing_mode'], 'follow'); ?>><?php esc_html_e('Follow product price', 'trovesia-plugin'); ?></option>
-                    <option value="fixed" <?php selected($rule['pricing_mode'], 'fixed'); ?>><?php esc_html_e('Fixed add-on price', 'trovesia-plugin'); ?></option>
-                    <option value="discount" <?php selected($rule['pricing_mode'], 'discount'); ?>><?php esc_html_e('Discount product price', 'trovesia-plugin'); ?></option>
+                    <option value="follow" <?php selected($rule['pricing_mode'], 'follow'); ?>><?php esc_html_e('Follow product price', 'product-addon-plugin'); ?></option>
+                    <option value="fixed" <?php selected($rule['pricing_mode'], 'fixed'); ?>><?php esc_html_e('Fixed add-on price', 'product-addon-plugin'); ?></option>
+                    <option value="discount" <?php selected($rule['pricing_mode'], 'discount'); ?>><?php esc_html_e('Discount product price', 'product-addon-plugin'); ?></option>
                 </select>
             </p>
             <p>
-                <label><?php esc_html_e('Fixed price', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Fixed price', 'product-addon-plugin'); ?></label>
                 <input class="widefat" min="0" name="trovesia_addons[<?php echo esc_attr($index); ?>][fixed_price]" step="0.01" type="number" value="<?php echo esc_attr((string) $rule['fixed_price']); ?>">
             </p>
             <p>
-                <label><?php esc_html_e('Original / compare-at price', 'trovesia-plugin'); ?></label>
-                <input class="widefat" min="0" name="trovesia_addons[<?php echo esc_attr($index); ?>][compare_at_price]" placeholder="<?php esc_attr_e('Linked product regular price', 'trovesia-plugin'); ?>" step="0.01" type="number" value="<?php echo esc_attr((string) $rule['compare_at_price']); ?>">
+                <label><?php esc_html_e('Original / compare-at price', 'product-addon-plugin'); ?></label>
+                <input class="widefat" min="0" name="trovesia_addons[<?php echo esc_attr($index); ?>][compare_at_price]" placeholder="<?php esc_attr_e('Linked product regular price', 'product-addon-plugin'); ?>" step="0.01" type="number" value="<?php echo esc_attr((string) $rule['compare_at_price']); ?>">
             </p>
             <p>
-                <label><?php esc_html_e('Discount (%)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Discount (%)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" max="100" min="0" name="trovesia_addons[<?php echo esc_attr($index); ?>][discount_percent]" step="0.01" type="number" value="<?php echo esc_attr((string) $rule['discount_percent']); ?>">
             </p>
             <p>
-                <label><?php esc_html_e('Quantity per main item', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Quantity per main item', 'product-addon-plugin'); ?></label>
                 <input class="widefat" min="1" name="trovesia_addons[<?php echo esc_attr($index); ?>][quantity]" step="1" type="number" value="<?php echo esc_attr((string) $rule['quantity']); ?>">
             </p>
             <p class="trovesia-addon-rule__wide">
-                <label><?php esc_html_e('Allowed variation values (optional)', 'trovesia-plugin'); ?></label>
+                <label><?php esc_html_e('Allowed variation values (optional)', 'product-addon-plugin'); ?></label>
                 <input class="widefat" name="trovesia_addons[<?php echo esc_attr($index); ?>][allowed_values]" type="text" value="<?php echo esc_attr(implode(' | ', (array) $rule['allowed_values'])); ?>" placeholder="<?php echo esc_attr(implode(' | ', array_slice($variation_values, 0, 2))); ?>">
-                <small><?php esc_html_e('Leave blank to show for every variation. Separate multiple exact values with |.', 'trovesia-plugin'); ?>
-                    <?php if ($variation_values !== []) : ?><?php echo esc_html(sprintf(__('Available: %s', 'trovesia-plugin'), implode(' | ', $variation_values))); ?><?php endif; ?>
+                <small><?php esc_html_e('Leave blank to show for every variation. Separate multiple exact values with |.', 'product-addon-plugin'); ?>
+                    <?php if ($variation_values !== []) : ?><?php echo esc_html(sprintf(__('Available: %s', 'product-addon-plugin'), implode(' | ', $variation_values))); ?><?php endif; ?>
                 </small>
             </p>
             <p>
-                <label><input name="trovesia_addons[<?php echo esc_attr($index); ?>][default_selected]" type="checkbox" value="1" <?php checked((bool) $rule['default_selected']); ?>> <?php esc_html_e('Selected by default', 'trovesia-plugin'); ?></label>
+                <label><input name="trovesia_addons[<?php echo esc_attr($index); ?>][default_selected]" type="checkbox" value="1" <?php checked((bool) $rule['default_selected']); ?>> <?php esc_html_e('Selected by default', 'product-addon-plugin'); ?></label>
             </p>
-            <p class="trovesia-addon-rule__actions"><button class="button-link-delete trovesia-remove-addon" type="button"><?php esc_html_e('Remove rule', 'trovesia-plugin'); ?></button></p>
+            <p class="trovesia-addon-rule__actions"><button class="button-link-delete trovesia-remove-addon" type="button"><?php esc_html_e('Remove rule', 'product-addon-plugin'); ?></button></p>
         </fieldset>
         <?php
     }
@@ -533,7 +533,7 @@ final class Addon_Pricing
         foreach($cart->get_cart() as $key=>$item){
             if(empty($item['_trovesia_addon_parent_key'])&&empty($item['_trovesia_addon_rule_id'])){continue;}
             $rule=$this->cart_rule($item,$cart);
-            if(!$rule){$cart->remove_cart_item($key);$message=__('An add-on is no longer available. Please choose it again.','trovesia-plugin');if(!wc_has_notice($message,'notice')){wc_add_notice($message,'notice');}continue;}
+            if(!$rule){$cart->remove_cart_item($key);$message=__('An add-on is no longer available. Please choose it again.','product-addon-plugin');if(!wc_has_notice($message,'notice')){wc_add_notice($message,'notice');}continue;}
             $parent=$cart->get_cart_item((string)$item['_trovesia_addon_parent_key']);
             $expected=max(1,(int)$parent['quantity'])*max(1,(int)$rule['quantity']);
             if((int)$item['quantity']!==$expected){$cart->set_quantity($key,$expected,false);}
@@ -598,8 +598,8 @@ final class Addon_Pricing
         if ($parent_id > 0) {
             $parent = wc_get_product($parent_id);
             $item_data[] = [
-                'key'   => __('Add-on for', 'trovesia-plugin'),
-                'value' => $parent ? $parent->get_name() : __('Main product', 'trovesia-plugin'),
+                'key'   => __('Add-on for', 'product-addon-plugin'),
+                'value' => $parent ? $parent->get_name() : __('Main product', 'product-addon-plugin'),
             ];
         }
 
@@ -676,9 +676,9 @@ final class Addon_Pricing
             '<span class="quantity trovesia-mini-cart__quantity" data-cart-item-key="%1$s" data-quantity="%2$d"><button type="button" data-mini-cart-quantity-change="-1" aria-label="%3$s"%4$s>&minus;</button><span class="trovesia-mini-cart__quantity-value" aria-live="polite">%2$d</span><button type="button" data-mini-cart-quantity-change="1" aria-label="%5$s"%6$s>+</button><span class="trovesia-mini-cart__unit-price">&times; %7$s</span></span>',
             esc_attr($cart_item_key),
             $quantity,
-            esc_attr__('Decrease quantity', 'trovesia-plugin'),
+            esc_attr__('Decrease quantity', 'product-addon-plugin'),
             $quantity <= 1 ? ' disabled' : '',
-            esc_attr__('Increase quantity', 'trovesia-plugin'),
+            esc_attr__('Increase quantity', 'product-addon-plugin'),
             $increase_disabled ? ' disabled' : '',
             wp_kses_post($display_price)
         );
@@ -687,11 +687,11 @@ final class Addon_Pricing
     public function update_cart_quantity(): void
     {
         if (! check_ajax_referer('trovesia_cart_quantity', 'nonce', false)) {
-            wp_send_json_error(['message' => __('The cart request expired. Please refresh the page.', 'trovesia-plugin')], 403);
+            wp_send_json_error(['message' => __('The cart request expired. Please refresh the page.', 'product-addon-plugin')], 403);
         }
 
         if (! function_exists('WC')) {
-            wp_send_json_error(['message' => __('The cart is unavailable.', 'trovesia-plugin')], 400);
+            wp_send_json_error(['message' => __('The cart is unavailable.', 'product-addon-plugin')], 400);
         }
         if (! WC()->cart && function_exists('wc_load_cart')) {
             wc_load_cart();
@@ -701,12 +701,12 @@ final class Addon_Pricing
         $quantity = max(1, absint($_POST['quantity'] ?? 1));
         $cart_item = WC()->cart ? WC()->cart->get_cart_item($cart_item_key) : [];
         if ($cart_item === [] || ! empty($cart_item['_trovesia_addon_parent_key'])) {
-            wp_send_json_error(['message' => __('This cart item cannot be updated directly.', 'trovesia-plugin')], 400);
+            wp_send_json_error(['message' => __('This cart item cannot be updated directly.', 'product-addon-plugin')], 400);
         }
 
         $product = $cart_item['data'] ?? null;
         if (! $product instanceof \WC_Product) {
-            wp_send_json_error(['message' => __('This product is unavailable.', 'trovesia-plugin')], 400);
+            wp_send_json_error(['message' => __('This product is unavailable.', 'product-addon-plugin')], 400);
         }
 
         $max = $product->get_max_purchase_quantity();
@@ -731,11 +731,11 @@ final class Addon_Pricing
             return;
         }
 
-        if(!WC()->cart||!$this->cart_rule($values,WC()->cart)){throw new \Exception(__('The add-on changed. Please refresh your cart.','trovesia-plugin'));}
+        if(!WC()->cart||!$this->cart_rule($values,WC()->cart)){throw new \Exception(__('The add-on changed. Please refresh your cart.','product-addon-plugin'));}
         $parent = wc_get_product($parent_id);
         $item->add_meta_data(
-            __('Add-on for', 'trovesia-plugin'),
-            $parent ? $parent->get_name() : __('Main product', 'trovesia-plugin'),
+            __('Add-on for', 'product-addon-plugin'),
+            $parent ? $parent->get_name() : __('Main product', 'product-addon-plugin'),
             true
         );
         $item->add_meta_data('_trovesia_addon_rule_id', (string) ($values['_trovesia_addon_rule_id'] ?? ''), true);

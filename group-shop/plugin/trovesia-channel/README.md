@@ -1,5 +1,7 @@
 # Trovesia Channel
 
+> 2026-11-06: Disabled in the current Group Shop local single-site environment (it was already inactive). Source and business data are retained; the default theme hides its portal entry while the plugin is not loaded. Production activation state was not checked or changed. Related active packages are now `muti-storefront-plugin` and `product-addon-plugin`.
+
 First-party channel links and WooCommerce order attribution for Trovesia.
 
 ## Included

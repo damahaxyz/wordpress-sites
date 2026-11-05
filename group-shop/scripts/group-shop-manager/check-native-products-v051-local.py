@@ -129,7 +129,7 @@ try:
     nonce=re.search(r'"add_variation_nonce":"([^"\\]+)"',page).group(1)
     status,body=r.req(main+'/wp-admin/admin-ajax.php',{'action':'woocommerce_add_variation','post_id':x['va'],'security':nonce})
     check(status==403,'Native AJAX cannot add private specs to a linked brand variable product')
-    manager=r.get(main+'/wp-admin/admin.php?'+urlencode({'page':'group-shop-manager','tab':'products','store':6,'product':x['a'],'gsm_brand':0}))
+    manager=r.get(main+'/wp-admin/admin.php?'+urlencode({'page':'muti-storefront-plugin','tab':'products','store':6,'product':x['a'],'gsm_brand':0}))
     check('继承商品的可编辑差异统一在原生编辑器维护' in manager and 'name="gsm_product_complete"' not in manager,'Legacy inherited editor offers native editing without a second ineffective form')
     staff=client();staff.admin(a,f['email'],f['password_staff'],'/wp-admin/edit.php?post_type=product')
     staff_editor=staff.get(a+'/wp-admin/post.php?post='+str(x['a'])+'&action=edit&gsm_brand=6')

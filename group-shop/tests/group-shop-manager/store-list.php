@@ -31,11 +31,11 @@ try {
     $assert($rows_before===$rows_after,'Products, orders, users and logo attachment identity are retained');
     $throws(fn()=>Stores::domain('mapped-qa.example.org',$b),'Another store cannot bind the same domain');
     $throws(fn()=>Stores::save($b,array_merge($other,['domain'=>'mapped-qa.example.org'])),'Duplicate domain is rejected on save');
-    $_GET=['page'=>'group-shop-manager','tab'=>'stores']; ob_start(); Admin::render(); $list=ob_get_clean();
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>'stores']; ob_start(); Admin::render(); $list=ob_get_clean();
     $assert(substr_count($list,'<tr data-store=')===count(Stores::all()),'Store list has exactly one record per active store');
     $assert(str_contains($list,'mapped-qa.example.org')&&str_contains($list,'gsm-store-dialog')&&str_contains($list,'data-gsm-store-dialog'),'List shows mapped domain and modal edit/create entry points');
     $assert(!str_contains($list,'name="logo_id"')&&!str_contains($list,'name="slug"')&&!str_contains($list,'选择店铺 <select'),'List contains no inline editor or old store selector');
-    $_GET=['page'=>'group-shop-manager','tab'=>'stores','store'=>$a,'gsm_dialog'=>'edit']; ob_start(); Admin::render(); $form=ob_get_clean();
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>'stores','store'=>$a,'gsm_dialog'=>'edit']; ob_start(); Admin::render(); $form=ob_get_clean();
     $assert(str_contains($form,'name="domain" value="mapped-qa.example.org"')&&str_contains($form,'从媒体库选择图片'),'Child editor shows its own domain and native media selector');
     $assert(!str_contains($form,'nav-tab-wrapper')&&!str_contains($form,'gsm-stores-table'),'Popup editor omits duplicate navigation and list');
     $_GET['gsm_saved']=wp_create_nonce('gsm_store_saved_'.$a); delete_site_transient('gsm_notice_'.get_current_user_id());
@@ -46,7 +46,7 @@ try {
     unset($_GET['gsm_saved']);
     $_GET['store']=Stores::main_id(); ob_start(); Admin::render(); $form=ob_get_clean();
     $assert((bool)preg_match('/name="domain"[^>]+readonly/',$form),'Main-store domain input is read-only');
-    $_GET=['page'=>'group-shop-manager','tab'=>'stores','gsm_dialog'=>'create']; ob_start(); Admin::render(); $form=ob_get_clean();
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>'stores','gsm_dialog'=>'create']; ob_start(); Admin::render(); $form=ob_get_clean();
     $assert(str_contains($form,'name="domain"')&&str_contains($form,'name="gsm_dialog" value="create"')&&!str_contains($form,'name="slug"'),'Create dialog asks for name and domain without an internal slug');
     $new_id=Stores::create('Mapped QA','mapped-qa-'.bin2hex(random_bytes(2)),'new-mapped-qa.example.org');
     $assert(get_site($new_id)->domain==='new-mapped-qa.example.org'&&get_site($new_id)->path==='/'&&get_blog_option($new_id,'siteurl')==='https://new-mapped-qa.example.org','New store is created directly on its mapped HTTPS domain');

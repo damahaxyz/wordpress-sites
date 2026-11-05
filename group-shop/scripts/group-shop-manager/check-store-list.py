@@ -8,7 +8,7 @@ a=p.parse_args(); cookie=a.cookie_file.read_text().strip().removeprefix('Cookie:
 def get(query):
     c=http.client.HTTPConnection('127.0.0.1',8086,timeout=30)
     try:
-        c.request('GET','/wp-admin/admin.php?page=group-shop-manager&tab=stores'+query,headers={'Host':'www.animecats.online','X-Forwarded-Proto':'https','Cookie':cookie})
+        c.request('GET','/wp-admin/admin.php?page=muti-storefront-plugin&tab=stores'+query,headers={'Host':'www.animecats.online','X-Forwarded-Proto':'https','Cookie':cookie})
         r=c.getresponse(); body=r.read().decode(); assert r.status==200, r.status
         assert 'notice-error' not in body
         return body

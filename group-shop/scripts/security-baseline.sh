@@ -20,7 +20,7 @@ fi
 
 case "${mode}" in
 apply)
-    for path in theme/trovesia plugin/trovesia-plugin plugin/trovesia-channel plugin/group-shop-manager security; do
+    for path in theme/trovesia plugin/product-addon-plugin plugin/trovesia-channel plugin/muti-storefront-plugin security; do
         test -d "${path}"
         chown -R root:root "${path}"
         find "${path}" -type d -exec chmod 755 {} +
@@ -46,8 +46,8 @@ for path in /var/www/html/wp-admin /var/www/html/wp-includes /var/www/html/wp-co
 done
 # Skip deployment-managed read-only bind mounts; their host ownership is set above.
 for path in /var/www/html/wp-content/plugins /var/www/html/wp-content/themes /var/www/html/wp-content/mu-plugins; do
-    find "$path" \( -path /var/www/html/wp-content/plugins/trovesia-plugin -o -path /var/www/html/wp-content/plugins/trovesia-channel -o -path /var/www/html/wp-content/plugins/group-shop-manager -o -path /var/www/html/wp-content/themes/trovesia -o -path /var/www/html/wp-content/mu-plugins/trovesia-security.php \) -prune -o -type d -exec chown 0:0 {} + -exec chmod 755 {} +
-    find "$path" \( -path /var/www/html/wp-content/plugins/trovesia-plugin -o -path /var/www/html/wp-content/plugins/trovesia-channel -o -path /var/www/html/wp-content/plugins/group-shop-manager -o -path /var/www/html/wp-content/themes/trovesia -o -path /var/www/html/wp-content/mu-plugins/trovesia-security.php \) -prune -o -type f -exec chown 0:0 {} + -exec chmod 644 {} +
+    find "$path" \( -path /var/www/html/wp-content/plugins/product-addon-plugin -o -path /var/www/html/wp-content/plugins/trovesia-channel -o -path /var/www/html/wp-content/plugins/muti-storefront-plugin -o -path /var/www/html/wp-content/themes/trovesia -o -path /var/www/html/wp-content/mu-plugins/trovesia-security.php \) -prune -o -type d -exec chown 0:0 {} + -exec chmod 755 {} +
+    find "$path" \( -path /var/www/html/wp-content/plugins/product-addon-plugin -o -path /var/www/html/wp-content/plugins/trovesia-channel -o -path /var/www/html/wp-content/plugins/muti-storefront-plugin -o -path /var/www/html/wp-content/themes/trovesia -o -path /var/www/html/wp-content/mu-plugins/trovesia-security.php \) -prune -o -type f -exec chown 0:0 {} + -exec chmod 644 {} +
 done
 for path in /var/www/html/wp-content/uploads /var/www/html/wp-content/cache; do
     mkdir -p "$path"
@@ -73,7 +73,7 @@ check)
     docker compose config --quiet
     [[ "$(stat -c '%u:%a' .env)" == 0:600 ]] || { echo 'FAIL: .env ownership/mode' >&2; exit 1; }
     mounts="$(docker inspect --format '{{range .Mounts}}{{println .Destination .RW}}{{end}}' "$(docker compose ps -q wordpress)")"
-    for destination in /var/www/html/wp-content/themes/trovesia /var/www/html/wp-content/plugins/trovesia-plugin /var/www/html/wp-content/plugins/trovesia-channel /var/www/html/wp-content/plugins/group-shop-manager /var/www/html/wp-content/mu-plugins/trovesia-security.php /opt/trovesia; do
+    for destination in /var/www/html/wp-content/themes/trovesia /var/www/html/wp-content/plugins/product-addon-plugin /var/www/html/wp-content/plugins/trovesia-channel /var/www/html/wp-content/plugins/muti-storefront-plugin /var/www/html/wp-content/mu-plugins/trovesia-security.php /opt/trovesia; do
         grep -Fxq "${destination} false" <<< "${mounts}" || { echo "FAIL: writable/missing code mount ${destination}" >&2; exit 1; }
     done
     docker compose exec -T --user 33:33 wordpress php /opt/trovesia/filesystem-audit.php check

@@ -10,4 +10,4 @@
 
 ![中央五个标签](manager-five-tabs.png)
 
-用户追加商品集合合理性评估，已只读检查集合规则、原生成员关系、品牌继承及展示接口；建议保留共享分类与品牌集合的职责区分，方案见plugin/group-shop-manager/docs/COLLECTIONS-ASSESSMENT.md。本轮没有修改集合规则或数据，不将评估视为后续重构授权。
+用户追加商品集合合理性评估，已只读检查集合规则、原生成员关系、品牌继承及展示接口；建议保留共享分类与品牌集合的职责区分，方案见plugin/muti-storefront-plugin/docs/COLLECTIONS-ASSESSMENT.md。本轮没有修改集合规则或数据，不将评估视为后续重构授权。

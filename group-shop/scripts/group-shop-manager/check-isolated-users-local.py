@@ -129,7 +129,7 @@ try:
     check(status==403 and '顾客角色固定为 Customer' in body,'Forged native customer-to-administrator update is rejected')
     profile=rootc.get(main+'/wp-admin/network/user-edit.php?user_id='+str(f['staff']))
     check('gsm_staff_roles[6]' in profile and 'gsm_staff_roles[7]' in profile and 'gsm_staff_complete' in profile,'Employee profile exposes explicit per-shop grant controls')
-    overview=rootc.get(main+'/wp-admin/admin.php?page=group-shop-manager')
+    overview=rootc.get(main+'/wp-admin/admin.php?page=muti-storefront-plugin')
     check('v0.4.0' in overview and '顾客每店独立注册' in overview and '同一邮箱与密码，无需重复注册' not in overview,'Manager describes new identity policy')
 finally:
     for item in clients:

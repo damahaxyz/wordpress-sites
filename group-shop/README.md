@@ -1,7 +1,8 @@
 # Group Shop
 
-> 当前 Group Shop Manager 本地已升级 0.5.9 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+> 当前 muti-storefront-plugin 本地已升级 0.5.10 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/muti-storefront-plugin/docs/HANDOFF.md) 与 [OPERATIONS](plugin/muti-storefront-plugin/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
 
+> 2026-11-06 本地插件已更名为 muti-storefront-plugin 0.5.10 与 product-addon-plugin 3.8.5；trovesia-channel 保持禁用、源码保留。目录／入口／后台／挂载及维护引用已更新，生产未发布。
 > 2026-11-06 当前本地为72件Chanel公共商品＋72件主店销售版本；七品牌和后台账号保留。0.5.9已完成原生SEO隔离本地验收，CSS／JS／图片继续共用。此前重置时的0品牌版本是历史基线，当前状态与私有备份见插件HANDOFF／OPERATIONS。
 
 
@@ -13,7 +14,7 @@ volumes、数据库凭据与 Redis 键前缀，可以在同一台服务器上同
 
 ```text
 theme/trovesia/                 页面模板、样式和前端交互
-plugin/trovesia-plugin/         站点业务功能和 WordPress hooks
+plugin/product-addon-plugin/         站点业务功能和 WordPress hooks
 ```
 
 这两个目录独立挂载到 WordPress 容器，本地修改后可直接刷新页面验证。
@@ -61,7 +62,7 @@ docker compose ps
 
 ```text
 外观 → 主题 → Trovesia Shop → 启用
-插件 → 已安装的插件 → Trovesia Shop Plugin → 启用
+插件 → 已安装的插件 → product-addon-plugin → 启用
 ```
 
 默认仅绑定 `127.0.0.1:8086`。在服务器本机上检查：
@@ -87,7 +88,7 @@ curl -I http://127.0.0.1:8086/
 
 ## 多店铺插件（新对话先读）
 
-新功能入口为 [Group Shop Manager](plugin/group-shop-manager/README.md)。接手时先阅读 [当前状态](plugin/group-shop-manager/docs/HANDOFF.md)、[架构](plugin/group-shop-manager/docs/ARCHITECTURE.md) 与 [变更记录](plugin/group-shop-manager/CHANGELOG.md)。功能和注意事项变更必须同步更新文档，详见根目录 AGENTS.md。
+新功能入口为 [muti-storefront-plugin](plugin/muti-storefront-plugin/README.md)。接手时先阅读 [当前状态](plugin/muti-storefront-plugin/docs/HANDOFF.md)、[架构](plugin/muti-storefront-plugin/docs/ARCHITECTURE.md) 与 [变更记录](plugin/muti-storefront-plugin/CHANGELOG.md)。功能和注意事项变更必须同步更新文档，详见根目录 AGENTS.md。
 
 底层为 WordPress Multisite，共享用户与默认地址。0.2.1 已增加店铺 Logo 原生媒体选择和搜索引擎收录开关，保留统一分类模板、分店覆盖与规则集合，各店商品、评论和订单独立；商品和变体不管理库存、始终有货，批量库存已移除。第二店为 https://test.animecats.online/（禁止收录、邮件关闭、商品仍为草稿）。支付待定，详细上线证据和限制以 HANDOFF 为准。
 

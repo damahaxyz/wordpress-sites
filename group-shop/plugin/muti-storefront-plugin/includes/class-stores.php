@@ -68,5 +68,5 @@ final class Stores {
         Brands::set_option($id,'nav_menu_options',['auto_add'=>[]]);
         Schema::audit('brand_created',$id); return $id;
     }
-    public static function purge(): void { if (class_exists('Trovesia\\Plugin\\Page_Cache')) { \Trovesia\Plugin\Page_Cache::instance()->purge_now('Group Shop Manager update'); } }
+    public static function purge(): void { if (class_exists('Trovesia\\Plugin\\Page_Cache')) { \Trovesia\Plugin\Page_Cache::instance()->purge_now('muti-storefront-plugin update'); } }
 }

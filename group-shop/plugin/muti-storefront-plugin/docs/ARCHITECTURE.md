@@ -1,4 +1,4 @@
-# 单站多品牌架构（0.5.9，本地）
+# 单站多品牌架构（0.5.10，本地）
 
 ## 基本模型
 
@@ -145,7 +145,7 @@ Brands的后台rest_url使用当前注册请求主机的siteurl，避免切换�
 
 Product presentation 默认动态继承公共商品，涵盖Eyebrow、Key benefits、退货说明、配送说明、Order activity文案及原有配送天数元数据；公共修改即时生效，不向品牌批量复制文案。在该面板勾选“单独设置本店展示信息”后可独立编辑，取消勾选并保存恢复当前公共值。留空仍使用Trovesia原有默认文案；自动订单数的查询与缓存均按当前店铺计算，不继承另一店的数量。继承模式字段不可编辑，服务端忽略伪造字段并阻止直接元数据覆盖；覆盖选择沿用 `_gsm_overrides` 的presentation项。
 
-Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
+muti-storefront-plugin 0.5.8、product-addon-plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
 
 本轮开始只读盘点为72公共＋72品牌版本，已有展示及加购元数据均为0；没有自动改写这些业务商品、建立版本或设置营销规则。29项运行、5项订单统计和23项真实HTTP检查，以及浏览器实际覆盖保存／恢复继承通过；合成资料清理与原商品／元数据／品牌设置快照核对见 `qa/group-shop-manager/v058-local/LOCAL-v058.md`。仅本地，未连接或发布生产。
 
@@ -163,3 +163,8 @@ Woo FilterData可在WP_Query前命中持久缓存，分类／属性计数经wooc
 分类Sitemap通过品牌已发布商品关系求可用词条及共享祖先，参与原生列表和分页数量查询；不以全局term count决定店铺目录。用户Sitemap provider关闭且其直接入口404。商品／页面／文章Sitemap、Feed和搜索沿用原生品牌查询，相关／交叉销售ID在公开读取时再过滤。菜单沿用NativeMenus，非法显式菜单可能由WordPress回退到另一个本店菜单，但不得渲染外店菜单。
 
 the_content／the_excerpt／woocommerce_short_description渲染时使用WP_HTML_Tag_Processor移除指向其他注册店铺业务页的a.href／iframe.src，pre_oembed_result阻止外店嵌入；不改数据库正文，不猜测替换为本站路径。wp-content链接、图片、CSS、JS继续共享。第三方任意PHP／SQL读取不自动授权；新增SEO插件、路由或升级Woo内部FilterData接口必须复跑专门验收。
+
+
+## 0.5.10 名称与兼容标识
+
+代码包为muti-storefront-plugin与product-addon-plugin，运行时命名空间、GSM／TROVESIA常量、数据键和hooks保持兼容。WordPress加载标识分别为muti-storefront-plugin/muti-storefront-plugin.php与product-addon-plugin/product-addon-plugin.php；新名称不是新商城或新数据隔离层。后台新slug为muti-storefront-plugin，旧slug只保留权限相同的隐藏兼容路由。渠道插件不加载，主题默认渠道入口按类是否已加载决定显示。

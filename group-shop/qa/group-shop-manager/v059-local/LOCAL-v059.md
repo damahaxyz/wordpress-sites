@@ -33,6 +33,6 @@ HTTP涵盖A／B同公开路径分别解析自己的商品／页面、正常产�
 
 原posts、postmeta、terms、termmeta、term_taxonomy、term_relationships、comments、commentmeta逐行与开始快照一致；七品牌注册和业务配置核对恢复，保留原菜单、索引、集合配置及后台身份，仍144父商品。清理后七店商品API数量及共享分类计数均正确：主店72、其他店0；主店Sitemap仍72条，A索引设置恢复，跨店GET／HEAD与公共ID均404。
 
-复验顺序见插件[OPERATIONS](../../../plugin/group-shop-manager/docs/OPERATIONS.md)：fresh `seo-isolation-v059.php` → `check-seo-isolation-v059.php` → 从私有QA目录运行 `check-seo-isolation-v059-local.py` → `cleanup-seo-isolation-v059.php`。禁止复用旧清空／迁移fixture编号。私有fixture在成功清理后删除；再次验收必须新建。
+复验顺序见插件[OPERATIONS](../../../plugin/muti-storefront-plugin/docs/OPERATIONS.md)：fresh `seo-isolation-v059.php` → `check-seo-isolation-v059.php` → 从私有QA目录运行 `check-seo-isolation-v059-local.py` → `cleanup-seo-isolation-v059.php`。禁止复用旧清空／迁移fixture编号。私有fixture在成功清理后删除；再次验收必须新建。
 
 范围是当前原生WordPress／WooCommerce及本项目主题，不是对未知SEO插件、自定义SQL／接口、任意用户脚本或未来Woo版本的兼容承诺。普通分类词条、图片与静态资源仍共用；noindex不是资源授权机制。上线仍须用户新的明确发布通知及生产实际环境验收。

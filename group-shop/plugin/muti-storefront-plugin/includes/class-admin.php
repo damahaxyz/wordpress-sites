@@ -5,15 +5,25 @@ if (!defined('ABSPATH')) { exit; }
 final class Admin {
     private const TABS = ['overview'=>'概览', 'stores'=>'品牌设置', 'collections'=>'商品集合', 'audit'=>'操作日志', 'help'=>'文档与限制'];
     public static function boot(): void {
+        add_action('admin_init',static function (): void {
+            if (($_GET['page']??'')!=='group-shop-manager') { return; }
+            if (!Stores::can_manage()) { wp_die('需要商城总管理员权限。','权限不足',['response'=>403]); }
+            if (($_SERVER['REQUEST_METHOD']??'GET')!=='GET') { wp_die('请重新打开插件管理页面后操作。','旧入口已更名',['response'=>410]); }
+            $url=add_query_arg('page','muti-storefront-plugin',wp_unslash((string)($_SERVER['REQUEST_URI']??'/wp-admin/admin.php')));
+            wp_safe_redirect(wp_make_link_relative($url));exit;
+        },0);
         add_action('admin_menu', static function (): void {
             if (!Stores::can_manage()) { return; }
-            add_menu_page('Group Shop Manager', '多品牌管理', is_multisite() ? 'manage_network' : 'manage_options', 'group-shop-manager', [self::class,'render'], 'dashicons-store', 55);
+            add_menu_page('muti-storefront-plugin', '多品牌管理', is_multisite() ? 'manage_network' : 'manage_options', 'muti-storefront-plugin', [self::class,'render'], 'dashicons-store', 55);
+            // Core checks registered-page capabilities before admin_init. Keep a
+            // hidden, equally protected route so old bookmarks can reach redirect.
+            add_submenu_page('', 'muti-storefront-plugin', 'muti-storefront-plugin', is_multisite() ? 'manage_network' : 'manage_options', 'group-shop-manager', [self::class,'render']);
         });
         add_action('admin_init',[self::class,'redirect_products'],5);
         add_action('admin_post_gsm_action', [self::class, 'handle']);
         add_filter('admin_body_class', static fn($classes)=>$classes.(self::dialog()?' gsm-store-dialog-page':''));
         add_action('admin_enqueue_scripts', static function (): void {
-            if (($_GET['page'] ?? '') !== 'group-shop-manager') { return; }
+            if (($_GET['page'] ?? '') !== 'muti-storefront-plugin') { return; }
             wp_enqueue_style('gsm-admin', plugins_url('assets/admin.css', GSM_FILE), [], GSM_VERSION.'.'.filemtime(GSM_DIR.'assets/admin.css'));
             $dependencies=[]; $media_config=null;
             if (self::dialog()==='edit' || (self::tab()==='collections' && isset($_GET['collection']))) {
@@ -34,7 +44,7 @@ final class Admin {
     }
     public static function url(string $tab = 'overview', array $args = []): string {
         if ($tab==='products') { return self::product_url(absint($args['store']??0),absint($args['product']??0)); }
-        return add_query_arg(array_merge(['page'=>'group-shop-manager','tab'=>$tab], $args), get_admin_url(Stores::main_id(), 'admin.php'));
+        return add_query_arg(array_merge(['page'=>'muti-storefront-plugin','tab'=>$tab], $args), get_admin_url(Stores::main_id(), 'admin.php'));
     }
     private static function product_url(int $store,int $product): string {
         if ($store) { Stores::assert_store($store); }
@@ -45,7 +55,7 @@ final class Admin {
         return Brands::admin_url($store,'edit.php?post_type=product');
     }
     public static function redirect_products(): void {
-        if (($_GET['page']??'')!=='group-shop-manager'||($_GET['tab']??'')!=='products') { return; }
+        if (($_GET['page']??'')!=='muti-storefront-plugin'||($_GET['tab']??'')!=='products') { return; }
         if (!Stores::can_manage()) { wp_die('需要商城总管理员权限。','权限不足',['response'=>403]); }
         try { $url=self::product_url(absint($_GET['store']??0),absint($_GET['product']??0)); }
         catch (\Throwable $error) { wp_die('商品或品牌不存在，请从原生 Products 重新选择。','旧商品入口不可用',['response'=>404]); }
@@ -64,7 +74,7 @@ final class Admin {
         echo '<label class="gsm-field"><span>'.esc_html($label).'</span><textarea class="large-text" name="'.esc_attr($name).'" rows="5">'.esc_textarea($value).'</textarea></label>';
     }
     private static function select_store(int $selected): void {
-        echo '<form method="get" class="gsm-toolbar"><input type="hidden" name="page" value="group-shop-manager"><input type="hidden" name="tab" value="'.esc_attr(self::tab()).'"><label>选择品牌 <select name="store">';
+        echo '<form method="get" class="gsm-toolbar"><input type="hidden" name="page" value="muti-storefront-plugin"><input type="hidden" name="tab" value="'.esc_attr(self::tab()).'"><label>选择品牌 <select name="store">';
         foreach (Stores::all() as $id=>$name) { echo '<option value="'.(int)$id.'" '.selected($selected,$id,false).'>'.esc_html($name).' (#'.(int)$id.')</option>'; }
         echo '</select></label> '; submit_button('查看','secondary','',false); echo '</form>';
     }
@@ -72,7 +82,7 @@ final class Admin {
     private static function store(): int { return absint($_GET['store']??Stores::main_id()); }
     private static function dialog(): string {
         $mode=sanitize_key($_GET['gsm_dialog']??'');
-        return ($_GET['page']??'')==='group-shop-manager'&&self::tab()==='stores'&&in_array($mode,['edit','create'],true)?$mode:'';
+        return ($_GET['page']??'')==='muti-storefront-plugin'&&self::tab()==='stores'&&in_array($mode,['edit','create'],true)?$mode:'';
     }
     public static function handle(): void {
         $authorized=false; $store_saved=false;
@@ -144,7 +154,7 @@ final class Admin {
             }
             echo '<p><a href="'.esc_url(self::url('stores')).'" target="_top">返回品牌列表</a></p></div>'; return;
         }
-        echo '<div class="wrap gsm"><h1>Group Shop Manager <small>v'.esc_html(GSM_VERSION).'</small></h1><p>单站商城 · 多品牌门面 · 支付集成暂未开发</p><nav class="nav-tab-wrapper">';
+        echo '<div class="wrap gsm"><h1>muti-storefront-plugin <small>v'.esc_html(GSM_VERSION).'</small></h1><p>单站商城 · 多品牌门面 · 支付集成暂未开发</p><nav class="nav-tab-wrapper">';
         foreach (self::TABS as $key=>$label) { echo '<a class="nav-tab '.(self::tab()===$key?'nav-tab-active':'').'" href="'.esc_url(self::url($key)).'">'.esc_html($label).'</a>'; }
         echo '</nav>';
         echo '<div class="notice notice-info inline"><p>单站多品牌：公共商品、分类、标签和媒体共用；品牌商品版本、顾客、评论和经营权限按品牌管理。</p></div>';
@@ -219,6 +229,6 @@ final class Admin {
         echo '</tbody></table>';
     }
     private static function help(int $store): void {
-        echo '<section class="gsm-card"><h2>先读接手文档</h2><p><code>plugin/group-shop-manager/README.md</code> → <code>docs/HANDOFF.md</code> → <code>docs/ARCHITECTURE.md</code> → <code>CHANGELOG.md</code></p><h2>当前版本边界</h2><ul><li>单站商城使用原生用户：员工共享身份按店授权，顾客身份、密码和默认地址按店隔离。不会自动接入独立 Trovesia 店铺。</li><li>不同域名分别登录，未实现跨域自动 SSO。</li><li>商城共用货币、税务、运费及网关配置；支付服务商和退款集成尚未开发。</li><li>新店禁止收录与发信，需独立完成域名、HTTPS、SMTP 和上线检查。</li><li>原生商品编辑页提供公共资料／品牌版本，标题、描述、图片及价格可独立覆盖；各版本独立上架。</li><li>商城原生分类／标签全店统一，本店商品集合独立；商品内容、价格、发布状态、评论、购物车和前台订单按店隔离，所有商品不管理库存、始终有货。</li><li>订单使用 WooCommerce 原生后台；总管理员可选择全部或单个品牌，品牌员工只能管理授权品牌。支付、退款与物流集成仍待配置。</li><li>不修改 FluentSMTP 源码，不保证 Google 无法识别品牌关联。</li></ul></section>';
+        echo '<section class="gsm-card"><h2>先读接手文档</h2><p><code>plugin/muti-storefront-plugin/README.md</code> → <code>docs/HANDOFF.md</code> → <code>docs/ARCHITECTURE.md</code> → <code>CHANGELOG.md</code></p><h2>当前版本边界</h2><ul><li>单站商城使用原生用户：员工共享身份按店授权，顾客身份、密码和默认地址按店隔离。不会自动接入独立 Trovesia 店铺。</li><li>不同域名分别登录，未实现跨域自动 SSO。</li><li>商城共用货币、税务、运费及网关配置；支付服务商和退款集成尚未开发。</li><li>新店禁止收录与发信，需独立完成域名、HTTPS、SMTP 和上线检查。</li><li>原生商品编辑页提供公共资料／品牌版本，标题、描述、图片及价格可独立覆盖；各版本独立上架。</li><li>商城原生分类／标签全店统一，本店商品集合独立；商品内容、价格、发布状态、评论、购物车和前台订单按店隔离，所有商品不管理库存、始终有货。</li><li>订单使用 WooCommerce 原生后台；总管理员可选择全部或单个品牌，品牌员工只能管理授权品牌。支付、退款与物流集成仍待配置。</li><li>不修改 FluentSMTP 源码，不保证 Google 无法识别品牌关联。</li></ul></section>';
     }
 }

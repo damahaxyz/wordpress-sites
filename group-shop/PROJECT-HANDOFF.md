@@ -108,7 +108,7 @@ trovesia-shop/
 │   └── host/                     宿主机站点配置参考
 ├── php/uploads.ini              PHP 上传限制
 ├── theme/trovesia/              展示层、模板、CSS、前端交互
-├── plugin/trovesia-plugin/      业务逻辑、后台字段、购物车与迁移命令
+├── plugin/product-addon-plugin/      业务逻辑、后台字段、购物车与迁移命令
 ├── plugin/trovesia-channel/     渠道管理、推广链接、访问与订单归因、渠道门户
 ├── scripts/                     部署、备份和一次性/幂等商品脚本
 ├── product-assets/              商品原图、处理图和可上传成品
@@ -130,13 +130,13 @@ trovesia-shop/
 
 页面布局、颜色、字体、间距、响应式和非持久交互优先放在主题中。
 
-### 3.2 自定义插件 `plugin/trovesia-plugin`
+### 3.2 自定义插件 `plugin/product-addon-plugin`
 
 插件负责即使更换主题也必须保留的业务功能：
 
 | 文件/模块 | 主要功能 |
 | --- | --- |
-| `trovesia-plugin.php` | 插件入口、版本与常量 |
+| `product-addon-plugin.php` | 插件入口、版本与常量 |
 | `includes/class-plugin.php` | 模块启动、`[trovesia_year]` |
 | `includes/class-site-experience.php` | 站点页面、联系/物流查询、商品展示字段、变体卡片、结账保障等 |
 | `includes/class-account-experience.php` | 登录/注册弹窗及 AJAX |
@@ -425,7 +425,7 @@ Batana 变体：
 
 ### 5.4 迁移数据与线上数据的差异
 
-`plugin/trovesia-plugin/data/catalog.php` 是原有三款商品的迁移数据源，但它不一定与后台后续手工调整完全一致。当前线上 Batana 变体标签是 `Buy 1, get 1 Free` 等，而数据文件可能仍使用较短标签。
+`plugin/product-addon-plugin/data/catalog.php` 是原有三款商品的迁移数据源，但它不一定与后台后续手工调整完全一致。当前线上 Batana 变体标签是 `Buy 1, get 1 Free` 等，而数据文件可能仍使用较短标签。
 
 因此不要在未比较差异时直接运行：
 
@@ -636,14 +636,14 @@ curl -I 'https://www.trovesia.com/?cache-bypass-check=1'
 ```bash
 cd /Users/dodo/Documents/wordpress-sites/trovesia-shop
 git status --short
-git diff -- theme/trovesia plugin/trovesia-plugin
+git diff -- theme/trovesia plugin/product-addon-plugin
 ```
 
 当前工作区可能有未提交的 Trovesia 改动，尤其是：
 
 ```text
-plugin/trovesia-plugin/includes/class-addon-pricing.php
-plugin/trovesia-plugin/includes/class-site-experience.php
+plugin/product-addon-plugin/includes/class-addon-pricing.php
+plugin/product-addon-plugin/includes/class-site-experience.php
 theme/trovesia/assets/css/woocommerce.css
 theme/trovesia/assets/js/theme.js
 theme/trovesia/style.css
@@ -658,7 +658,7 @@ scripts/repair-comb-addon.php
 ### 8.2 语法与配置检查
 
 ```bash
-find theme/trovesia plugin/trovesia-plugin \
+find theme/trovesia plugin/product-addon-plugin \
   -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
 node --check theme/trovesia/assets/js/theme.js

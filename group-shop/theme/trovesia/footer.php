@@ -40,12 +40,14 @@
                 <?php if (class_exists('WooCommerce')) : ?>
                     <li><a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>"><?php esc_html_e('My account', 'trovesia'); ?></a></li>
                 <?php endif; ?>
+                <?php if (class_exists('Trovesia\\Channel\\Plugin', false)) : ?>
                 <li class="site-footer__partner-link">
                     <a href="<?php echo esc_url(home_url('/channel-portal/')); ?>">
                         <?php esc_html_e('Channel partner login', 'trovesia'); ?>
                         <span aria-hidden="true">↗</span>
                     </a>
                 </li>
+                <?php endif; ?>
             </ul>
             <?php endif; ?>
         </div>

@@ -38,7 +38,7 @@ def post(kind,**fields):
     fields={'action':'gsm_action','kind':kind,'return_tab':'products','store':f['a'],'_wpnonce':token,**fields}
     status,body=req('/wp-admin/admin-post.php',fields); assert status==200,(kind,status); return body
 def public(store_path,product): return req(store_path+'/wp-json/wc/store/v1/products/'+str(product),opener=anon)[0]
-list_url=f'/wp-admin/admin.php?page=group-shop-manager&tab=products&store={f["a"]}'
+list_url=f'/wp-admin/admin.php?page=muti-storefront-plugin&tab=products&store={f["a"]}'
 try:
     get('/wp-login.php')
     status,body=req('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+list_url,'testcookie':'1'})
@@ -87,13 +87,13 @@ try:
     tag_nonce=re.search(r'name="_wpnonce_add-tag"[^>]*value="([^"]+)"',body).group(1)
     status,data=req('/wp-admin/admin-ajax.php',{'action':'add-tag','taxonomy':'product_tag','tag-name':'QA HTTP Shared Tag','slug':'qa-http-shared-tag-'+__import__('secrets').token_hex(3),'_wpnonce_add-tag':tag_nonce})
     check(status==200 and 'QA HTTP Shared Tag' in data,'Native main-site AJAX can create a shared product tag')
-    body=get(f'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store={f["b"]}&collection=new')
+    body=get(f'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store={f["b"]}&collection=new')
     check('QA HTTP Shared Tag' in body,'A native taxonomy AJAX creation appears in sibling-store collection choices')
     body=get('/wp-admin/term.php?taxonomy=product_cat&tag_ID='+str(shared['category'])+'&post_type=product')
     edit_nonce=re.search(r'name="_wpnonce" value="([^"]+)"',body).group(1)
     status,body=req('/wp-admin/edit-tags.php',{'action':'editedtag','taxonomy':'product_cat','tag_ID':shared['category'],'post_type':'product','_wpnonce':edit_nonce,'name':'QA HTTP Global Category','slug':'qa-http-global-category','description':'Shared native HTTP edit','parent':'0'})
     check(status==200,'Native category edit submits successfully')
-    body=get(f'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store={f["b"]}&collection=new')
+    body=get(f'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store={f["b"]}&collection=new')
     check('QA HTTP Global Category' in body,'Native category editing propagates to sibling-store choices')
 finally:
     if logout:

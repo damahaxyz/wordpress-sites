@@ -26,16 +26,16 @@ def check(ok,name):
 
 try:
     request('/wp-login.php')
-    body=request('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=group-shop-manager&tab=stores','testcookie':'1'})
+    body=request('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=stores','testcookie':'1'})
     assert 'v0.3.0' in body and 'id="loginform"' not in body
     match=re.search(r'''href=['"]([^'"]*wp-login\.php\?action=logout[^'"]+)['"]''',body)
     assert match; logout=html.unescape(match.group(1))
     check('统一分类' not in body and '店铺分类' not in body,'Retired classification tabs are absent in the authenticated manager')
     check(body.count('class="nav-tab ')==10,'Exactly ten active manager tabs remain')
     for tab in ['overview','stores','collections','catalog','products','orders','customers','reviews','audit','help']:
-        body=request(f'/wp-admin/admin.php?page=group-shop-manager&tab={tab}&store={store}')
+        body=request(f'/wp-admin/admin.php?page=muti-storefront-plugin&tab={tab}&store={store}')
         check('v0.3.0' in body and 'notice-error' not in body,'Authenticated admin screen: '+tab)
-    body=request(f'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store={store}')
+    body=request(f'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store={store}')
     check('本店产品分类（含子分类，任一匹配）' in body and '本店产品标签' in body,'Collection selectors use the current store native taxonomy')
     check(f'/brand-a/wp-admin/edit-tags.php?taxonomy=product_cat' in body,'Collection page links to the correct store native product categories')
     nonce=re.search(r'name="_wpnonce" value="([^"]+)"',body).group(1)
@@ -50,8 +50,8 @@ try:
         check('未知管理操作' in body,'Retired write handler rejected: '+kind)
     check(ids(request(categories))==ids(before),'Rejected old handlers do not modify native category records')
     for retired in ['templates','categories']:
-        body=request(f'/wp-admin/admin.php?page=group-shop-manager&tab={retired}&store={store}')
-        check('class="nav-tab nav-tab-active" href="'+base+'/wp-admin/admin.php?page=group-shop-manager&#038;tab=overview"' in body,'Retired URL safely falls back to overview: '+retired)
+        body=request(f'/wp-admin/admin.php?page=muti-storefront-plugin&tab={retired}&store={store}')
+        check('class="nav-tab nav-tab-active" href="'+base+'/wp-admin/admin.php?page=muti-storefront-plugin&#038;tab=overview"' in body,'Retired URL safely falls back to overview: '+retired)
 finally:
     if logout:
         request(logout)

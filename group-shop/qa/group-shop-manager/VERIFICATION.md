@@ -31,7 +31,7 @@
 - 插件安装包：`dist/group-shop-manager-0.1.0.zip`，18 个文件，包含插件源码、AGENTS 和全部插件说明，不包含凭据、数据库或测试数据。
 - 首次交付安装包 SHA-256（路由修复前历史包）：`42310c4d74b528fbddb66d9aed27375b524cd244c3e0302c799629c75829171d`。随后因维护文档更新重新打包，当前包以 `dist/group-shop-manager-0.1.0.zip.sha256` 为准。
 - 当前生产已有只读挂载与 Multisite 配置，不能用上传 ZIP 替代服务器部署流程；后续部署使用 `scripts/deploy-manager-plugin.sh`。
-- 回滚与操作规则见 `plugin/group-shop-manager/docs/OPERATIONS.md`。停用插件不会撤销 Multisite。
+- 回滚与操作规则见 `plugin/muti-storefront-plugin/docs/OPERATIONS.md`。停用插件不会撤销 Multisite。
 
 ## 使用前需明确
 
@@ -39,7 +39,7 @@
 
 FluentSMTP 未修改核心；各店启用邮件前，须在主店配置精确发件路由并完成真实投递验证。被阻止邮件不排队、不补发。独立域名上线、品牌页面和既有政策文本仍需逐店配置与检查，不能承诺搜索引擎无法识别关联。
 
-新对话从 `plugin/group-shop-manager/docs/HANDOFF.md` 开始。根目录与插件目录的 `AGENTS.md` 均要求功能、限制和部署变化同步更新文档。
+新对话从 `plugin/muti-storefront-plugin/docs/HANDOFF.md` 开始。根目录与插件目录的 `AGENTS.md` 均要求功能、限制和部署变化同步更新文档。
 
 ## 首次验收遗漏及后续修复
 

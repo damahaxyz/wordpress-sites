@@ -1,7 +1,8 @@
 # Group Shop 部署记录
 
-> 当前 Group Shop Manager 本地已升级 0.5.4 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+> 当前 muti-storefront-plugin 本地已升级 0.5.10 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/muti-storefront-plugin/docs/HANDOFF.md) 与 [OPERATIONS](plugin/muti-storefront-plugin/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
 
+> 2026-11-06 本地插件已更名为 muti-storefront-plugin 0.5.10 与 product-addon-plugin 3.8.5；trovesia-channel 保持禁用、源码保留。目录／入口／后台／挂载及维护引用已更新，生产未发布。
 
 部署日期：2026-11-02 至 2026-11-03，Asia/Taipei。
 
@@ -86,13 +87,13 @@ ssh root@contabo2 'cd /root/wordpress-sites/group-shop && bash scripts/security-
 
 主机 Nginx 当前由现有 master 进程运行，配置更新使用 `nginx -t && nginx -s reload`，不使用未激活的 `nginx.service`。
 
-## Group Shop Manager 0.1.0（2026-11-03）
+## muti-storefront-plugin 0.1.0（2026-11-03）
 
-已转换为原生 Multisite，网络启用多店铺插件、WooCommerce 与 FluentSMTP。后台入口 `/wp-admin/admin.php?page=group-shop-manager`。共享用户、密码和默认地址；商品、库存、评论、订单按店铺独立。支付集成待定，旧独立 Trovesia 不会自动加入网络。
+已转换为原生 Multisite，网络启用多店铺插件、WooCommerce 与 FluentSMTP。后台入口 `/wp-admin/admin.php?page=muti-storefront-plugin`。共享用户、密码和默认地址；商品、库存、评论、订单按店铺独立。支付集成待定，旧独立 Trovesia 不会自动加入网络。
 
 迁移前完整备份 `/root/group-shop-backups/20261102T171948Z`，快速旧配置 `deploy-backups/gsm-v010-pre-multisite/`。演示店 `/demo-store/`（blog 2）禁止收录、邮件关闭，包含草稿商品 18（来源主商品 175）。原 6 用户、4 订单保留，未发送实际邮件或执行付款。
 
-新对话请先读 `AGENTS.md`、`plugin/group-shop-manager/docs/HANDOFF.md`；功能、限制或部署变更必须更新文档。详细验收和回滚以插件 HANDOFF/OPERATIONS 为准。
+新对话请先读 `AGENTS.md`、`plugin/muti-storefront-plugin/docs/HANDOFF.md`；功能、限制或部署变更必须更新文档。详细验收和回滚以插件 HANDOFF/OPERATIONS 为准。
 
 ### 后台路由修复（2026-11-03）
 
@@ -106,13 +107,13 @@ ssh root@contabo2 'cd /root/wordpress-sites/group-shop && bash scripts/security-
 
 变更前完整备份 `/root/group-shop-backups/20261102T175306Z`；宿主配置备份 `deploy-backups/gsm-store2-domain/`。公网首页、账户页和登录入口已验证。主店仍是 `https://www.animecats.online/`，统一管理入口不变；账号共享但不同域名分别登录。
 
-## Group Shop Manager 0.2.0（2026-11-03）
+## muti-storefront-plugin 0.2.0（2026-11-03）
 
 已通过受控 manager-plugin 流程部署并网络启用；新增统一分类、分店展示覆盖、规则/手工商品集合和可视化分类/标签选择。按用户最新要求删除批量库存，主店 27 个、分店 3 个商品与变体已通过 CRUD 迁移为不管理数量、始终有货，原生 lookup 同步。商品名称/售价/发布状态、订单/用户计数与 UUID 对比保持。分店仍在 test.animecats.online，禁止收录、邮件关闭，商品草稿不变。
 
 升级前完整备份 `/root/group-shop-backups/20261103T033820Z`；旧组件 `deploy-backups/group-shop-manager-20261103T033929Z.tar.gz`。迁移脚本 `scripts/group-shop-manager/upgrade-v020.php`，19 项安装验收通过；QA 120 项集成与 6 项 HTTP、浏览器 nonce 保存/排序验证通过。最终后台 HTTP 与安全证据见 `qa/group-shop-manager/RELEASE-v020.md`，新对话先读插件 HANDOFF。旧 0.1.0 安装器已版本封锁，不得再按旧路径创建演示店。回退库存与分类需恢复匹配数据库，停用/回退源码不会恢复旧数量。
 
-## Group Shop Manager 0.2.1（2026-11-03）
+## muti-storefront-plugin 0.2.1（2026-11-03）
 
 店铺设置增加原生媒体 Logo 选择/上传/预览/移除和原生 blog_public 收录选项。Logo 保留店铺引用，兼容原生设置和主题切换。跨店媒体由原生处理器配合受控请求上下文完成，未支持的删除操作拒绝。已有收录、主题、Logo 升级时保持。
 

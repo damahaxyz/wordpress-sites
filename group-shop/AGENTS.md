@@ -1,8 +1,8 @@
 # Group Shop 工作约定
 
-先读 plugin/group-shop-manager/README.md、docs/HANDOFF.md、docs/ARCHITECTURE.md、CHANGELOG.md。涉及运维再读 docs/OPERATIONS.md 和根 DEPLOYMENT.md。根 PROJECT-HANDOFF.md 是复制来的 Trovesia 历史材料，不是本插件规格。
+先读 plugin/muti-storefront-plugin/README.md、docs/HANDOFF.md、docs/ARCHITECTURE.md、CHANGELOG.md。涉及运维再读 docs/OPERATIONS.md 和根 DEPLOYMENT.md。根 PROJECT-HANDOFF.md 是复制来的 Trovesia 历史材料，不是本插件规格。
 
-## 当前产品决定（2026-11-06，0.5.9 本地）
+## 当前产品决定（2026-11-06，0.5.10 本地）
 
 - 用户明确要求一套商城、多个品牌门面，关闭 Multisite。当前本地已经迁移为单站，覆盖历史必须 Multisite、按站词表投影及共享顾客方案。历史行为仅看 CHANGELOG 与 qa 版本记录，不得恢复旧语义。
 - **后续改动只在本地测试，等用户明确新通知再发布。禁止自动部署、连接生产转换或在线清理。** 当前七个 HTTP .local 域名均 loopback；旧 localhost 安装器／fixture 不可去掉保护用于当前环境。
@@ -15,7 +15,7 @@
 
 ## 代码与验证边界
 
-新业务位于 plugin/group-shop-manager/；禁止顺带修改独立 trovesia-shop 或其他项目。WooCommerce 使用 CRUD 并兼容 HPOS，分类／媒体／用户沿用原生 API。Brands::id 是品牌，原生 blog_id 恒 1；跨品牌受信操作必须 finally 恢复作用域，不能直接切原生表。外部选择品牌必须校验身份、归属及 nonce，不把数字 ID 当作授权。
+新业务位于 plugin/muti-storefront-plugin/；禁止顺带修改独立 trovesia-shop 或其他项目。WooCommerce 使用 CRUD 并兼容 HPOS，分类／媒体／用户沿用原生 API。Brands::id 是品牌，原生 blog_id 恒 1；跨品牌受信操作必须 finally 恢复作用域，不能直接切原生表。外部选择品牌必须校验身份、归属及 nonce，不把数字 ID 当作授权。
 
 不要记录密码、令牌、邮件正文、完整顾客地址或 SMTP 凭据。真实邮箱可重复，第三方全局邮箱取用户需本品牌适配。停用／卸载保留业务数据；不删除旧子站档案表或文件。回滚必须数据库、源码及配置成套恢复。
 
@@ -41,3 +41,6 @@
 
 
 - 2026-11-06，0.5.9 SEO决定：仅隔离页面／文章、销售商品／变体、分类统计与私有集合、菜单及SEO业务入口，CSS／JS／图片和wp-content素材共用。普通分类／标签词条仍共享。SeoIsolation校验ID／Store API slug／评论／集合，分类响应及聚合缓存按品牌；原生Sitemap与链接不得串店。禁止404猜测，保留验证归属后的本店旧slug301；正文外店业务链接／iframe只在渲染时移除href／src，不重写数据库。46运行＋315 HTTP检查通过，合成资料清理与八表／七品牌业务配置保留，仍72公共＋72主店版本。仅本地，禁止部署；第三方SEO／接口及Woo升级需专项复验。
+
+
+- 2026-11-06，0.5.10更名：本插件目录／入口／显示名统一muti-storefront-plugin，附加插件为product-addon-plugin 3.8.5；保留GSM／GroupShop、TROVESIA／Trovesia及业务数据键／接口，后台旧slug为受控隐藏兼容跳转。trovesia-channel本地禁用且源码保留，默认页脚入口按实际加载状态隐藏。QA私有目录／项目／脚本分组仍group-shop-manager-qa／group-shop-manager，不创建新数据库卷或重跑旧安装器。27运行／数据＋43 HTTP检查通过，九表哈希及用户资料／权限／会话与七品牌业务配置保留，测试登录仅正常更新wc_last_active活动日期；未发布生产。

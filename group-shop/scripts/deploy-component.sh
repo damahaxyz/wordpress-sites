@@ -47,15 +47,15 @@ for component in "$@"; do
             ;;
         plugin)
             component_types+=("plugin")
-            component_slugs+=("trovesia-plugin")
-            local_paths+=("${project_dir}/plugin/trovesia-plugin")
-            required_files+=("trovesia-plugin.php")
+            component_slugs+=("product-addon-plugin")
+            local_paths+=("${project_dir}/plugin/product-addon-plugin")
+            required_files+=("product-addon-plugin.php")
             ;;
         manager-plugin)
             component_types+=("plugin")
-            component_slugs+=("group-shop-manager")
-            local_paths+=("${project_dir}/plugin/group-shop-manager")
-            required_files+=("group-shop-manager.php")
+            component_slugs+=("muti-storefront-plugin")
+            local_paths+=("${project_dir}/plugin/muti-storefront-plugin")
+            required_files+=("muti-storefront-plugin.php")
             ;;
         channel-plugin)
             component_types+=("plugin")

@@ -36,7 +36,7 @@ foreach ($stores as $store) {
 $assert(get_blog_option(2,'blog_public')=='0'&&!get_blog_option(2,'gsm_store_settings')['mail_enabled'],'Second store remains noindex with mail blocked');
 $assert(get_home_url(2)==='https://test.animecats.online','Mapped second-store domain preserved');
 foreach (['overview','stores','templates','categories','collections','catalog','products','orders','customers','reviews','audit','help'] as $tab) {
-    $_GET=['page'=>'group-shop-manager','tab'=>$tab,'store'=>2]; ob_start(); Admin::render(); $html=ob_get_clean();
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>$tab,'store'=>2]; ob_start(); Admin::render(); $html=ob_get_clean();
     $assert(str_contains($html,'v0.2.0')&&!str_contains($html,'notice-error')&&!str_contains($html,'批量库存'),'Production admin screen: '.$tab);
 }
 $assert(get_current_blog_id()===Stores::main_id(),'Production blog context restored');

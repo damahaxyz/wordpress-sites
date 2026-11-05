@@ -81,7 +81,7 @@ wp_set_current_user($customer);
 $throws(fn()=>Collections::save_collection($a,$collection,$rule),'Customers cannot change collection rules');
 $throws(fn()=>Collections::rebuild($a),'Customers cannot run collection maintenance');
 wp_set_current_user($admin->ID);
-$_GET=['page'=>'group-shop-manager','tab'=>'products','store'=>$a,'product'=>$pa]; ob_start(); Admin::render(); $editor=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'products','store'=>$a,'product'=>$pa]; ob_start(); Admin::render(); $editor=ob_get_clean();
 $assert(str_contains($editor,'name="category_ids[]"')&&str_contains($editor,'name="tag_ids[]"')&&!str_contains($editor,'分类编号'),'Product editing uses category and tag pickers instead of numeric inputs');
 $assert(!str_contains($editor,'统一分类')&&!str_contains($editor,'店铺分类'),'Removed classification tabs are absent from the manager navigation');
 $assert(!str_contains($editor,'批量库存'),'Removed bulk inventory entry is absent from the manager navigation');

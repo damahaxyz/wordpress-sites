@@ -53,7 +53,7 @@ try {
     require_once ABSPATH.'wp-admin/includes/user.php'; require_once ABSPATH.'wp-admin/includes/ms.php';
     wpmu_delete_user($id);
 }
-$_GET=['page'=>'group-shop-manager','tab'=>'customers']; ob_start(); Admin::render(); $html=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'customers']; ob_start(); Admin::render(); $html=ob_get_clean();
 $assert(!str_contains($html,'共享客户') && !str_contains($html,'tab=customers') && str_contains($html,'<h2>店铺入口</h2>'),'Retired customer tab falls back to overview without old list');
 $assert(str_contains($html,esc_url(network_admin_url('users.php'))),'Overview links to native network users');
 $assert(substr_count($html,'class="nav-tab ')===7,'Seven current manager tabs remain');

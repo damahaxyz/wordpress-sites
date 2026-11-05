@@ -13,7 +13,7 @@
 
 [migration.json](migration.json)：7 品牌、67 商品＋89 变体、5 原始订单、17 评论（10 产品评论）、36 附件、90 页面、24 集合，生成41个公共父档案及相应公共变体。原生非主站 ID 重分配，精确映射保留；SKU 内部唯一，业务 SKU 单独保留。源商品／订单金额、地址、状态和文件保留，旧子站表、历史映射、审计和 uploads 不删除。
 
-私有成套备份 `/private/tmp/group-shop-manager-qa/backups/single-brand-20261104-e59hs1sh/`：database.sql、source.tgz、qa.env、multisite-export.bin。不把私有导出、密码、令牌、重置链接或完整地址提交到证据目录。回滚必须同时恢复匹配数据库、源码与配置；不能只重开 Multisite。完整操作见 [OPERATIONS](../../../plugin/group-shop-manager/docs/OPERATIONS.md)。
+私有成套备份 `/private/tmp/group-shop-manager-qa/backups/single-brand-20261104-e59hs1sh/`：database.sql、source.tgz、qa.env、multisite-export.bin。不把私有导出、密码、令牌、重置链接或完整地址提交到证据目录。回滚必须同时恢复匹配数据库、源码与配置；不能只重开 Multisite。完整操作见 [OPERATIONS](../../../plugin/muti-storefront-plugin/docs/OPERATIONS.md)。
 
 ## 自动与真实 HTTP 检查
 

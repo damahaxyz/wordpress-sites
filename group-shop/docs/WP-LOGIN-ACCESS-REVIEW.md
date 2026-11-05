@@ -15,7 +15,7 @@
 | 组件 | 版本 | 核查结果 |
 | --- | --- | --- |
 | Trovesia Channel | 1.3.0 | 登录为 admin-post.php，改密为 admin-ajax.php，新渠道创建不再发送设密邮件；退出仍需 wp-login.php?action=logout。 |
-| Trovesia Plugin | 3.8.1 | 顾客弹窗登录/注册为 AJAX，找回密码指向 WooCommerce 账户页；评论/联系/查询为 admin-post.php。 |
+| product-addon-plugin | 3.8.1 | 顾客弹窗登录/注册为 AJAX，找回密码指向 WooCommerce 账户页；评论/联系/查询为 admin-post.php。 |
 | WooCommerce | 11.1.2 | 当前账户、找回密码、新顾客设密邮件使用 /my-account/；退出经 wp_logout_url，仍需退出例外。 |
 | WooCommerce PayPal Payments | 4.1.3 | 源码未发现对原生登录页的直接调用；支付通知和结账使用自身接口。 |
 | WooCommerce Stripe Gateway | 11.1.1 | 源码未发现对原生登录页的直接调用；webhook 挂载 woocommerce_api_wc_stripe。 |

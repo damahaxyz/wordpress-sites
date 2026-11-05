@@ -55,8 +55,8 @@ qawp plugin activate woocommerce --network
 qawp plugin activate fluent-smtp --network
 qawp theme enable trovesia --network
 qawp theme activate trovesia
-qawp plugin activate trovesia-plugin --network
-qawp plugin activate group-shop-manager --network
+qawp plugin activate product-addon-plugin --network
+qawp plugin activate muti-storefront-plugin --network
 qawp eval 'WC_Install::install(); WC_Install::create_pages(); update_option("woocommerce_enable_myaccount_registration", "yes"); update_option("woocommerce_registration_generate_password", "no"); update_option("permalink_structure", "/%postname%/"); flush_rewrite_rules(false);'
 "${compose[@]}" exec -T wordpress chown -R 33:33 /var/www/html/wp-content/uploads </dev/null
 qawp core is-installed --network

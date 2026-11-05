@@ -258,8 +258,8 @@ final class Page_Cache
     public function add_tools_page(): void
     {
         add_management_page(
-            __('Trovesia Page Cache', 'trovesia-plugin'),
-            __('Trovesia Page Cache', 'trovesia-plugin'),
+            __('Trovesia Page Cache', 'product-addon-plugin'),
+            __('Trovesia Page Cache', 'product-addon-plugin'),
             'manage_options',
             'trovesia-page-cache',
             [$this, 'render_tools_page']
@@ -274,9 +274,9 @@ final class Page_Cache
 
         $admin_bar->add_node([
             'id'    => 'trovesia-purge-page-cache',
-            'title' => __('Clear page cache', 'trovesia-plugin'),
+            'title' => __('Clear page cache', 'product-addon-plugin'),
             'href'  => wp_nonce_url(admin_url('admin-post.php?action=trovesia_purge_page_cache'), 'trovesia_purge_page_cache'),
-            'meta'  => ['title' => __('Start a new Nginx page-cache generation', 'trovesia-plugin')],
+            'meta'  => ['title' => __('Start a new Nginx page-cache generation', 'product-addon-plugin')],
         ]);
     }
 
@@ -284,8 +284,8 @@ final class Page_Cache
     {
         if (! current_user_can('manage_options')) {
             wp_die(
-                esc_html__('You do not have permission to clear the page cache.', 'trovesia-plugin'),
-                esc_html__('Page cache', 'trovesia-plugin'),
+                esc_html__('You do not have permission to clear the page cache.', 'product-addon-plugin'),
+                esc_html__('Page cache', 'product-addon-plugin'),
                 ['response' => 403]
             );
         }
@@ -311,8 +311,8 @@ final class Page_Cache
 
         $class = $status === 'success' ? 'notice notice-success is-dismissible' : 'notice notice-error';
         $message = $status === 'success'
-            ? __('Trovesia page cache was cleared.', 'trovesia-plugin')
-            : __('Trovesia could not update the page-cache generation file. Check the runtime directory permissions.', 'trovesia-plugin');
+            ? __('Trovesia page cache was cleared.', 'product-addon-plugin')
+            : __('Trovesia could not update the page-cache generation file. Check the runtime directory permissions.', 'product-addon-plugin');
 
         printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), esc_html($message));
     }
@@ -329,20 +329,20 @@ final class Page_Cache
         $generation = (string) get_option(self::LAST_GENERATION_OPTION, '');
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Trovesia Page Cache', 'trovesia-plugin'); ?></h1>
-            <p><?php esc_html_e('Nginx caches public HTML for anonymous visitors. Logged-in users, carts, checkout, accounts, requests with query strings, and WooCommerce sessions bypass the cache.', 'trovesia-plugin'); ?></p>
+            <h1><?php esc_html_e('Trovesia Page Cache', 'product-addon-plugin'); ?></h1>
+            <p><?php esc_html_e('Nginx caches public HTML for anonymous visitors. Logged-in users, carts, checkout, accounts, requests with query strings, and WooCommerce sessions bypass the cache.', 'product-addon-plugin'); ?></p>
             <table class="widefat striped" style="max-width: 900px">
                 <tbody>
-                    <tr><th><?php esc_html_e('Generation file', 'trovesia-plugin'); ?></th><td><code><?php echo esc_html($path); ?></code></td></tr>
-                    <tr><th><?php esc_html_e('Writable', 'trovesia-plugin'); ?></th><td><?php echo esc_html(is_writable(dirname($path)) ? __('Yes', 'trovesia-plugin') : __('No', 'trovesia-plugin')); ?></td></tr>
-                    <tr><th><?php esc_html_e('Current generation', 'trovesia-plugin'); ?></th><td><code><?php echo esc_html($generation !== '' ? $generation : 'bootstrap'); ?></code></td></tr>
-                    <tr><th><?php esc_html_e('Last cleared', 'trovesia-plugin'); ?></th><td><?php echo esc_html($last_purged > 0 ? wp_date('Y-m-d H:i:s', $last_purged) : __('Not recorded', 'trovesia-plugin')); ?></td></tr>
-                    <tr><th><?php esc_html_e('Reason', 'trovesia-plugin'); ?></th><td><?php echo esc_html($last_reason !== '' ? $last_reason : __('Not recorded', 'trovesia-plugin')); ?></td></tr>
+                    <tr><th><?php esc_html_e('Generation file', 'product-addon-plugin'); ?></th><td><code><?php echo esc_html($path); ?></code></td></tr>
+                    <tr><th><?php esc_html_e('Writable', 'product-addon-plugin'); ?></th><td><?php echo esc_html(is_writable(dirname($path)) ? __('Yes', 'product-addon-plugin') : __('No', 'product-addon-plugin')); ?></td></tr>
+                    <tr><th><?php esc_html_e('Current generation', 'product-addon-plugin'); ?></th><td><code><?php echo esc_html($generation !== '' ? $generation : 'bootstrap'); ?></code></td></tr>
+                    <tr><th><?php esc_html_e('Last cleared', 'product-addon-plugin'); ?></th><td><?php echo esc_html($last_purged > 0 ? wp_date('Y-m-d H:i:s', $last_purged) : __('Not recorded', 'product-addon-plugin')); ?></td></tr>
+                    <tr><th><?php esc_html_e('Reason', 'product-addon-plugin'); ?></th><td><?php echo esc_html($last_reason !== '' ? $last_reason : __('Not recorded', 'product-addon-plugin')); ?></td></tr>
                 </tbody>
             </table>
             <p>
                 <a class="button button-primary" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=trovesia_purge_page_cache'), 'trovesia_purge_page_cache')); ?>">
-                    <?php esc_html_e('Clear page cache', 'trovesia-plugin'); ?>
+                    <?php esc_html_e('Clear page cache', 'product-addon-plugin'); ?>
                 </a>
             </p>
         </div>

@@ -1,6 +1,6 @@
-# Group Shop Manager 接手约定
+# muti-storefront-plugin 接手约定
 
-继承根 AGENTS.md。先读 README、HANDOFF、ARCHITECTURE、CHANGELOG。当前 0.5.9 本地为单站多品牌，已关闭 Multisite，生产未发布；不得自动上线。
+继承根 AGENTS.md。先读 README、HANDOFF、ARCHITECTURE、CHANGELOG。当前 0.5.10 本地为单站多品牌，已关闭 Multisite，生产未发布；不得自动上线。
 
 Brands 管业务范围，不再 switch_to_blog；get_current_blog_id 恒 1。公共商品不直接销售，品牌原生版本独立成交、上架、评论和订单。共享分类、标签及媒体，私有集合／菜单／页面必须标品牌。客户同邮箱多 ID，角色固定；员工显式授权，品牌 Administrator 不等于总管理员。
 
@@ -30,3 +30,6 @@ Brands 管业务范围，不再 switch_to_blog；get_current_blog_id 恒 1。公
 
 
 - 2026-11-06，0.5.9 SEO决定：仅隔离页面／文章、销售商品／变体、分类统计与私有集合、菜单及SEO业务入口，CSS／JS／图片和wp-content素材共用。普通分类／标签词条仍共享。SeoIsolation校验ID／Store API slug／评论／集合，分类响应及聚合缓存按品牌；原生Sitemap与链接不得串店。禁止404猜测，保留验证归属后的本店旧slug301；正文外店业务链接／iframe只在渲染时移除href／src，不重写数据库。46运行＋315 HTTP检查通过，合成资料清理与八表／七品牌业务配置保留，仍72公共＋72主店版本。仅本地，禁止部署；第三方SEO／接口及Woo升级需专项复验。
+
+
+- 2026-11-06，0.5.10更名：本插件目录／入口／显示名统一muti-storefront-plugin，附加插件为product-addon-plugin 3.8.5；保留GSM／GroupShop、TROVESIA／Trovesia及业务数据键／接口，后台旧slug为受控隐藏兼容跳转。trovesia-channel本地禁用且源码保留，默认页脚入口按实际加载状态隐藏。QA私有目录／项目／脚本分组仍group-shop-manager-qa／group-shop-manager，不创建新数据库卷或重跑旧安装器。27运行／数据＋43 HTTP检查通过，九表哈希及用户资料／权限／会话与七品牌业务配置保留，测试登录仅正常更新wc_last_active活动日期；未发布生产。

@@ -101,9 +101,9 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
+      - ./plugin/product-addon-plugin:/var/www/html/wp-content/plugins/product-addon-plugin:ro
       - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel:ro
-      - ./plugin/group-shop-manager:/var/www/html/wp-content/plugins/group-shop-manager:ro
+      - ./plugin/muti-storefront-plugin:/var/www/html/wp-content/plugins/muti-storefront-plugin:ro
       - ./security/trovesia-security.php:/var/www/html/wp-content/mu-plugins/trovesia-security.php:ro
       - ./security:/opt/trovesia:ro
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
@@ -139,9 +139,9 @@ services:
       - wordpress_data:/var/www/html:ro
       # Nginx 需要直接读取自定义主题和插件的静态资源。
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia:ro
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin:ro
+      - ./plugin/product-addon-plugin:/var/www/html/wp-content/plugins/product-addon-plugin:ro
       - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel:ro
-      - ./plugin/group-shop-manager:/var/www/html/wp-content/plugins/group-shop-manager:ro
+      - ./plugin/muti-storefront-plugin:/var/www/html/wp-content/plugins/muti-storefront-plugin:ro
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/cache-watch.sh:/etc/nginx/cache-watch.sh:ro
       - ./runtime/page-cache:/var/run/trovesia-page-cache
@@ -184,9 +184,9 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./theme/trovesia:/var/www/html/wp-content/themes/trovesia
-      - ./plugin/trovesia-plugin:/var/www/html/wp-content/plugins/trovesia-plugin
+      - ./plugin/product-addon-plugin:/var/www/html/wp-content/plugins/product-addon-plugin
       - ./plugin/trovesia-channel:/var/www/html/wp-content/plugins/trovesia-channel
-      - ./plugin/group-shop-manager:/var/www/html/wp-content/plugins/group-shop-manager
+      - ./plugin/muti-storefront-plugin:/var/www/html/wp-content/plugins/muti-storefront-plugin
       - ./security/trovesia-security.php:/var/www/html/wp-content/mu-plugins/trovesia-security.php:ro
       - ./runtime/page-cache:/var/run/trovesia-page-cache
       - ./security:/opt/trovesia:ro

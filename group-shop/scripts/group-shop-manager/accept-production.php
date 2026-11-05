@@ -35,8 +35,8 @@ try {
 $assert(count_users()['total_users']===$main_counts['users'],'Temporary acceptance customer removed');
 $assert(wc_get_orders(['limit'=>1,'paginate'=>true])->total===$main_counts['orders'],'Acceptance did not create or change master orders');
 foreach (['overview','stores','catalog','products','inventory','orders','customers','reviews','audit','help'] as $tab) {
-    $_GET=['page'=>'group-shop-manager','tab'=>$tab,'store'=>$demo]; ob_start(); Admin::render(); $html=ob_get_clean();
-    $assert(str_contains($html,'Group Shop Manager')&&!str_contains($html,'notice-error'),'Production admin screen: '.$tab);
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>$tab,'store'=>$demo]; ob_start(); Admin::render(); $html=ob_get_clean();
+    $assert(str_contains($html,'muti-storefront-plugin')&&!str_contains($html,'notice-error'),'Production admin screen: '.$tab);
 }
 $assert(get_current_blog_id()===$main,'Production scope restored');
 echo wp_json_encode(['version'=>GSM_VERSION,'passed'=>count($checks),'checks'=>$checks,'demo_store'=>$demo,'demo_product'=>$edition,'demo_url'=>get_home_url($demo),'users'=>$main_counts['users'],'orders'=>$main_counts['orders'],'mail_sent'=>false,'payments_executed'=>false],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)."\n";

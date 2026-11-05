@@ -1,0 +1,178 @@
+{
+  "passed": 43,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "Homepage www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Homepage www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Disabled channel footer entry www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Both renamed plugin asset URLs www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Original catalog and scope www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Renamed asset loads /wp-content/plugins/product-addon-plugin/assets/css/account-modal.css",
+      "passed": true
+    },
+    {
+      "check": "Renamed asset loads /wp-content/plugins/product-addon-plugin/assets/js/account-modal.js",
+      "passed": true
+    },
+    {
+      "check": "Renamed asset loads /wp-content/plugins/muti-storefront-plugin/assets/collections.css",
+      "passed": true
+    },
+    {
+      "check": "Renamed asset loads /wp-content/plugins/muti-storefront-plugin/assets/admin.js",
+      "passed": true
+    },
+    {
+      "check": "Cross-store access remains blocked /?p=1639&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "Cross-store access remains blocked /wp-json/wc/store/v1/products/1639",
+      "passed": true
+    },
+    {
+      "check": "Public base remains blocked",
+      "passed": true
+    },
+    {
+      "check": "Category statistics remain scoped www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Category statistics remain scoped www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Original product sitemap preserved",
+      "passed": true
+    },
+    {
+      "check": "Renamed admin page loads after native login",
+      "passed": true
+    },
+    {
+      "check": "Renamed admin JavaScript URL",
+      "passed": true
+    },
+    {
+      "check": "Old admin bookmark safely redirects preserving tab",
+      "passed": true
+    },
+    {
+      "check": "Admin help points at renamed documentation",
+      "passed": true
+    },
+    {
+      "check": "Native plugin list shows new entries",
+      "passed": true
+    }
+  ]
+}

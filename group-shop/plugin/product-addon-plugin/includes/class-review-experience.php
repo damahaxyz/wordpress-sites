@@ -169,7 +169,7 @@ final class Review_Experience
 
         add_meta_box(
             'trovesia-review-editor',
-            __('Trovesia review settings', 'trovesia-plugin'),
+            __('Trovesia review settings', 'product-addon-plugin'),
             [$this, 'render_review_meta_box'],
             'comment',
             'normal',
@@ -189,23 +189,23 @@ final class Review_Experience
         <div class="trovesia-review-editor">
             <label class="trovesia-review-editor__featured">
                 <input name="trovesia_featured_review" type="checkbox" value="1" <?php checked($featured); ?>>
-                <span><strong><?php esc_html_e('Featured review', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Show this review in the featured cards above the product description.', 'trovesia-plugin'); ?></small></span>
+                <span><strong><?php esc_html_e('Featured review', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Show this review in the featured cards above the product description.', 'product-addon-plugin'); ?></small></span>
             </label>
             <div class="trovesia-review-media-editor">
-                <strong><?php esc_html_e('Review image', 'trovesia-plugin'); ?></strong>
+                <strong><?php esc_html_e('Review image', 'product-addon-plugin'); ?></strong>
                 <input class="trovesia-review-media-editor__id" name="trovesia_review_media_attachment_id" type="hidden" value="<?php echo esc_attr((string) $attachment_id); ?>">
                 <div class="trovesia-review-media-editor__preview">
                     <?php if ($image) : ?>
                         <img src="<?php echo esc_url($image); ?>" alt="">
                     <?php else : ?>
-                        <span><?php esc_html_e('No image selected', 'trovesia-plugin'); ?></span>
+                        <span><?php esc_html_e('No image selected', 'product-addon-plugin'); ?></span>
                     <?php endif; ?>
                 </div>
                 <p>
-                    <button class="button trovesia-review-media-editor__choose" type="button"><?php esc_html_e('Choose or upload image', 'trovesia-plugin'); ?></button>
-                    <button class="button-link-delete trovesia-review-media-editor__remove" type="button"<?php echo $attachment_id > 0 ? '' : ' hidden'; ?>><?php esc_html_e('Remove image', 'trovesia-plugin'); ?></button>
+                    <button class="button trovesia-review-media-editor__choose" type="button"><?php esc_html_e('Choose or upload image', 'product-addon-plugin'); ?></button>
+                    <button class="button-link-delete trovesia-review-media-editor__remove" type="button"<?php echo $attachment_id > 0 ? '' : ' hidden'; ?>><?php esc_html_e('Remove image', 'product-addon-plugin'); ?></button>
                 </p>
-                <p class="description"><?php esc_html_e('Changing this replaces the image shown on the storefront review card. The original media-library file is not deleted.', 'trovesia-plugin'); ?></p>
+                <p class="description"><?php esc_html_e('Changing this replaces the image shown on the storefront review card. The original media-library file is not deleted.', 'product-addon-plugin'); ?></p>
             </div>
         </div>
         <?php
@@ -245,7 +245,7 @@ final class Review_Experience
      */
     public function add_featured_column(array $columns): array
     {
-        $featured = ['trovesia_featured' => __('Featured', 'trovesia-plugin')];
+        $featured = ['trovesia_featured' => __('Featured', 'product-addon-plugin')];
 
         if (isset($columns['trovesia_media'])) {
             $media = ['trovesia_media' => $columns['trovesia_media']];
@@ -308,12 +308,12 @@ final class Review_Experience
                 <section class="trovesia-featured-reviews" aria-labelledby="trovesia-featured-reviews-heading">
                     <header class="trovesia-review-section__header">
                         <div>
-                            <p><?php esc_html_e('Customer favorites', 'trovesia-plugin'); ?></p>
-                            <h2 id="trovesia-featured-reviews-heading"><?php esc_html_e('Featured reviews', 'trovesia-plugin'); ?></h2>
+                            <p><?php esc_html_e('Customer favorites', 'product-addon-plugin'); ?></p>
+                            <h2 id="trovesia-featured-reviews-heading"><?php esc_html_e('Featured reviews', 'product-addon-plugin'); ?></h2>
                         </div>
-                        <div class="trovesia-review-carousel__controls" aria-label="<?php esc_attr_e('Featured review controls', 'trovesia-plugin'); ?>">
-                            <button type="button" data-review-carousel-previous aria-label="<?php esc_attr_e('Previous featured review', 'trovesia-plugin'); ?>">&larr;</button>
-                            <button type="button" data-review-carousel-next aria-label="<?php esc_attr_e('Next featured review', 'trovesia-plugin'); ?>">&rarr;</button>
+                        <div class="trovesia-review-carousel__controls" aria-label="<?php esc_attr_e('Featured review controls', 'product-addon-plugin'); ?>">
+                            <button type="button" data-review-carousel-previous aria-label="<?php esc_attr_e('Previous featured review', 'product-addon-plugin'); ?>">&larr;</button>
+                            <button type="button" data-review-carousel-next aria-label="<?php esc_attr_e('Next featured review', 'product-addon-plugin'); ?>">&rarr;</button>
                         </div>
                     </header>
                     <div class="trovesia-review-grid trovesia-review-grid--featured" data-review-carousel>
@@ -325,24 +325,24 @@ final class Review_Experience
             <?php endif; ?>
 
             <section class="trovesia-direct-description" id="description" aria-labelledby="trovesia-description-heading">
-                <p class="trovesia-section-kicker"><?php esc_html_e('Product details', 'trovesia-plugin'); ?></p>
-                <h2 id="trovesia-description-heading"><?php esc_html_e('Description', 'trovesia-plugin'); ?></h2>
+                <p class="trovesia-section-kicker"><?php esc_html_e('Product details', 'product-addon-plugin'); ?></p>
+                <h2 id="trovesia-description-heading"><?php esc_html_e('Description', 'product-addon-plugin'); ?></h2>
                 <div class="trovesia-direct-description__content">
                     <?php echo apply_filters('the_content', $product->get_description()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
             </section>
 
-            <section class="trovesia-all-reviews<?php echo $total === 0 ? ' trovesia-all-reviews--empty' : ''; ?>" id="reviews" <?php echo $total > 0 ? 'aria-labelledby="trovesia-all-reviews-heading"' : 'aria-label="' . esc_attr__('Product reviews', 'trovesia-plugin') . '"'; ?>>
+            <section class="trovesia-all-reviews<?php echo $total === 0 ? ' trovesia-all-reviews--empty' : ''; ?>" id="reviews" <?php echo $total > 0 ? 'aria-labelledby="trovesia-all-reviews-heading"' : 'aria-label="' . esc_attr__('Product reviews', 'product-addon-plugin') . '"'; ?>>
                 <?php if ($total === 0) : ?>
                     <?php $this->render_submission_notice(); ?>
-                    <button class="trovesia-review-modal-open" type="button" data-review-modal-open><?php esc_html_e('Write a review', 'trovesia-plugin'); ?></button>
+                    <button class="trovesia-review-modal-open" type="button" data-review-modal-open><?php esc_html_e('Write a review', 'product-addon-plugin'); ?></button>
                 <?php else : ?>
                     <header class="trovesia-review-section__header">
                         <div>
-                            <p><?php esc_html_e('Real routines, real feedback', 'trovesia-plugin'); ?></p>
-                            <h2 id="trovesia-all-reviews-heading"><?php printf(esc_html__('Customer reviews (%d)', 'trovesia-plugin'), esc_html($total)); ?></h2>
+                            <p><?php esc_html_e('Real routines, real feedback', 'product-addon-plugin'); ?></p>
+                            <h2 id="trovesia-all-reviews-heading"><?php printf(esc_html__('Customer reviews (%d)', 'product-addon-plugin'), esc_html($total)); ?></h2>
                         </div>
-                        <button class="trovesia-review-modal-open" type="button" data-review-modal-open><?php esc_html_e('Write a review', 'trovesia-plugin'); ?></button>
+                        <button class="trovesia-review-modal-open" type="button" data-review-modal-open><?php esc_html_e('Write a review', 'product-addon-plugin'); ?></button>
                     </header>
 
                     <?php $this->render_submission_notice(); ?>
@@ -353,7 +353,7 @@ final class Review_Experience
                         <?php endforeach; ?>
                     </div>
                     <?php if ($pages > 1) : ?>
-                        <nav class="trovesia-review-pagination" aria-label="<?php esc_attr_e('Review pages', 'trovesia-plugin'); ?>">
+                        <nav class="trovesia-review-pagination" aria-label="<?php esc_attr_e('Review pages', 'product-addon-plugin'); ?>">
                             <?php
                             echo wp_kses_post(paginate_links([
                                 'base' => add_query_arg('review-page', '%#%', get_permalink($product_id)),
@@ -362,8 +362,8 @@ final class Review_Experience
                                 'total' => $pages,
                                 'type' => 'list',
                                 'add_fragment' => '#reviews',
-                                'prev_text' => __('Previous', 'trovesia-plugin'),
-                                'next_text' => __('Next', 'trovesia-plugin'),
+                                'prev_text' => __('Previous', 'product-addon-plugin'),
+                                'next_text' => __('Next', 'product-addon-plugin'),
                             ]));
                             ?>
                         </nav>
@@ -458,7 +458,7 @@ final class Review_Experience
                 'trovesia_review_image',
                 $product_id,
                 [
-                    'post_title' => sprintf(__('Review photo from %s', 'trovesia-plugin'), $author),
+                    'post_title' => sprintf(__('Review photo from %s', 'product-addon-plugin'), $author),
                 ]
             );
 
@@ -467,7 +467,7 @@ final class Review_Experience
                 $this->redirect_review($redirect, 'image');
             }
 
-            update_post_meta((int) $attachment_id, '_wp_attachment_image_alt', sprintf(__('Review photo from %s', 'trovesia-plugin'), $author));
+            update_post_meta((int) $attachment_id, '_wp_attachment_image_alt', sprintf(__('Review photo from %s', 'product-addon-plugin'), $author));
             update_comment_meta((int) $comment_id, self::MEDIA_META, (int) $attachment_id);
         }
 
@@ -507,18 +507,18 @@ final class Review_Experience
         <article class="trovesia-review-card<?php echo $featured ? ' trovesia-review-card--featured' : ''; ?>">
             <?php if ($attachment_id > 0) : ?>
                 <a class="trovesia-review-card__media" href="<?php echo esc_url((string) wp_get_attachment_image_url($attachment_id, 'full')); ?>" target="_blank" rel="noopener">
-                    <?php echo wp_get_attachment_image($attachment_id, 'medium_large', false, ['loading' => 'lazy', 'alt' => sprintf(__('Review photo from %s', 'trovesia-plugin'), $comment->comment_author)]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <?php echo wp_get_attachment_image($attachment_id, 'medium_large', false, ['loading' => 'lazy', 'alt' => sprintf(__('Review photo from %s', 'product-addon-plugin'), $comment->comment_author)]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </a>
             <?php endif; ?>
             <div class="trovesia-review-card__body">
-                <div class="trovesia-review-card__rating" aria-label="<?php echo esc_attr(sprintf(__('%d out of 5 stars', 'trovesia-plugin'), $rating)); ?>">
+                <div class="trovesia-review-card__rating" aria-label="<?php echo esc_attr(sprintf(__('%d out of 5 stars', 'product-addon-plugin'), $rating)); ?>">
                     <span aria-hidden="true"><?php echo esc_html(str_repeat('★', $rating) . str_repeat('☆', 5 - $rating)); ?></span>
                 </div>
                 <blockquote><?php echo wpautop(esc_html($comment->comment_content)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></blockquote>
                 <footer>
                     <span class="trovesia-review-card__avatar" aria-hidden="true"><?php echo esc_html(mb_strtoupper(mb_substr($comment->comment_author, 0, 1))); ?></span>
                     <span><strong><?php echo esc_html($comment->comment_author); ?></strong><small><?php echo esc_html(get_comment_date('', $comment)); ?></small></span>
-                    <?php if ($verified) : ?><span class="trovesia-review-card__verified"><?php esc_html_e('Verified', 'trovesia-plugin'); ?></span><?php endif; ?>
+                    <?php if ($verified) : ?><span class="trovesia-review-card__verified"><?php esc_html_e('Verified', 'product-addon-plugin'); ?></span><?php endif; ?>
                 </footer>
             </div>
         </article>
@@ -531,9 +531,9 @@ final class Review_Experience
         ?>
         <dialog class="trovesia-review-modal" id="trovesia-review-modal" aria-labelledby="trovesia-review-modal-title">
             <div class="trovesia-review-modal__panel">
-                <button class="trovesia-review-modal__close" type="button" data-review-modal-close aria-label="<?php esc_attr_e('Close review form', 'trovesia-plugin'); ?>">&times;</button>
-                <p class="trovesia-section-kicker"><?php esc_html_e('Share your ritual', 'trovesia-plugin'); ?></p>
-                <h2 id="trovesia-review-modal-title"><?php esc_html_e('Write a review', 'trovesia-plugin'); ?></h2>
+                <button class="trovesia-review-modal__close" type="button" data-review-modal-close aria-label="<?php esc_attr_e('Close review form', 'product-addon-plugin'); ?>">&times;</button>
+                <p class="trovesia-section-kicker"><?php esc_html_e('Share your ritual', 'product-addon-plugin'); ?></p>
+                <h2 id="trovesia-review-modal-title"><?php esc_html_e('Write a review', 'product-addon-plugin'); ?></h2>
                 <p><?php echo esc_html($product->get_name()); ?></p>
                 <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="trovesia_submit_review">
@@ -542,29 +542,29 @@ final class Review_Experience
                     <input class="trovesia-review-honeypot" name="trovesia_review_website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
 
                     <fieldset class="trovesia-review-rating">
-                        <legend><?php esc_html_e('Your rating', 'trovesia-plugin'); ?></legend>
+                        <legend><?php esc_html_e('Your rating', 'product-addon-plugin'); ?></legend>
                         <div>
                             <?php for ($rating = 5; $rating >= 1; $rating--) : ?>
                                 <input id="trovesia-rating-<?php echo esc_attr((string) $rating); ?>" name="rating" type="radio" value="<?php echo esc_attr((string) $rating); ?>" required>
-                                <label for="trovesia-rating-<?php echo esc_attr((string) $rating); ?>" title="<?php echo esc_attr(sprintf(__('%d stars', 'trovesia-plugin'), $rating)); ?>">★</label>
+                                <label for="trovesia-rating-<?php echo esc_attr((string) $rating); ?>" title="<?php echo esc_attr(sprintf(__('%d stars', 'product-addon-plugin'), $rating)); ?>">★</label>
                             <?php endfor; ?>
                         </div>
                     </fieldset>
 
                     <?php if (! $user->exists()) : ?>
                         <div class="trovesia-review-form__row">
-                            <label><?php esc_html_e('Name', 'trovesia-plugin'); ?><input name="author" type="text" maxlength="80" autocomplete="name" required></label>
-                            <label><?php esc_html_e('Email', 'trovesia-plugin'); ?><input name="email" type="email" maxlength="100" autocomplete="email" required></label>
+                            <label><?php esc_html_e('Name', 'product-addon-plugin'); ?><input name="author" type="text" maxlength="80" autocomplete="name" required></label>
+                            <label><?php esc_html_e('Email', 'product-addon-plugin'); ?><input name="email" type="email" maxlength="100" autocomplete="email" required></label>
                         </div>
                     <?php endif; ?>
 
-                    <label><?php esc_html_e('Your review', 'trovesia-plugin'); ?><textarea name="comment" rows="5" maxlength="3000" required></textarea></label>
+                    <label><?php esc_html_e('Your review', 'product-addon-plugin'); ?><textarea name="comment" rows="5" maxlength="3000" required></textarea></label>
                     <label class="trovesia-review-upload">
-                        <span><strong><?php esc_html_e('Add a photo', 'trovesia-plugin'); ?></strong><small><?php esc_html_e('Optional · JPG, PNG or WebP · maximum 5 MB', 'trovesia-plugin'); ?></small></span>
+                        <span><strong><?php esc_html_e('Add a photo', 'product-addon-plugin'); ?></strong><small><?php esc_html_e('Optional · JPG, PNG or WebP · maximum 5 MB', 'product-addon-plugin'); ?></small></span>
                         <input name="trovesia_review_image" type="file" accept="image/jpeg,image/png,image/webp" data-review-image-input>
                     </label>
                     <div class="trovesia-review-upload-preview" data-review-image-preview hidden></div>
-                    <button class="trovesia-review-submit" type="submit"><?php esc_html_e('Submit review', 'trovesia-plugin'); ?></button>
+                    <button class="trovesia-review-submit" type="submit"><?php esc_html_e('Submit review', 'product-addon-plugin'); ?></button>
                 </form>
             </div>
         </dialog>
@@ -575,15 +575,15 @@ final class Review_Experience
     {
         $status = sanitize_key((string) ($_GET['review-status'] ?? ''));
         $messages = [
-            'published' => __('Thank you. Your review is now live.', 'trovesia-plugin'),
-            'moderation' => __('Thank you. Your review was received and is awaiting approval.', 'trovesia-plugin'),
-            'required' => __('Please add a rating and review text.', 'trovesia-plugin'),
-            'identity' => __('Please enter a valid name and email address.', 'trovesia-plugin'),
-            'image' => __('The review photo must be a JPG, PNG or WebP image under 5 MB.', 'trovesia-plugin'),
-            'closed' => __('Reviews are not currently open for this product.', 'trovesia-plugin'),
-            'security' => __('The review form expired. Please try again.', 'trovesia-plugin'),
-            'duplicate' => __('This review has already been submitted. Verified customers and store managers may submit another review.', 'trovesia-plugin'),
-            'failed' => __('The review could not be submitted. Please try again.', 'trovesia-plugin'),
+            'published' => __('Thank you. Your review is now live.', 'product-addon-plugin'),
+            'moderation' => __('Thank you. Your review was received and is awaiting approval.', 'product-addon-plugin'),
+            'required' => __('Please add a rating and review text.', 'product-addon-plugin'),
+            'identity' => __('Please enter a valid name and email address.', 'product-addon-plugin'),
+            'image' => __('The review photo must be a JPG, PNG or WebP image under 5 MB.', 'product-addon-plugin'),
+            'closed' => __('Reviews are not currently open for this product.', 'product-addon-plugin'),
+            'security' => __('The review form expired. Please try again.', 'product-addon-plugin'),
+            'duplicate' => __('This review has already been submitted. Verified customers and store managers may submit another review.', 'product-addon-plugin'),
+            'failed' => __('The review could not be submitted. Please try again.', 'product-addon-plugin'),
         ];
 
         if (! isset($messages[$status])) {
@@ -601,7 +601,7 @@ final class Review_Experience
     private function render_featured_status(int $comment_id): void
     {
         if (get_comment_meta($comment_id, self::FEATURED_META, true) === '1') {
-            echo '<span class="trovesia-admin-featured-review" title="' . esc_attr__('Featured review', 'trovesia-plugin') . '">★</span>';
+            echo '<span class="trovesia-admin-featured-review" title="' . esc_attr__('Featured review', 'product-addon-plugin') . '">★</span>';
             return;
         }
 

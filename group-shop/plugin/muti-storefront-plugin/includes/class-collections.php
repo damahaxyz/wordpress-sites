@@ -297,6 +297,6 @@ final class Collections {
             }
             return $html.'</ul>';
         };
-        return '<nav class="gsm-collections" aria-label="'.esc_attr__('Product collections','group-shop-manager').'">'.$render(0).'</nav>';
+        return '<nav class="gsm-collections" aria-label="'.esc_attr__('Product collections','muti-storefront-plugin').'">'.$render(0).'</nav>';
     }
 }

@@ -131,12 +131,12 @@ $throws(fn()=>Orders::list([$a,$b]),'Customer cannot query central order dashboa
 $throws(fn()=>Stores::save($b,['name'=>'Attack']),'Customer cannot edit store identity');
 wp_set_current_user($admin->ID);
 foreach (['overview','stores','collections','catalog','products','orders','customers','reviews','audit','help'] as $tab) {
-    $_GET=['page'=>'group-shop-manager','tab'=>$tab,'store'=>$a]; ob_start(); Admin::render(); $html=ob_get_clean();
-    $assert(str_contains($html,'Group Shop Manager')&&!str_contains($html,'notice-error'),'Admin screen renders: '.$tab);
+    $_GET=['page'=>'muti-storefront-plugin','tab'=>$tab,'store'=>$a]; ob_start(); Admin::render(); $html=ob_get_clean();
+    $assert(str_contains($html,'muti-storefront-plugin')&&!str_contains($html,'notice-error'),'Admin screen renders: '.$tab);
     $assert(get_current_blog_id()===$main,'Admin screen restores main context: '.$tab);
 }
 $throws(fn()=>Orders::change_status($a,$oa,'cancelled','completed'),'Completed orders cannot be cancelled through the limited first-version workflow');
-$_GET=['page'=>'group-shop-manager','tab'=>'orders','store'=>$a,'order'=>$oa]; ob_start(); Admin::render(); $detail=ob_get_clean();
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'orders','store'=>$a,'order'=>$oa]; ob_start(); Admin::render(); $detail=ob_get_clean();
 $assert(str_contains($detail,'订单记录')&&str_contains($detail,'收货资料')&&str_contains($detail,'内部备注'),'Central order details expose fulfillment data and internal notes in the owning store');
 $assert(get_current_blog_id()===$main,'Order detail restores main context');
 require __DIR__.'/classification-suite.php';

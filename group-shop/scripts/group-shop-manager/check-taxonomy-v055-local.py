@@ -121,14 +121,14 @@ try:
     check('value="'+str(x['foreign'])+'"' not in parents and 'value="'+str(x['child'])+'"' not in parents and 'value="'+str(x['grand'])+'"' not in parents,'Parent picker excludes foreign, self and descendant collections')
     save={**x['http_parent_data'],'name':'QA055 Child '+x['suffix'],'include[]':[x['a2']],'parent':0,'action':'gsm_action','kind':'collection_save','store':6,'collection':x['child'],'return_tab':'collections','_wpnonce':nonce,'gsm_collection_complete':'1','gsm_brand':0}
     save.pop('include',None)
-    page=r.get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
+    page=r.get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
     status,body=r.req(main+'/wp-admin/admin-post.php',save)
     check(status==200 and selected(body,'parent')=='0','Real collection POST can move a child to top level')
     save['parent']=x['parent'];status,body=r.req(main+'/wp-admin/admin-post.php',save)
     check(status==200 and selected(body,'parent')==str(x['parent']),'Real collection POST persists a same-store parent')
     save['parent']=x['foreign'];status,body=r.req(main+'/wp-admin/admin-post.php',save)
     check(status==200 and '上次提交的内容已保留' in body and '父级必须是同店铺' in body,'Invalid cross-store parent preserves failed form values with an actionable error')
-    saved=r.get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
+    saved=r.get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
     # Clear the private retry form by saving the original valid hierarchy.
     save['parent']=x['parent'];status,body=r.req(main+'/wp-admin/admin-post.php',save)
     check(status==200 and selected(body,'parent')==str(x['parent']),'Retry succeeds without replacing the collection ID')
@@ -150,7 +150,7 @@ try:
     check(status==403 and '集合管理' in body,'Native bulk deletion cannot remove collection rules or hierarchy')
     status,body=r.req(main+'/wp-admin/admin-ajax.php',{'action':'add-tag','taxonomy':'product_cat','tag-name':'QA055 invalid '+x['suffix'],'parent':x['parent']})
     check(status==403 and '共享分类不能' in body,'Native shared category creation cannot attach to a private collection parent')
-    child_editor=r.get(main+'/wp-admin/admin.php?page=group-shop-manager&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
+    child_editor=r.get(main+'/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store=6&collection='+str(x['child'])+'&gsm_brand=0')
     check('Tampered name' not in child_editor and selected(child_editor,'parent')==str(x['parent']),'Rejected native writes leave the collection title and parent intact')
 finally:
     if r.logout:r.req(r.logout)

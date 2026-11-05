@@ -1,10 +1,22 @@
-# Group Shop Manager
+# muti-storefront-plugin
 
-本地源码 **0.5.9**：一套 WordPress／WooCommerce 商城，多个品牌门面。当前本地已关闭 Multisite 并迁移七个品牌；**未发布生产**。用户后续明确通知前不得部署。
+本地源码 **0.5.10**：一套 WordPress／WooCommerce 商城，多个品牌门面。当前本地已关闭 Multisite 并迁移七个品牌；**未发布生产**。用户后续明确通知前不得部署。
 
-当前入口：[商城后台](http://www.main.local/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0)。品牌 A／B／C／E／F／G 分别为 www.branda.local、www.brandb.local、www.brandc.local、www.brande.local、www.brandf.local、www.brandg.local，均为本机 HTTP、80 端口。
+当前入口：[商城后台](http://www.main.local/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0)。品牌 A／B／C／E／F／G 分别为 www.branda.local、www.brandb.local、www.brandc.local、www.brande.local、www.brandf.local、www.brandg.local，均为本机 HTTP、80 端口。
 
 先读 [接手状态](docs/HANDOFF.md)、[架构](docs/ARCHITECTURE.md)、[使用说明](docs/USER-GUIDE.md)、[运维与回滚](docs/OPERATIONS.md)、[变更记录](CHANGELOG.md)。根目录 PROJECT-HANDOFF.md 为复制来的 Trovesia 历史材料，不能当作当前规格。
+
+## 0.5.10 插件更名与渠道停用（2026-11-06，仅本地）
+
+本插件原名Group Shop Manager／group-shop-manager，现统一为`muti-storefront-plugin`，目录`plugin/muti-storefront-plugin/`，入口`muti-storefront-plugin.php`，翻译域同名；源码版本0.5.10。`trovesia-plugin`同时更名为`product-addon-plugin`，入口`product-addon-plugin.php`，版本3.8.5。两个插件的WordPress启用记录、资源路径、Compose挂载、维护脚本与文档路径均已更新。
+
+后台入口改为`/wp-admin/admin.php?page=muti-storefront-plugin&gsm_brand=0`。旧`page=group-shop-manager`以相同权限注册隐藏兼容入口，GET安全跳转并保留tab／店铺等参数；旧直接POST拒绝410，已有admin-post nonce处理器不变。WordPress在admin_init前检查注册页面权限，因此不能只加一个未注册页面的重定向。
+
+保留GroupShop\Manager、GSM_*、Trovesia\Plugin、TROVESIA_PLUGIN_*、gsm_*／trovesia_*数据键、现有hooks／短代码／动态区块及PHP主题接口，不做业务数据迁移或重新初始化。私有QA目录、Compose项目名及scripts／tests／qa的group-shop-manager分组继续保留，不能把它们误改为新的数据库或数据卷。
+
+`trovesia-channel`在当前本地原本未启用，本轮明确保持禁用且不加载，保留源码与原数据；默认主题仅在该插件实际加载时显示渠道登录入口。未删除渠道业务表、角色或配置，未连接生产核实其状态。
+
+27项运行／数据检查与43项真实HTTP检查通过；45个插件PHP文件及页脚语法、脚本语法、Compose配置和diff格式通过。九张业务／身份表哈希与改名前一致；用户元数据仅正常测试登录更新wc_last_active，其他资料／权限／会话一致，七品牌注册及业务bank保持，144件父商品保留。没有调用业务插件的激活／停用初始化钩子，没有新建商品、用户或政策页面。报告`qa/plugin-renames-20261106/README.md`；备份与切换细节见OPERATIONS。生产未发布。
 
 ## 0.5.9 公开资源与 SEO 隔离（2026-11-06，本地）
 
@@ -24,7 +36,7 @@
 
 Product presentation 默认动态继承公共商品，涵盖Eyebrow、Key benefits、退货说明、配送说明、Order activity文案及原有配送天数元数据；公共修改即时生效，不向品牌批量复制文案。在该面板勾选“单独设置本店展示信息”后可独立编辑，取消勾选并保存恢复当前公共值。留空仍使用Trovesia原有默认文案；自动订单数的查询与缓存均按当前店铺计算，不继承另一店的数量。继承模式字段不可编辑，服务端忽略伪造字段并阻止直接元数据覆盖；覆盖选择沿用 `_gsm_overrides` 的presentation项。
 
-Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
+muti-storefront-plugin 0.5.8、product-addon-plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
 
 本轮开始只读盘点为72公共＋72品牌版本，已有展示及加购元数据均为0；没有自动改写这些业务商品、建立版本或设置营销规则。29项运行、5项订单统计和23项真实HTTP检查，以及浏览器实际覆盖保存／恢复继承通过；合成资料清理与原商品／元数据／品牌设置快照核对见 `qa/group-shop-manager/v058-local/LOCAL-v058.md`。仅本地，未连接或发布生产。
 

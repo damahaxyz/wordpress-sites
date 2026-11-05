@@ -214,7 +214,7 @@ final class Customers {
         echo '<p class="woocommerce-info">顾客账户、密码和默认地址仅用于当前店铺；其他店铺需另行注册。员工账户按授权跨店使用。</p>';
     }
     public static function translate(string $translation,string $text,string $domain): string {
-        if ($domain==='trovesia-plugin'&&$text==='Already registered with one of our stores? Sign in with the same email and password. Your account and saved addresses are shared across our stores.') {
+        if ($domain==='product-addon-plugin'&&$text==='Already registered with one of our stores? Sign in with the same email and password. Your account and saved addresses are shared across our stores.') {
             return '顾客账户仅用于当前店铺。其他店铺需要重新注册；可使用相同用户名和邮箱，密码与地址独立。';
         }
         return $translation;

@@ -31,7 +31,7 @@ def check(ok,name):
 
 try:
     get('/wp-login.php')
-    status,body=req('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=group-shop-manager','testcookie':'1'})
+    status,body=req('/wp-login.php',{'log':'gsm-admin','pwd':(root/'.qa-admin-password').read_text().strip(),'redirect_to':base+'/wp-admin/admin.php?page=muti-storefront-plugin','testcookie':'1'})
     assert status==200 and 'v0.3.4' in body and 'id="loginform"' not in body
     logout=html.unescape(re.search(r'''href=['"]([^'"]*wp-login\.php\?action=logout[^'"]+)['"]''',body).group(1))
     check('统一订单' not in body and 'tab=orders' not in body,'Authenticated manager no longer exposes central order UI')
@@ -54,14 +54,14 @@ try:
         check(status==200 and 'QA HTTP native internal note' in note,'Native AJAX saves internal note in original store: '+store)
         detail=get(edit)
         check('QA HTTP native internal note' in detail,'Native note persists on reload: '+store)
-        form=get('/wp-admin/admin.php?page=group-shop-manager&tab=collections&store='+store+'&collection=new')
+        form=get('/wp-admin/admin.php?page=muti-storefront-plugin&tab=collections&store='+store+'&collection=new')
         token=re.search(r'name="_wpnonce" value="([^"]+)"',form).group(1)
         for kind in ['order_note','order_status']:
             status,result=req('/wp-admin/admin-post.php',{'action':'gsm_action','kind':kind,'store':store,'order':order,'return_tab':'orders','_wpnonce':token,'status':'cancelled','expected':'on-hold','note':'Retired handler must not write'})
             check(status==200 and '未知管理操作' in result,'Retired central handler is rejected: '+kind+' store '+store)
         after=get(edit)
         check('Retired handler must not write' not in after and re.search(r'<option[^>]*value="wc-on-hold"[^>]*selected',after),'Rejected old handlers preserve notes and native status: '+store)
-    old=get('/wp-admin/admin.php?page=group-shop-manager&tab=orders&store=6&order='+str(f['6']['id']))
+    old=get('/wp-admin/admin.php?page=muti-storefront-plugin&tab=orders&store=6&order='+str(f['6']['id']))
     check('<h2>店铺入口</h2>' in old and 'name="kind" value="order_' not in old,'Old central order bookmark falls back to overview')
 finally:
     if logout:

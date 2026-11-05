@@ -1,0 +1,115 @@
+{
+    "passed": 27,
+    "failed": 0,
+    "php_files": 45,
+    "checks": [
+        {
+            "check": "Plugin name and active entry muti-storefront-plugin",
+            "passed": true
+        },
+        {
+            "check": "Text domain muti-storefront-plugin",
+            "passed": true
+        },
+        {
+            "check": "Plugin name and active entry product-addon-plugin",
+            "passed": true
+        },
+        {
+            "check": "Text domain product-addon-plugin",
+            "passed": true
+        },
+        {
+            "check": "Old plugin entries absent",
+            "passed": true
+        },
+        {
+            "check": "Channel plugin inactive and not loaded",
+            "passed": true
+        },
+        {
+            "check": "Renamed module versions loaded",
+            "passed": true
+        },
+        {
+            "check": "Existing PHP integrations remain available",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged posts",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged postmeta",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged terms",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged termmeta",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged term_taxonomy",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged term_relationships",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged comments",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged commentmeta",
+            "passed": true
+        },
+        {
+            "check": "Original table unchanged users",
+            "passed": true
+        },
+        {
+            "check": "User profile, role and session metadata unchanged (normal Woo activity date excluded)",
+            "passed": true
+        },
+        {
+            "check": "Brand registry unchanged",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 1",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 6",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 7",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 9",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 11",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 12",
+            "passed": true
+        },
+        {
+            "check": "Brand business configuration unchanged 13",
+            "passed": true
+        },
+        {
+            "check": "PHP syntax for 45 plugin files",
+            "passed": true
+        }
+    ]
+}

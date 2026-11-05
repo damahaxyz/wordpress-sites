@@ -62,11 +62,11 @@ try {
     require_once ABSPATH.'wp-admin/includes/ms.php';
     wpmu_delete_user($customer);
 }
-$_GET=['page'=>'group-shop-manager','tab'=>'overview'];
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'overview'];
 ob_start(); Admin::render(); $html=ob_get_clean();
 $assert(!str_contains($html,'统一订单') && !str_contains($html,'tab=orders'),'Manager no longer contains central order tab or links');
 foreach ($fixtures as $store=>$fixture) { $assert(str_contains($html,esc_url($fixture['url'])),'Overview links to correct store native orders: '.$store); }
-$_GET=['page'=>'group-shop-manager','tab'=>'orders','store'=>$a,'order'=>$fixtures[$a]['id']];
+$_GET=['page'=>'muti-storefront-plugin','tab'=>'orders','store'=>$a,'order'=>$fixtures[$a]['id']];
 ob_start(); Admin::render(); $retired=ob_get_clean();
 $assert(str_contains($retired,'<h2>店铺入口</h2>') && !str_contains($retired,'name="kind" value="order_'),'Old central URL safely falls back to overview');
 $assert(Orders::columns([])['gsm_store']==='店铺来源','Native HPOS source column remains registered');
