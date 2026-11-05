@@ -1,0 +1,2258 @@
+{
+  "version": "0.5.9",
+  "passed": 315,
+  "failed": 0,
+  "http_requests": 141,
+  "failures": [],
+  "checks": [
+    {
+      "check": "a a returns 200",
+      "passed": true
+    },
+    {
+      "check": "a a excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a a business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a a canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a a JSON-LD @id stays on host",
+      "passed": true
+    },
+    {
+      "check": "a a JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a a JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a a JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a a serves own content",
+      "passed": true
+    },
+    {
+      "check": "a va returns 200",
+      "passed": true
+    },
+    {
+      "check": "a va excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a va business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a va canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a va JSON-LD @id stays on host",
+      "passed": true
+    },
+    {
+      "check": "a va JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a va JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a va JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "a page_a returns 200",
+      "passed": true
+    },
+    {
+      "check": "a page_a excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a page_a business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a page_a canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a page_a serves own content",
+      "passed": true
+    },
+    {
+      "check": "a post_a returns 200",
+      "passed": true
+    },
+    {
+      "check": "a post_a excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a post_a business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a post_a canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a post_a serves own content",
+      "passed": true
+    },
+    {
+      "check": "a shared returns 200",
+      "passed": true
+    },
+    {
+      "check": "a shared excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a shared business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a shared canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a shared_child returns 200",
+      "passed": true
+    },
+    {
+      "check": "a shared_child excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a shared_child business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a shared_child canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a shared_tag returns 200",
+      "passed": true
+    },
+    {
+      "check": "a shared_tag excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a shared_tag business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a shared_tag canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a collection_a returns 200",
+      "passed": true
+    },
+    {
+      "check": "a collection_a excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "a collection_a business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a collection_a canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a same-slug product resolves locally",
+      "passed": true
+    },
+    {
+      "check": "a same-slug page resolves locally",
+      "passed": true
+    },
+    {
+      "check": "a valid own historical slug keeps native redirect",
+      "passed": true
+    },
+    {
+      "check": "a foreign historical slug does not redirect",
+      "passed": true
+    },
+    {
+      "check": "a legacy foreign rich-text anchor and iframe are removed",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?p=1733",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?p=1733&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?page_id=1740",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?p=1744",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?p=1728&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign/base/missing ID /?page_id=1742",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "A rejects B-only path private_b",
+      "passed": true
+    },
+    {
+      "check": "A rejects B-only path private_b?gsm_brand=7",
+      "passed": true
+    },
+    {
+      "check": "A rejects B-only path private_page_b",
+      "passed": true
+    },
+    {
+      "check": "A rejects B-only path private_page_b?gsm_brand=7",
+      "passed": true
+    },
+    {
+      "check": "a REST direct ID /wp-json/wc/store/v1/products/1733",
+      "passed": true
+    },
+    {
+      "check": "a REST direct ID /wp-json/wc/store/v1/products/1728",
+      "passed": true
+    },
+    {
+      "check": "a REST direct ID /wp-json/wp/v2/pages/1740",
+      "passed": true
+    },
+    {
+      "check": "a REST direct ID /wp-json/wp/v2/posts/1744",
+      "passed": true
+    },
+    {
+      "check": "a REST direct ID /wp-json/wc/store/v1/products/categories/200",
+      "passed": true
+    },
+    {
+      "check": "a REST foreign comment ID",
+      "passed": true
+    },
+    {
+      "check": "a REST refuses foreign/base native slug b",
+      "passed": true
+    },
+    {
+      "check": "a REST refuses foreign/base native slug vb",
+      "passed": true
+    },
+    {
+      "check": "a REST refuses foreign/base native slug vb_variation",
+      "passed": true
+    },
+    {
+      "check": "a REST refuses foreign/base native slug base_variation",
+      "passed": true
+    },
+    {
+      "check": "a REST native slug resolves own product a",
+      "passed": true
+    },
+    {
+      "check": "a REST native slug resolves own product va",
+      "passed": true
+    },
+    {
+      "check": "a REST native slug resolves own product va_variation",
+      "passed": true
+    },
+    {
+      "check": "a REST public slug resolves own edition",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign collection/user sitemap /product-category/gsm-collection-4adb68a4-3f93-4e4e-a57e-739a4016efb8/",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign collection/user sitemap /?taxonomy=product_cat&term=gsm-collection-4adb68a4-3f93-4e4e-a57e-739a4016efb8",
+      "passed": true
+    },
+    {
+      "check": "a rejects foreign collection/user sitemap /wp-sitemap-users-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wc/store/v1/products?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "a product pagination total",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wc/store/v1/products?include=1732,1733",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wp/v2/pages?per_page=100&_embed=1",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wp/v2/posts?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wp/v2/search?search=QA059&per_page=100",
+      "passed": true
+    },
+    {
+      "check": "a REST list /wp-json/wc/store/v1/products/reviews?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped product count /wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped review count /wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped product count /wp-json/wc/store/v1/products/categories/196",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped review count /wp-json/wc/store/v1/products/categories/196",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped product count /wp-json/wc/store/v1/products/tags?include=198",
+      "passed": true
+    },
+    {
+      "check": "a taxonomy scoped review count /wp-json/wc/store/v1/products/tags?include=198",
+      "passed": true
+    },
+    {
+      "check": "a foreign category include and total empty",
+      "passed": true
+    },
+    {
+      "check": "a collection aggregates succeed",
+      "passed": true
+    },
+    {
+      "check": "a price range excludes other store",
+      "passed": true
+    },
+    {
+      "check": "a aggregate stock count",
+      "passed": true
+    },
+    {
+      "check": "a aggregate taxonomy excludes other collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap-posts-product-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap-posts-product-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap contains exact own product count",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap-posts-page-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap-posts-page-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap-posts-post-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap-posts-post-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap-taxonomies-product_cat-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap-taxonomies-product_cat-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a sitemap available /wp-sitemap-taxonomies-product_tag-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap locations stay on host /wp-sitemap-taxonomies-product_tag-1.xml",
+      "passed": true
+    },
+    {
+      "check": "a sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /",
+      "passed": true
+    },
+    {
+      "check": "a discovery / business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery / canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /feed/",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /?s=QA059&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?s=QA059&post_type=product business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?s=QA059&post_type=product canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /?s=QA059",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?s=QA059 business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?s=QA059 canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /?post_type=product",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?post_type=product business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery /?post_type=product canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /wp-json/wp/v2/pages?search=QA059",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /feed/?post_type=product",
+      "passed": true
+    },
+    {
+      "check": "a discovery/feed/search /wp-json/wp/v2/comments?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "a oEmbed cannot resolve other host page",
+      "passed": true
+    },
+    {
+      "check": "a native batch rejects unsupported GET /wp-json/batch/v1",
+      "passed": true
+    },
+    {
+      "check": "a native batch rejects unsupported GET /wp-json/wc/store/v1/batch",
+      "passed": true
+    },
+    {
+      "check": "a unsigned brand header rejected",
+      "passed": true
+    },
+    {
+      "check": "b b returns 200",
+      "passed": true
+    },
+    {
+      "check": "b b excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b b business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b b canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b b JSON-LD @id stays on host",
+      "passed": true
+    },
+    {
+      "check": "b b JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b b JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b b JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b b serves own content",
+      "passed": true
+    },
+    {
+      "check": "b vb returns 200",
+      "passed": true
+    },
+    {
+      "check": "b vb excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b vb business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b vb canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b vb JSON-LD @id stays on host",
+      "passed": true
+    },
+    {
+      "check": "b vb JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b vb JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b vb JSON-LD url stays on host",
+      "passed": true
+    },
+    {
+      "check": "b page_b returns 200",
+      "passed": true
+    },
+    {
+      "check": "b page_b excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b page_b business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b page_b canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b page_b serves own content",
+      "passed": true
+    },
+    {
+      "check": "b post_b returns 200",
+      "passed": true
+    },
+    {
+      "check": "b post_b excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b post_b business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b post_b canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b post_b serves own content",
+      "passed": true
+    },
+    {
+      "check": "b shared returns 200",
+      "passed": true
+    },
+    {
+      "check": "b shared excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b shared business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b shared canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b shared_child returns 200",
+      "passed": true
+    },
+    {
+      "check": "b shared_child excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b shared_child business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b shared_child canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b shared_tag returns 200",
+      "passed": true
+    },
+    {
+      "check": "b shared_tag excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b shared_tag business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b shared_tag canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b collection_b returns 200",
+      "passed": true
+    },
+    {
+      "check": "b collection_b excludes foreign content",
+      "passed": true
+    },
+    {
+      "check": "b collection_b business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b collection_b canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b same-slug product resolves locally",
+      "passed": true
+    },
+    {
+      "check": "b same-slug page resolves locally",
+      "passed": true
+    },
+    {
+      "check": "b valid own historical slug keeps native redirect",
+      "passed": true
+    },
+    {
+      "check": "b foreign historical slug does not redirect",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?p=1732",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?p=1732&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?page_id=1739",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?p=1743",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?p=1728&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign/base/missing ID /?page_id=999999999",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b rejected ID canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b REST direct ID /wp-json/wc/store/v1/products/1732",
+      "passed": true
+    },
+    {
+      "check": "b REST direct ID /wp-json/wc/store/v1/products/1728",
+      "passed": true
+    },
+    {
+      "check": "b REST direct ID /wp-json/wp/v2/pages/1739",
+      "passed": true
+    },
+    {
+      "check": "b REST direct ID /wp-json/wp/v2/posts/1743",
+      "passed": true
+    },
+    {
+      "check": "b REST direct ID /wp-json/wc/store/v1/products/categories/199",
+      "passed": true
+    },
+    {
+      "check": "b REST foreign comment ID",
+      "passed": true
+    },
+    {
+      "check": "b REST refuses foreign/base native slug a",
+      "passed": true
+    },
+    {
+      "check": "b REST refuses foreign/base native slug va",
+      "passed": true
+    },
+    {
+      "check": "b REST refuses foreign/base native slug va_variation",
+      "passed": true
+    },
+    {
+      "check": "b REST refuses foreign/base native slug base_variation",
+      "passed": true
+    },
+    {
+      "check": "b REST native slug resolves own product b",
+      "passed": true
+    },
+    {
+      "check": "b REST native slug resolves own product vb",
+      "passed": true
+    },
+    {
+      "check": "b REST native slug resolves own product vb_variation",
+      "passed": true
+    },
+    {
+      "check": "b REST public slug resolves own edition",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign collection/user sitemap /product-category/gsm-collection-952805eb-0066-4bf9-9e27-fc2c44044077/",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign collection/user sitemap /?taxonomy=product_cat&term=gsm-collection-952805eb-0066-4bf9-9e27-fc2c44044077",
+      "passed": true
+    },
+    {
+      "check": "b rejects foreign collection/user sitemap /wp-sitemap-users-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wc/store/v1/products?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "b product pagination total",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wc/store/v1/products?include=1733,1732",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wp/v2/pages?per_page=100&_embed=1",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wp/v2/posts?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wp/v2/search?search=QA059&per_page=100",
+      "passed": true
+    },
+    {
+      "check": "b REST list /wp-json/wc/store/v1/products/reviews?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped product count /wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped review count /wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped product count /wp-json/wc/store/v1/products/categories/196",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped review count /wp-json/wc/store/v1/products/categories/196",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy response succeeds",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy hides other collection",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped product count /wp-json/wc/store/v1/products/tags?include=198",
+      "passed": true
+    },
+    {
+      "check": "b taxonomy scoped review count /wp-json/wc/store/v1/products/tags?include=198",
+      "passed": true
+    },
+    {
+      "check": "b foreign category include and total empty",
+      "passed": true
+    },
+    {
+      "check": "b collection aggregates succeed",
+      "passed": true
+    },
+    {
+      "check": "b price range excludes other store",
+      "passed": true
+    },
+    {
+      "check": "b aggregate stock count",
+      "passed": true
+    },
+    {
+      "check": "b aggregate taxonomy excludes other collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap-posts-product-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap-posts-product-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap contains exact own product count",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap-posts-page-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap-posts-page-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap-posts-post-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap-posts-post-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap-taxonomies-product_cat-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap-taxonomies-product_cat-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b sitemap available /wp-sitemap-taxonomies-product_tag-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap locations stay on host /wp-sitemap-taxonomies-product_tag-1.xml",
+      "passed": true
+    },
+    {
+      "check": "b sitemap hides foreign collection",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /",
+      "passed": true
+    },
+    {
+      "check": "b discovery / business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery / canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /feed/",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /?s=QA059&post_type=product",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?s=QA059&post_type=product business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?s=QA059&post_type=product canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /?s=QA059",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?s=QA059 business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?s=QA059 canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /?post_type=product",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?post_type=product business anchors stay on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery /?post_type=product canonical stays on host",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /wp-json/wp/v2/pages?search=QA059",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /feed/?post_type=product",
+      "passed": true
+    },
+    {
+      "check": "b discovery/feed/search /wp-json/wp/v2/comments?per_page=100",
+      "passed": true
+    },
+    {
+      "check": "b oEmbed cannot resolve other host page",
+      "passed": true
+    },
+    {
+      "check": "b native batch rejects unsupported GET /wp-json/batch/v1",
+      "passed": true
+    },
+    {
+      "check": "b native batch rejects unsupported GET /wp-json/wc/store/v1/batch",
+      "passed": true
+    },
+    {
+      "check": "b unsigned brand header rejected",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.branda.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.brandb.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store fixture separation www.brandc.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store fixture separation www.brande.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store fixture separation www.brandf.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store fixture separation www.brandg.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product API www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store product URLs www.main.local",
+      "passed": true
+    },
+    {
+      "check": "Seven-store fixture separation www.main.local",
+      "passed": true
+    },
+    {
+      "check": "A aggregate remains isolated after B cache warmup",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "host": "www.branda.local",
+      "path": "/product/qa059-57122c4f-base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product/qa059-57122c4f-variable_base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-page/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-article/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product-category/qa059-57122c4f-shared/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product-category/qa059-57122c4f-shared/qa059-57122c4f-shared_child/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product-tag/qa059-57122c4f-shared_tag/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product-category/gsm-collection-952805eb-0066-4bf9-9e27-fc2c44044077/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product/qa059-57122c4f-base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-page/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-old-a/",
+      "method": "GET",
+      "status": 301,
+      "location": "http://www.branda.local/qa059-57122c4f-article/"
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-old-b/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-page/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?p=1733",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?p=1733&post_type=product",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?page_id=1740",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?p=1744",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?p=1728&post_type=product",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?page_id=1742",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product/qa059-57122c4f-private_base/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product/qa059-57122c4f-private_base/?gsm_brand=7",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-private-page/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/qa059-57122c4f-private-page/?gsm_brand=7",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/1733",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/1728",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/pages/1740",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/posts/1744",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/categories/200",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/comments/99",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_b_57122c4f",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_b_57122c4f-3",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small-3",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_a_57122c4f",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_a_57122c4f-2",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small-2",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-base",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/product-category/gsm-collection-4adb68a4-3f93-4e4e-a57e-739a4016efb8/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?taxonomy=product_cat&term=gsm-collection-4adb68a4-3f93-4e4e-a57e-739a4016efb8",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-users-1.xml",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products?include=1732,1733",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/pages?per_page=100&_embed=1",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/posts?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/search?search=QA059&per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/reviews?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/categories/196",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/tags?include=198",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/categories?include=200&hide_empty=false",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/collection-data?calculate_price_range=true&calculate_stock_status_counts=true&calculate_rating_counts=true&calculate_taxonomy_counts%5B%5D=product_cat",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-posts-product-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-posts-page-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-posts-post-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-taxonomies-product_cat-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-sitemap-taxonomies-product_tag-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/feed/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?s=QA059&post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?s=QA059",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/?post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/pages?search=QA059",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/feed/?post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wp/v2/comments?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.brandb.local%2Fqa059-57122c4f-page%2F",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/batch/v1",
+      "method": "POST",
+      "status": 400,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/batch",
+      "method": "POST",
+      "status": 400,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products",
+      "method": "GET",
+      "status": 403,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product/qa059-57122c4f-base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product/qa059-57122c4f-variable_base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/qa059-57122c4f-page/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/qa059-57122c4f-article/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product-category/qa059-57122c4f-shared/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product-category/qa059-57122c4f-shared/qa059-57122c4f-shared_child/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product-tag/qa059-57122c4f-shared_tag/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product-category/gsm-collection-4adb68a4-3f93-4e4e-a57e-739a4016efb8/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product/qa059-57122c4f-base/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/qa059-57122c4f-page/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/qa059-57122c4f-old-b/",
+      "method": "GET",
+      "status": 301,
+      "location": "http://www.brandb.local/qa059-57122c4f-article/"
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/qa059-57122c4f-old-a/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?p=1732",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?p=1732&post_type=product",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?page_id=1739",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?p=1743",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?p=1728&post_type=product",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?page_id=999999999",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/1732",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/1728",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/pages/1739",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/posts/1743",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/categories/199",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/comments/98",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_a_57122c4f",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_a_57122c4f-2",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small-2",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_b_57122c4f",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-seo_b_57122c4f-3",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-variable_base-small-3",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/qa059-57122c4f-base",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/product-category/gsm-collection-952805eb-0066-4bf9-9e27-fc2c44044077/",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?taxonomy=product_cat&term=gsm-collection-952805eb-0066-4bf9-9e27-fc2c44044077",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-users-1.xml",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products?include=1733,1732",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/pages?per_page=100&_embed=1",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/posts?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/search?search=QA059&per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/reviews?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/categories?per_page=100&hide_empty=false",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/categories/196",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/tags?include=198",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/categories?include=199&hide_empty=false",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products/collection-data?calculate_price_range=true&calculate_stock_status_counts=true&calculate_rating_counts=true&calculate_taxonomy_counts%5B%5D=product_cat",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-posts-product-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-posts-page-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-posts-post-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-taxonomies-product_cat-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-sitemap-taxonomies-product_tag-1.xml",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/feed/",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?s=QA059&post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?s=QA059",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/?post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/pages?search=QA059",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/feed/?post_type=product",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wp/v2/comments?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.branda.local%2Fqa059-57122c4f-page%2F",
+      "method": "GET",
+      "status": 404,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/batch/v1",
+      "method": "POST",
+      "status": 400,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/batch",
+      "method": "POST",
+      "status": 400,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products",
+      "method": "GET",
+      "status": 403,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandc.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brande.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandf.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.brandg.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.main.local",
+      "path": "/wp-json/wc/store/v1/products?per_page=100",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/wp-json/wc/store/v1/products/collection-data?calculate_taxonomy_counts[]=product_cat",
+      "method": "GET",
+      "status": 200,
+      "location": null
+    }
+  ]
+}

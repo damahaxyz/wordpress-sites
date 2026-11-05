@@ -1,0 +1,12 @@
+{
+    "products_removed": 12,
+    "coupons_removed": 1,
+    "orders_removed": 2,
+    "users_removed": 8,
+    "comments_removed": 1,
+    "retained_demo_product_records": 12,
+    "brands": 7,
+    "native_multisite": false,
+    "native_blog_id": 1,
+    "source_record_cutoff": 1228
+}

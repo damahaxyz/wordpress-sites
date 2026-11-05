@@ -1,0 +1,20 @@
+{
+    "source_sha256": "2fcb46a7c150a1a8770b880edf3fc975467615758007016861c5b083f682e104",
+    "checks": 1662,
+    "passed": 1662,
+    "failures": [],
+    "public_products": 72,
+    "local_images": 72,
+    "local_attribute_rows": 349,
+    "brand_product_counts": {
+        "1": 0,
+        "6": 0,
+        "7": 0,
+        "9": 0,
+        "11": 0,
+        "12": 0,
+        "13": 0
+    },
+    "preserved_admin_accounts": 2,
+    "original_source_unchanged": true
+}

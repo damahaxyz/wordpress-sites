@@ -13,15 +13,16 @@ final class Orders {
         add_action('woocommerce_before_order_object_save',static function ($order): void {
             if (Identities::is_internal()) { return; }
             $id=$order->get_customer_id(); $identity=$id?Identities::get($id):null;
-            if ($identity&&$identity['kind']==='customer'&&(int)$identity['store_id']!==get_current_blog_id()) {
-                Schema::audit('order_customer_scope_denied',get_current_blog_id(),$order->get_id(),['reason'=>'foreign_customer']);
+            if ($identity&&$identity['kind']==='staff'&&(!$order->get_id()||array_key_exists('customer_id',$order->get_changes()))) { Schema::audit('order_customer_scope_denied',Brands::id(),$order->get_id(),['reason'=>'staff_customer']); throw new \WC_Data_Exception('gsm_staff_customer','员工账户不能作为购物顾客。'); }
+            if ($identity&&$identity['kind']==='customer'&&(int)$identity['store_id']!==((int)$order->get_meta('_gsm_store_id')?:Brands::id())) {
+                Schema::audit('order_customer_scope_denied',Brands::id(),$order->get_id(),['reason'=>'foreign_customer']);
                 throw new \WC_Data_Exception('gsm_customer_store','订单顾客不属于当前店铺。');
             }
         });
         // WC_Order::save catches exceptions and logs its entire order object. Keep this denial ID-only.
         add_filter('woocommerce_logger_log_message',static function ($message,$level,$context) {
             $error=$context['error']??null;
-            return $error instanceof \WC_Data_Exception&&$error->getErrorCode()==='gsm_customer_store'?null:$message;
+            return $error instanceof \WC_Data_Exception&&in_array($error->getErrorCode(),['gsm_customer_store','gsm_staff_customer'],true)?null:$message;
         },20,3);
         add_filter('manage_woocommerce_page_wc-orders_columns', [self::class, 'columns']);
         add_action('manage_woocommerce_page_wc-orders_custom_column', [self::class, 'column'], 20, 2);
@@ -33,7 +34,7 @@ final class Orders {
     public static function stamp(\WC_Order $order): void {
         if ($order->get_meta('_gsm_store_id')) { return; }
         $settings = Stores::settings();
-        $order->update_meta_data('_gsm_store_id', get_current_blog_id());
+        $order->update_meta_data('_gsm_store_id', Brands::id());
         $order->update_meta_data('_gsm_store_uuid', $settings['uuid'] ?? '');
         $order->update_meta_data('_gsm_store_name', get_bloginfo('name'));
         $order->update_meta_data('_gsm_origin_url', home_url('/'));
@@ -41,7 +42,7 @@ final class Orders {
     public static function belongs_here(mixed $order): bool {
         if (!$order instanceof \WC_Order) { return false; }
         $origin = (int)$order->get_meta('_gsm_store_id');
-        return !$origin || $origin === get_current_blog_id();
+        return !$origin || $origin === Brands::id();
     }
     public static function protect_customer_order(array $caps, array $requested, array $args, \WP_User $user): array {
         if (!in_array($args[0] ?? '', ['view_order', 'pay_for_order', 'order_again'], true) || empty($args[2]) || user_can($user, 'manage_woocommerce')) { return $caps; }
@@ -60,7 +61,7 @@ final class Orders {
             $path = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()
                 ? 'admin.php?page=wc-orders'
                 : 'edit.php?post_type=shop_order';
-            return get_admin_url($store, $path);
+            return Brands::admin_url($store, $path);
         });
     }
 }

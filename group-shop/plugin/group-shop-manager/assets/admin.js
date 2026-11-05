@@ -156,13 +156,13 @@ if (typeof gsmMedia !== 'undefined' && window.wp && wp.media) {
         render(false);
     });
 }
-const productEditor = document.querySelector('.gsm-product-editor form, .gsm-collection-editor form');
-if (productEditor) {
+const collectionForm = document.querySelector('.gsm-collection-editor form');
+if (collectionForm) {
     let dirty = false;
     let submitting = false;
-    productEditor.addEventListener('input', () => { dirty = true; });
-    productEditor.addEventListener('change', () => { dirty = true; });
-    productEditor.addEventListener('submit', () => {
+    collectionForm.addEventListener('input', () => { dirty = true; });
+    collectionForm.addEventListener('change', () => { dirty = true; });
+    collectionForm.addEventListener('submit', () => {
         submitting = true;
         if (window.tinymce) tinymce.triggerSave();
     });
@@ -170,22 +170,7 @@ if (productEditor) {
         const richDirty = window.tinymce && tinymce.editors.some(editor => editor.isDirty());
         if (!submitting && (dirty || richDirty)) { event.preventDefault(); event.returnValue = ''; }
     });
-    const apply = (field, value) => productEditor.querySelectorAll('[data-price="' + field + '"]').forEach(input => {
-        input.value = value; input.dispatchEvent(new Event('input', {bubbles: true}));
-    });
-    const applyButton = productEditor.querySelector('.gsm-apply-prices');
-    if (applyButton) {
-        applyButton.addEventListener('click', () => {
-            let count = 0;
-            productEditor.querySelectorAll('[data-gsm-bulk]').forEach(input => {
-                if (input.value.trim() !== '') { apply(input.dataset.gsmBulk, input.value.trim()); count++; }
-            });
-            productEditor.querySelector('.gsm-bulk-feedback').textContent = count ? '已填入本页，保存后生效。' : '请先填写要应用的价格。';
-        });
-        productEditor.querySelector('.gsm-clear-sales').addEventListener('click', () => {
-            apply('sale_price', ''); productEditor.querySelector('.gsm-bulk-feedback').textContent = '已清空本页促销价，保存后生效。';
-        });
-    }
+
 }
 
 const collectionEditor = document.querySelector('.gsm-collection-editor');

@@ -1,187 +1,165 @@
-# 架构与不变量
+# 单站多品牌架构（0.5.9，本地）
 
-## 选择：原生 Multisite，而非独立安装之间复制用户
+## 基本模型
 
-group-shop 是网络主店。WordPress 共用 `wp_users` / `wp_usermeta`，每个博客拥有自己的商品、评论、分类、选项、WooCommerce 订单表。店铺编号使用 WordPress blog_id，另存 UUID；域名和品牌可改变，编号不能重用。
+只有一套原生 WordPress 表和 WooCommerce 存储。品牌由 `gsm_brands` option 注册；保留历史编号 1／6／7／9／11／12／13 作为品牌 ID。运行时原生 `get_current_blog_id()` 恒为 1，品牌编号不能再从 blog_id 推断。品牌 UUID 保持，`gsm_brand_sequence` 单调递增，不复用已分配编号。
 
-原有独立 trovesia-shop 不属于此网络。没有远程连接器、密码同步服务或跨域 SSO。0.4.0 顾客按店映射到不同原生 WP 用户 ID，员工为 scope=0 的独立共享身份。每个 ID 的原生密码与会话独立；修改密码仅撤销该 ID 会话。
+`Brands::id()` 为当前品牌；`Stores::within()`／`Brands::within()` 只改变受控业务作用域，finally 恢复，不切换原生表。`Brands::unscoped()` 仅供受信内部批量操作，不是外部授权接口。网页按注册 Host 精确识别品牌，未知 Host 拒绝；前台顾客不能用查询参数选择其他品牌。
 
-## 数据归属
+## 数据权威
 
-| 数据 | 存储／归属 | 变更原则 |
+| 数据 | 原生存储及扩展 | 原则 |
 |---|---|---|
-| 顾客邮箱、密码、姓名、默认账单／收货地址 | 每店一个原生用户 ID（共享 wp_users 表） | 同邮箱可跨店重复；修改不跨 ID 同步，订单快照不变 |
-| 身份／可见用户名／邮箱唯一范围 | 网络表 `{base_prefix}gsm_identities` | user_id 主键；network_id + store_id + login_key/email_key 分别唯一；员工 store_id=0 |
-| 员工密码和角色 | 独立原生用户；每店原生 capabilities | 只有网络超级管理员分配 admin／shop_manager；无自动加店 |
-| 首次注册来源 | usermeta `_gsm_first_store` | 只写一次；迁移顾客按所属店设置，缺失不猜成主店 |
-| 分店首次登录／注册时间 | usermeta `_gsm_store_{id}_joined_at` | 只写一次，不覆盖首次来源 |
-| 品牌、邮件、永久 UUID | 每站 option `gsm_store_settings` | UUID 保存不变；SMTP 凭据不放这里 |
-| 产品／变体／排序／评论／发布状态 | 原生各博客表 | 按店独立；必须切换店铺后操作 |
-| 产品分类／标签 | 主站原生 term 为唯一权威，各店为原生投影 | 主站原生后台统一编辑，主商品归属同步到映射版本；集合按店独立 |
-| 订单／订单行 | 原生 WooCommerce CRUD，兼容 HPOS | 原始店铺是唯一数据来源；通过所属店原生后台管理，无中央汇总 |
-| 历史主商品到版本映射 | 网络表 `{base_prefix}gsm_catalog` | 保留旧记录供分类同步；0.3.7 不再通过商品发布创建／更新映射 |
-| 操作日志 | 网络表 `{base_prefix}gsm_audit` | 仅记录编号、动作、字段、计数与状态等 |
+| 品牌 | `gsm_brands`；`gsm_brand_options_{id}` | 域名、名称、UUID；品牌资料／页面 ID／集合规则／主题展示选项独立 |
+| 公共商品 | 原生 product／product_variation，`_gsm_kind=base`、`_gsm_brand_id=0` | 不直接展示或销售 |
+| 品牌商品 | 原生 product，`_gsm_kind=edition`、`_gsm_brand_id`、`_gsm_base_product` | 各版本有不同原生 ID，独立发布状态和排序 |
+| 字段差异 | `_gsm_overrides`；变体 `_gsm_base_variation` | name／description／short_description／images／price 显式覆盖；取消即恢复继承 |
+| 分类／标签／属性／媒体 | 单站原生 terms／关系／attachment | 共用 ID 与文件，无跨站投影或图片导入 |
+| 商品集合 | 品牌 option `gsm_collections`＋带 `_gsm_collection`／品牌标记的原生分类 | 规则、回收站和成员独立，不把集合当共享普通分类 |
+| 顾客资料 | 原生 users／usermeta，一个品牌一个 ID | 密码、邮箱、默认地址、会话继续原生；不同品牌可同邮箱 |
+| 身份索引 | `gsm_identities` | 保留 network_id=1；顾客 store_id=品牌，员工 scope=0；规范化别名／邮箱分别唯一 |
+| 员工授权 | 原生共享员工 ID＋`_gsm_brand_roles` | 品牌 Administrator／Shop Manager 白名单，不用全局 administrator 角色代替 |
+| 总管理员 | option `gsm_platform_admins` | 受控 ID 清单；不能用单站 is_super_admin 推断品牌管理员 |
+| 订单 | 原生 Woo CRUD，兼容 HPOS；`_gsm_store_id` 等来源快照 | 顾客必须属于订单品牌，员工不能作为购物顾客 |
+| 评论 | 原生 comments／commentmeta `_gsm_brand_id` | 作者、评分与购买验证依附所属品牌销售商品，普通回复也保留归属 |
+| 页面／文章／菜单 | 原生 posts、nav_menu terms，品牌元数据 | 公共 URL 使用 `_gsm_public_slug`，内部唯一 slug 允许不同品牌保留同路径 |
+| 历史映射／审计 | 旧 `gsm_catalog`／`gsm_audit` | 保留历史，不再用旧映射驱动跨站写入；审计仅编号、动作、字段及计数 |
 
-订单写入 `_gsm_store_id`、`_gsm_store_uuid`、`_gsm_store_name`、`_gsm_origin_url`。已存在的归属不覆盖；客户前台不得访问归属不匹配的订单。店名修改不改历史快照。
+原生 SKU 在单站必须唯一：迁移时内部 SKU 命名空间化，原业务 SKU 保存 `_gsm_business_sku`。共享媒体仍引用原 uploads/sites/N 文件，未删除或移动原文件。原始 root 记录尽量保留 ID，其他站点导入重新分配 ID，准确映射存 `gsm_single_migration_map`，不能按数字相同推断归属。
 
-## 类职责
+## 公共商品与覆盖
 
-- `Schema`：幂等建表、版本号、最小操作日志、主店初始设置。
-- `Stores`：权限、作用域、店铺列表、草稿建店、品牌和邮件设置、缓存清理。
-- `Catalog`：仅保留本店商品编辑、状态切换及变体保存校验；跨店快照、复制、媒体导入、字段覆盖和映射写入 API 已在 0.3.7 移除。
-- `Availability`：全网络不管理库存、始终有货的运行策略及现有商品/变体的 CRUD 迁移。
-- `Collections` / `CollectionAdmin`：本店持久选品规则、列表／独立编辑页／回收站、授权商品搜索，物化为原生关系。
-- `CollectionDisplay`：同一集合的原生动态区块、短代码、主题读取接口与经典 Shop 主查询筛选。
-- `ReviewAdmin`：原生 WooCommerce Reviews 列表的只读所属店铺列，评论及回复按当前 blog_id 归属；不注册写操作或跨店查询。
-- `TaxonomyAdmin`：原生分类／标签列表和编辑页的只读类型、当前店归属、集合链接与作用域提示，不改变 CRUD／权限。
-- `SharedTaxonomies`：主站原生词表权威、各店只读投影、既有独有词条汇集、主商品归属同步、权限与失败重试。
-- `ProductAdmin`：本店商品主图列表、独立上下架、原生富文本／媒体、每页 20 个变体编辑。
-- `CategoryMigration`：授权升级时转换旧集合编号，清除退休模板来源/覆盖元数据，不删除原生业务表与分类。
-- `Identities`：作用域唯一索引、原生用户创建／邮箱修改、MySQL 注册锁、类型／归属与登录别名；真实邮箱和密码保留原生。
-- `Customers`：按店身份认证、Cookie／重置范围、角色和会员关系保护、注册／REST 适配、员工购物限制与提示。
-- `UserAdmin`：原生网络／各店用户列、类型只读、顾客角色锁定、原生员工创建说明与网络管理员按店授权。
-- `UserMigration`：显式预检、检查点续跑及旧顾客拆分，不自动执行。
-- `IdentityPrivacy`：将原生按邮箱导出／擦除回调改为本店顾客解析，保留本店订单／下载／令牌范围。
-- `Orders`：来源快照、前台归属保护、已有 HPOS 列，以及按目标店存储模式生成原生订单后台入口；不再提供聚合查询或中央写操作。
-- `Mail`：发件身份、Reply-To、店铺头、页脚及禁止未配置店铺发信。
-- `Admin`：主店菜单与表单，只允许网络管理员写入，所有写操作经过 nonce 和能力校验。
+`ProductVersions` 扩展 Woo 原生商品面板，保存公共商品时为已选择品牌建立原生草稿版本，更新已关联版本未覆盖字段。标题、长短描述、主图相册和价格／促销日程可独立；规格、税务类型、重量尺寸、下载配置及分类标签共用。变体按来源映射同步，允许自己的价格、图片、描述；父商品价格覆盖优先。公共删除的变体停用对应版本，不删除历史订单资料。
 
-## 跨店访问规则
+既有品牌独立增加过规格时，迁移按显式历史映射和实际规格形状分组；不强行把不同规格归入同一公共档案。原有标题／价格／图片差异自动标记覆盖，保留迁移前行为。公共商品不直接参与前台查询、购物车、成交、评论或品牌集合。
 
-所有跨店访问都通过 `Stores::within()`，先验证同网络且未归档/删除，再 `switch_to_blog`，finally 恢复。不得把仅有数字产品或订单 ID 当成跨店唯一标识。WooCommerce 商品读写使用 CRUD；不直接 SQL 改库存或商品 lookup。分类使用 WordPress 原生 term API。
+## 查询与权限
 
-`Stores::can_manage()` 在多站点要求网络超级管理员；顾客登录只接受其唯一所属店，登录绝不自动增加成员关系；员工按显式原生角色授权登录。
+`BrandScope` 在原生 WP_Query、Woo 商品／订单 CRUD 查询、HPOS 列表、评论／用户列表及 REST 数字 ID／批量入口上施加品牌条件；直接商品、订单与页面编辑能力也校验归属。原生 Reviews 增加所属品牌列。共享分类树不复制，计数按当前品牌计算；菜单／页面和集合独立。公共档案及关联操作仅商城总管理员可管理。
 
-## 身份与原生用户（0.4.0，仅本地）
+总管理员在原生后台顶栏选择“全部品牌”可查询全商城；选择某品牌后原生列表按该品牌处理。Gutenberg／React 请求通过 nonce 签名的 X-GSM-Brand 头携带当前后台作用域，无签名／篡改／顾客伪造请求拒绝。普通 Host 上的顾客 REST 和 Store API 仍由域名决定品牌。该桥接不是自动 SSO。
 
-原生 users/usermeta 仍是资料、密码与会话权威，新增 gsm_identities 不复制密码、真实邮件或地址。顾客内部 user_login 为 gsmc_{store}_{UUID}，员工为 gsms_{UUID}；迁移保留原用户 ID 的原有用户名。login_name 为用户可见名称，login_key/email_key 以 trim+小写归一，按网络／店铺分别唯一；员工 scope=0 单独唯一。禁止公开注册保留前缀或邮箱形式用户名，避免用户名与邮箱查找歧义。不能以内部用户名绕过登录入口。
+员工只获得经营所需白名单能力：本品牌商品、订单、优惠券、顾客和审核；品牌 Administrator 另可编辑本品牌文章／页面。不能安装／更新／删除插件、改共享设置／主题、推广员工权限或访问全局销售报表。共享媒体可选用及上传，但员工不能永久删除共享附件或修改他人附件。员工不能改商品归属／公共来源元数据。总管理员编辑员工授权后撤销该员工会话。
 
-原生 email_exists/username_exists 改成当前作用域查询；wp_pre_insert_user_data 最终校验、按登录名与邮箱排序获得 MySQL GET_LOCK，然后建立原生用户与唯一索引；重复／竞态失败拒绝或清除新建用户。修改邮箱同时校验所属范围并更新索引。锁在注册／更新完成和 shutdown 释放。数据库异常仍非核心 users＋索引的完整事务，迁移须备份；不声称任意直写数据库安全。
+顾客固定 Customer，禁止元数据／原生角色／REST 升级与变成员工。前台账户优先本品牌顾客，原生 wp-login.php 优先员工；同邮箱两类身份也有明确入口。默认地址属于各自原生用户 ID。密码重置发起、链接和提交都校验品牌；A 改密只撤销 A 的 ID 会话。应用密码对顾客禁用。第三方按邮箱查询应使用 `Identities::find(Brands::id(), $email, true)` 再按 ID 取用户；全局 get_user_by(email) 无品牌含义。
 
-前台优先本店 customer，原生 wp-login 后台优先 staff；认证保留 WP 密码哈希／rehash／认证用户过滤及垃圾用户检查，最终再校验范围。determine_current_user 在原生 Cookie 验证后拒绝异店顾客和无授权员工。相同邮箱另店不自动加入；顾客应用密码禁用，已授权员工的原生应用密码仍遵循店铺访问范围。第三方绕过原生认证链的 SSO 需单独验证。
+WC 会话 Cookie 名包含品牌；游客 ID 保留 Woo 原生 t_ 前缀且编码品牌；复制 Cookie／Store API Cart-Token 到另一品牌拒绝。订单已有来源不因当前后台改选而重写。新增订单／关联游客订单的顾客归属必须匹配；历史订单金额、地址、状态和行快照保留。
 
-顾客类型和 home 固定，角色严格 customer；can_add_user_to_blog、metadata、map_meta_cap、user_has_cap 及 site_admins 更新共同阻止跨店成员、升级及授予超级管理员。用户编辑服务器校验覆盖 DOM 禁用控件，REST 用户角色更新及数字 ID 跨店访问也拒绝。员工分店角色只允许网络超级管理员修改，不可自我加店；每店只允许 Administrator／Shop Manager。员工下单拦截用于保持业务身份分离。
+## 选项、集合与邮件
 
-密码重置发起先用本店／员工入口解析别名或真实邮箱，再交原生重置；key+id/login 链接、最终确认及 allow_password_reset 校验归属。顾客改密只撤销该 ID 会话；员工改密影响共享员工身份。发送品牌使用原始当前店；邮件正文替换内部用户名时避开 URL 参数，不能破坏原生带 canonical login 的令牌链接。
+`Brands` 将品牌名称、home、Logo、blog_public、Woo 页面 ID、隐私页／站标、主题展示选项、集合等 option 路由到品牌 option bank；siteurl 保持当前原生请求主机，支持中央后台原生资源加载。一套主题代码／货币／税务／运费／网关／插件配置共用，品牌员工不能改这些全局设置。
 
-网络／店铺原生列表显示类型／范围与可见用户名，网络列表另有首次来源和原生 Sites。UserAdmin 的原生资料页只向网络超级管理员显示员工逐店授权控件，nonce＋所有店铺字段＋末尾完整标记校验后保存并撤销旧会话。顾客普通编辑永不能转员工；单独新建员工。无重复客户列表。
+集合继续支持分类子树、标签、手选／排除／置顶、50 个未删除集合、每组 200 件及最多 2000 件父商品重建。公共更新后刷新关联品牌；共享分类变化按品牌重算；删除依赖词条停用待检查，不能退回全商品。动态区块、短代码、主题接口与经典 Shop 使用同一份成员关系；Woo Store API 独立集合筛选区块并不自动读取本插件自定义规则。
 
-原生 WordPress 用户资料导出与 Woo 顾客／订单／下载／令牌导出、擦除使用 IdentityPrivacy 的本店解析；订单擦除尊重原配置与原生操作。令牌 ID 窄查询后用原生 CRUD，包含已停用网关及分页，避免 Woo 默认查询漏记录。订单创建保存拒绝异店 customer ID，拒绝日志只记编号，不让 Woo 原生日志写完整订单对象。新版邮箱确认事件只为本店顾客执行原生游客订单绑定；网络编辑异店顾客或员工时控件禁用、服务器移除确认字段，旧报表 link_orders 也校验本店身份。第三方按邮箱全局 get_user_by/email 查询不会自动变成安全本店查询，须用 Identities::find(get_current_blog_id(), $email, true) 再按 ID 读取；后台编辑异店目标使用 Identities::scoped。其他插件的个人资料导出器也需独立审核。
+FluentSMTP 保留一套凭据和精确 From 路由，不修改核心。Woo 通知、直接后台重发、HTML／纯文本模板按订单品牌临时进入作用域，链接、发件人、Reply-To 和页脚一致，结束恢复。未配置品牌禁止发送，无自动补发队列。本地额外 MU 拦截一切实际邮件和支付。
 
-这是 Multisite 同库逻辑隔离，数据库管理员／网络超级管理员能管理全网。无物理分库、自动 SSO、多网络用户兼容承诺或共享顾客资料。安装未完成 gsm_identity_ready 时顾客登录／注册关闭；不会自动迁移。
+## 显式迁移与边界
 
-## 旧用户迁移（0.4.0）
+`SingleMigration` 只接受当前受限本地私有原生 API 导出，持迁移锁及数据库事务；成功才置 gsm_single_brand_ready，失败回滚并清缓存。激活和访问页面不迁移。保留原站点表／文件及旧审计作为档案；旧 SharedTaxonomies／CategoryMigration／UserMigration 写入入口退休并拒绝。原 .4 迁移若需复原必须用匹配旧源码。
 
-UserMigration::plan 先检查未分类用户。纯 customer/subscriber 以有效首次来源（否则首个所属店）为保留原 ID 的 home，其余所属店分配新 ID；管理员／Shop Manager 保留员工 ID 与管理店权限，其 customer-only 店拆成独立顾客；超级管理员保持原身份。未知角色、停用归属或跨网络成员先阻止，不猜测转换。
+当前源数据只含简单／可变商品，5 笔订单、无税率／退款／下载权限／付款令牌；未将其空样本等同完整支付、订阅、下载或第三方业务迁移证明。未知第三方 SQL／缓存／会员／SSO／订单扩展需专项适配。同库为逻辑隔离；数据库管理员与商城总管理员能访问全商城。
 
-显式 run 持有网络迁移锁，禁止发信，保存 source 检查点，全部完成才置 ready。保留原 ID 密码哈希，新增 ID 只一次复制哈希和默认地址起点，后续绝不同步。原生 CRUD 重绑所属店订单顾客、产品评论作者、持久购物车、下载权限和既有付款令牌；历史金额／状态／地址快照不修改。撤销旧共享顾客会话；员工管理 ID／原授权保留。按来源完成后记录 done，可续跑；多站迁移不是一个数据库事务，回滚须恢复匹配完整数据库与旧源码。无主动收款／退款动作。
+## 0.5.1 原生列表和有效编辑控制
 
-## 原生商品评论（0.3.5，仅本地）
+NativeProducts 扩展原生列表单一商品归属（公共／各品牌）及可选公共来源筛选、归属／来源／版本列及行跳转。状态计数通过同一组安全元数据条件计算，不污染原生计数缓存；状态链接保留当前筛选。原生 edit 链接和经典 Woo AJAX 均携带目标品牌，权限仍由服务端归属和能力检查决定。
 
-Admin 移除 reviews 标签、自建查询／分页／审核表单及 review_status 写分支；旧标签由白名单回退概览，旧写请求在原能力／nonce 检查后以未知操作拒绝。没有新增审核入口、权限或查询改写。
+ProductVersions 在原生保存前恢复继承的公共字段，保存后继续同步；变体覆盖标记在首次持久化前确定，保留 SKU／条码与品牌启用状态。公共商品创建由 Woo CRUD 写品牌元数据，WP 自动草稿阶段才补缺省品牌，避免双重标记。员工不能更换公共来源。
 
-ReviewAdmin 使用 WooCommerce 的 woocommerce_product_reviews_table_columns 和 woocommerce_product_reviews_table_column_gsm_store，给原生产品 Reviews 表格增加“所属店铺”。回调接收 WP_Comment，验证目标在当前上下文为 product，再输出转义后的当前店名称及 blog_id。原生回复也属于产品，不限定 comment_type=review，以免回复行缺失归属。归属依赖当前原生 comments 表，不按裸评论／产品编号跨店查源，不增加 commentmeta，不复制评论或建立共享评论表。
+界面仅对已关联品牌版本隐藏共用字段和未启用的差异字段，独立／公共商品仍使用原生控件；库存策略导致的无效控件全局隐藏。变体 AJAX 动态加载后重应用显隐，保留只读规格文本；结构变更及无效批量操作在服务端也拒绝，加载／保存先检查实际商品能力。父级继承设置未保存时提示先更新并收起变体。
 
-普通 edit-comments.php 不注册新列。现有原生角色、审核／编辑／回复／筛选／批量操作和第三方精选／媒体列保留，评分与购买验证仍按店计算；此扩展不聚合全网，也不提供跨域 SSO。历史审计保留，退休的中央 review_moderated 事件不再由原生操作生成。
+继承行移除快速编辑，含继承商品的结果页移除混合批量编辑，保留回收站；公共商品原生编辑不受该限制。中央品牌商品标签及其列表／快捷状态已移除，全部商品管理收敛到原生 Products。
 
-## 原生订单入口（0.3.4，仅本地）
+品牌身份及来源对总管理员与员工均以只读文本展示。原生内部 slug 不直接改变门面公开路径，因此本轮收起相关编辑框；空白 General 页签按实际可编辑字段显示，启用价格覆盖后恢复。关联筛选清除入口放在列表控件中，避免被 Woo 通知折叠。
 
-Admin 移除 orders 标签、自建列表／详情和 order_note／order_status 分支；旧标签由现有白名单回退概览，旧写请求在原有能力／nonce 检查后按未知操作拒绝。Orders 删除 list／change_status／next_statuses，概览改用 Orders::admin_url。该方法要求中央管理权限，在 Stores::within 目标店中通过 OrderUtil::custom_orders_table_usage_is_enabled 选择 admin.php?page=wc-orders 或 edit.php?post_type=shop_order，并 finally 恢复上下文；不得按主站模式决定全部分店的 URL。
+## 原生批量任务（0.5.2）
 
-订单创建来源 stamp、belongs_here、顾客 view_order／pay_for_order／order_again 校验、HPOS 来源列及邮件原始店上下文保留。没有订单复制／迁移、删除、数据库或新增权限变化。原生后台按本店查询和原生角色处理，不支持全网合并列表，不新增自动 SSO。中央有限状态白名单及其审计事件不再产生，历史审计与订单备注保留；原生状态／备注操作沿用 WooCommerce 权限、通知及网关配置。
+BulkProducts 扩展原生 bulk actions，Apply 只生成确认清单；确认后由 owner＋随机 token 的私有 transient 保存队列、选择时状态、结果和游标，TTL为最后一次写入后24小时，usermeta指向最近任务。每批最多200个父商品，每个 AJAX 请求处理一件；支持暂停／继续／仅重试失败项。原生 bulk-posts nonce、确认／执行 nonce、逐次身份与逐对象品牌权限校验均保留。任务 token 不是授权，不记录于日志。
 
-## 主商品发布退休（0.3.7，仅本地）
+每任务使用 MySQL GET_LOCK 防止重复推进；公共商品／品牌组合另有锁，ProductVersions::ensure_edition 包含回收站查重，所有公共面板新建关联也经过同一锁。已有关联不写入；生成父／变体使用 Woo CRUD、空覆盖和草稿，媒体引用共用。_gsm_build_state 标记未完整建立版本，集合同步暂时跳过；捕获写失败仅清理本次新建记录，硬中断留下草稿由人工检查并 Update 完成。
 
-Admin 移除 catalog 标签、渲染函数、catalog_publish 分支；旧标签按白名单回到概览，旧 POST 经过原有权限／nonce 检查后以未知操作拒绝。Catalog 移除 FIELDS、mapping、attribute_snapshot、variation_attributes、snapshot、import_media、publish、publish_locked，以及发布锁、跨店商品／变体／属性／媒体复制、字段覆盖、映射写入和 catalog_published 审计产生逻辑。没有替代入口或隐藏发布 API。
+批量状态只处理品牌销售商品，逐件 within 校验 edit_post 和 publish_products。选择后状态改变跳过，不覆盖并发状态修改；已经达标也跳过，不触发无效保存。逐件审计只记动作、编号、原因类别和状态；整批部分成功不回滚，页面关闭不继续后台执行。没有新业务表、迁移或旧发布器恢复。
 
-Catalog 类保留原 set_status／save_edition／prepare_edition，继续使用所属店 Woo CRUD、Stores::within finally、先验证完整批次、价格／附件／父子归属和原生变体同步。本次不改这些方法行为。店铺新增商品和结构调整走本店原生产品后台。
+## 统一继承模型（0.5.3）
 
-不删除或改写已有商品、变体、图片文件／附件、_gsm_master_*、_gsm_source_store／_gsm_source_attachment 来源元数据、历史映射和审计。Schema 的 gsm_catalog 保留兼容结构，SharedTaxonomies 仍查询原映射同步统一分类／标签归属，并维持关联商品既有原生分类面板控制；不新增映射，不将内容或价格复制回来。此保留是既有分类决策的兼容行为，不是仍保留发布功能。停用／卸载保留业务数据约定不变，无清理迁移。
+所有品牌销售父商品必须关联同类型公共父商品，变体必须映射到该公共父商品下的变体。不再支持独立品牌商品。新建原生商品默认公共，专用create_posts能力仅授予平台管理员；品牌员工继续编辑其已授权版本和差异，不能直接新增公共或品牌商品。
 
-旧商品／集合／分类套件依赖 Catalog::publish 来生成 fixtures，不能直接用于当前版本，既有 localhost 保护也不得移除。本轮改用退休 API 检查、本店临时 CRUD fixture 和只读七店摘要；历史发布测试只代表当时功能。
+ProductVersions在Woo写入前验证关联、类型及固定品牌／来源，新增销售版本只能经过公共商品物化器。原生editpost在admin_init先校验nonce、完整表单、归属、来源及类型，早于WordPress写标题／内容，避免非法表单部分保存；对象保存时仍重复验证。直接WC CRUD／REST不能清空或改关联。受信内部生成使用unscoped，保留队列并发锁。无登录用户的Woo cron仅允许已存在、关联有效的记录更新，公共同步只传播现有版本，不以cron身份新建品牌关联。
 
-## 统一分类与本店集合（0.3.1，仅本地）
+Products的gsm_brand=0现在明确表示公共目录；正数表示指定品牌版本，不再有列表“全部品牌”或gsm_products类型筛选。只有原生Products列表的无显式scope请求忽略全局品牌Cookie，其他页面的既有品牌作用域保持；员工仅授权品牌，不开放公共目录。品牌特有商品仍是公共档案，只给特定品牌生成销售版本即可。
 
-此版本按最新用户决定覆盖 0.3.0 的独立词表方案。主站原生 product_cat/product_tag 是唯一权威，UI 只有主站原生编辑页。Multisite 中每店的 term ID 和商品关系必须本地化，不能共享表前缀或跨店复用数字 ID，因此保留受控原生投影；这些不是可独立编辑的数据源。没有新的分类业务表，没有模板／覆盖字段或第二套分类编辑器。
+本地已保存的品牌商品全部有关联，无需搬迁或重建ID；仅两条未保存的auto-draft归属从旧品牌改成公共，私有原元数据备份留存，状态和内容不变。没有自动生产转换或独立商品批量迁移器。
 
-SharedTaxonomies 在网络管理员普通 admin_init（CategoryMigration 之后）检查每店 gsm_shared_taxonomy_revision。首次先汇集各店独有的普通分类／标签，按原生 slug 复用主站已有项，冲突时主站内容为准；默认分类直接归一到主站默认分类。分店已有 term ID 尽量保留，_gsm_shared_source 只记录对应主站 ID。既有集合及其规则不汇入主站。
+## 中央商品页面退休（0.5.4）
 
-saved_term/delete_term、thumbnail_id/order、默认分类修改增加网络修订号，请求 shutdown 合并处理一次；使用网络 advisory lock 串行化投影。名称、slug、介绍、父级、图片和排序写入分店原生 term API；图片复制到本店媒体并以 _gsm_shared_media 来源键复用，不跨店复用附件 ID。各店 terms 的其他元数据保留。创建新店在初始化结束后接入；未活动店不越过 Stores::within 校验，重新启用后补做。失效项通过本店原生删除 API 移除；与店铺集合 slug 冲突时中断并显示错误，不覆盖集合。
+Admin只保留五个标签。删除ProductAdmin及仅供旧中央页面使用的Catalog服务和启动加载；旧edition_save／edition_status在原权限及nonce校验后返回410，不再处理或暂存商品表单。原生ProductVersions／NativeProducts／BulkProducts及Woo状态保存不受影响。
 
-主商品归属变更在 set_object_terms/deleted_term_relationships 收集，按 gsm_catalog 映射同步全部已关联版本，商品写入使用 WooCommerce CRUD（包括其商品实例缓存失效）。0.3.7 不再有首次／再次发布入口；历史映射的归属同步继续独立生效。分店关联版本的原生分类面板移除，伪造的关系变更会恢复主商品归属；仅分店独立新建、无映射的商品可在原生编辑器选择共享词条。
+旧tab=products的GET在admin_init、输出前进行平台权限与品牌／商品一致性验证，再按已登录后台的相对路径安全跳到原生列表或编辑页，避免品牌home域名导致wp_safe_redirect回落。无品牌参数进入公共目录，无效／不匹配请求404。概览商品链接直达原生品牌列表。媒体／富文本和共享样式继续供集合编辑使用，集合规则及数据没有变更。
 
-网络管理员才可中央写入；分店 manage/edit/delete_product_terms 返回 do_not_allow，原生分类页返回主站；pre_insert_term 阻止分店建立新词条。受控集合保存和同步过程有明确内部作用域，允许生成本店集合分类。第三方直写数据库或绕开控制器的低层 term API 不属于受支持编辑途径，需网络管理员显式 reconcile(true) 修复投影。
+## 分类视图与集合层级（0.5.5）
 
-集合仍为每店 gsm_collections + _gsm_collection 派生 product_cat；taxonomy_scope=local，规则 ID 是共享词条在本店的 ID，不得用源 ID 代替。OR 分类子树、标签任一／全部、选入／排除／置顶、归档与导航保持。批量投影时延迟集合重算，再按店重建；删除规则依赖项会停用并 needs_review，避免空条件扩选。集合仍按店独立，不把集合变成共享分类。
+TaxonomyAdmin只在原生product_cat列表的all／count查询应用共享或指定品牌条件；共享以集合term ID排除，品牌以collection标记＋品牌元数据约束。无显式范围默认共享，不读上次Cookie。列表、计数和分页同范围，原生共享parent选择器不含集合；品牌集合编辑与回收统一引导CollectionAdmin，原生快捷写入受保护。共享Woo拖动排序的遍历排除集合，不改品牌集合顺序。
 
-同步只在全部投影及商品关系成功后标记店铺修订号。异常显示 gsm_shared_taxonomy_error，保留待同步版本，下次网络管理员普通后台请求重试；不宣称跨店事务或失败自动回滚。迁移会合并词表并改变原分店差异分类及已映射商品归属，完整回滚需要匹配数据库、代码及 uploads 备份。
+集合层级直接使用term_taxonomy.parent，不另存第二份父级。Collections验证parent为同品牌规则中的未删除集合且不成环，新增集合在重建前写入_gsm_brand_id。各集合成员仍独立物化，不以父子关系继承规则或汇总商品；原生归档增加include_children=false约束，与区块／Shop一致。BrandScope计数只对普通分类累加后代商品。Collections::tree按同级order／名称生成显示树，过滤后父级不可见则子级作为显示顶层，不改存储关系。前台导航嵌套，区块与Shop选项缩进，主题数据返回parent。
 
-0.3.0 的 CategoryMigration 仍先将旧集合来源 ID 转为本地，再删除 _gsm_template_id/_gsm_template_store/_gsm_overrides；没有 DROP TABLE，gsm_catalog/gsm_audit 不变。旧 v030 分类测试与报告只代表历史独立分类语义，当前使用 shared-taxonomies.php 验收。
+全局product_cat_children缓存的get=all＋fields=id=>parent内部查询不加品牌过滤，避免某品牌保存层级后破坏其他品牌树。没有业务迁移、term ID或slug重建；parent改变会自然改变原生层级归档URL，不新增旧地址重定向服务。
 
-## 原生词表的归属提示（0.3.3，仅本地）
+## 原生独立页面（0.5.6）
 
-TaxonomyAdmin 使用 manage_edit-{taxonomy}_columns / manage_{taxonomy}_custom_column，为 product_cat/product_tag 原生列表补类型和所属范围。只有 product_cat 且带 _gsm_collection 的项标记集合，状态读取当前店 gsm_collections，归属使用当前 blog_id、名称及 home URL；不能按裸 term ID 跨店推断。其他分类／标签显示全站共享。
+NativePages扩展page原生列表和写入边界。所有页面属于一个真实品牌，不存在品牌0公共页面模板。平台管理员列表默认主店，正数gsm_brand选店；编辑器上下文由现有页面的品牌确定，新建链接保留列表选择。WP_Query／REST页面选择／状态与作者计数同范围。NativePages在wp_insert_post_empty_content和rest_pre_insert_page写入前校验固定归属、角色及父级；新记录在wp_after_insert_post写唯一品牌标记，现有标记不能通过直接元数据增删改绕过。初次实际保存修正auto-draft公开路径标记。正文、标题、发布和修订继续原生，不做继承或同步。
 
-原生编辑页通过 {taxonomy}_edit_form_fields 输出相同只读字段；网络管理员可经行操作／店名进入本店集合编辑，回收站项进入回收站，缺少规则的标记项退回本店集合列表。原生页面提示它仅显示当前站点记录，其他店集合经中央入口切换，不聚合跨店原生 term 查询。
+Brands的后台rest_url使用当前注册请求主机的siteurl，避免切换品牌后的home把Gutenberg请求带到另一个登录域；X-GSM-Brand及原nonce仍负责业务范围授权。受控平台管理员只对平台管理员自己的品牌用户查询可见，员工边界保持。品牌页面草稿预览留在已登录主机，页面级nonce＋平台管理员／明确品牌Administrator授权共同选择预览品牌；其他前台访问仍按Host。404的WordPress地址猜测不能跳到另一注册品牌。
 
-不新增字段、业务表、迁移、写处理器、权限或原生删除拦截。CSS 只在两类原生 taxonomy screen 加载；桌面宽度不足时列表排在原生新增表单之前，保留原生搜索、排序、分页和响应式表格。
+旧单店Site_Experience政策安装器在多品牌启用时卸载其init回调，防止按全局slug查到并覆盖独立页面。隐私／条款 option bank、现有页面和页脚路径沿用，不新建用途映射、不自动改政策正文，也无数据迁移。
 
-## 商品编辑与原生控件（0.3.1）
+## 原生菜单按店铺管理（0.5.7，本地）
 
-列表主图和价格从所属店原生商品读取。快捷动作只允许 draft/publish，校验 expected_status 防止旧页面重复点击，并处理原 future 发布时间，始终只操作所选店。所有写请求必须网络管理员和 gsm_action nonce。
+外观 → 菜单新增“菜单所属店铺”切换，总管理员直接进入默认主店。每店可建立多个菜单，Primary／Footer 位置及自动添加页面设置独立。左侧商品、页面、文章只显示本站已发布资料；商品只使用品牌销售版本，排除公共档案。Product categories 包含共享分类与本站启用且未回收的集合，标签仍共用。自定义链接限本站域名、以 `/` 开头的相对路径或 `#` 锚点，不提供外部链接。
 
-编辑使用 wp_editor 长／短描述，wp_kses_post 保存；wp.media 用固定目标店授权。本店主图／相册最多 100 张，变体一张。媒体查询、上传、附件编辑及 send-attachment-to-editor/send-link-to-editor 都在目标店原生 handler 运行；原生 wp.media.post 是独立别名，必须同 wp.media.ajax 一起加入目标店上下文，防止编号相同引用到主站附件。
+服务器在原生表单或 AJAX 写入前校验店铺签名、菜单／菜单项归属、资源与父项；阻止跨店资源、其他菜单的菜单项、循环层级和跨店位置绑定，非法混合保存不会先改菜单名。前台按域名读取位置，并过滤历史无效／跨店条目；不自动删除既有资料。页面自动添加在归属写入后按页面所属店铺执行。
 
-变体每页 20 个，以父商品为边界，编辑价格、publish/private 启用状态、图片、描述；当前页批量填价不改其他页。先 prepare 所有行、检查父级及附件、价格，再经 Woo CRUD 保存并 sync 父商品价格。末尾 gsm_product_complete 防 PHP 输入截断。验证失败不写任何行，当前管理员最多 200 KB 输入保留 120 秒、只在同店同商品取回，不记入审计。数据库故障或第三方保存钩子异常仍可能部分落库，未宣称数据库事务。
+品牌 Administrator 使用“店铺菜单”入口，只授予菜单页面和受控 AJAX 所需能力；不获得主题、插件或全局设置权限，Shop Manager 权限保持。经典原生编辑器是当前受支持入口，Customizer 菜单组件及菜单相关 REST 编辑入口关闭，第三方菜单编辑器需另行适配。WordPress 菜单名称仍全站唯一，建议使用“店铺名＋菜单用途”。
 
-## 商品集合与展示入口（0.3.2，仅本地）
+主题 Footer menu 已实际接通 Customer care 栏；有绑定时显示该店页脚菜单，未绑定时保持现有政策／账户链接。新店不复制主店菜单位置或自动添加设置。无菜单内容复制／继承，无业务菜单迁移；只在本地验收，尚未发布。
 
-集合仍使用本店 option gsm_collections 及 _gsm_collection 派生 product_cat，不新增业务表、不共享集合编号。标题／描述沿用原生 term，封面使用本店 thumbnail_id，导航／集合排序沿用 order。新建 slug 为系统生成的 gsm-collection-{uuid}、parent=0，客户端 slug／parent 不参与写入；已有 slug／parent 保持，避免破坏既有归档链接及规则。
+实现位于 `NativeMenus`，保留原生 nav_menu term、nav_menu_item post 与 `_gsm_brand_id`。nav_menu 查询始终限定当前品牌，显式菜单 ID 同样受限；`theme_mod_nav_menu_locations` 拒绝读取外店绑定，`pre_update_option` 在品牌 bank 路由前校验位置及 auto_add。原生 `nav-menu-data` JSON 在 load 阶段展开并统一校验后才交核心处理，避免绕过或部分保存。菜单名不做命名空间转换。
 
-编辑器通过 collection=new／数字编号进入独立页面，默认集合入口只显示列表。增加 shop_filter（旧记录缺省 false），只有启用且勾选者进入经典 Shop 筛选。新建 UI 默认勾选，页面模块不要求这个开关。每店最多 50 个未删除集合（含停用），重建仍最多 2000 父商品，手选每组 200。商品选择 AJAX 在整个当前店商品库搜索标题或精确编号，每次返回 25 条与本店缩略图／状态；必须网络管理员、按店 nonce，Stores::within 恢复上下文，不注册匿名操作。
+网页修改只能经过本插件支持的原生入口；受信 PHP／数据库管理员仍具全商城能力，不宣称限制直接 SQL 或未知插件。商品分类全局 `id=>parent` 层级缓存仍不按品牌裁切。页面自动添加从 transition_post_status 移至 wp_after_insert_post，晚于 NativePages／BrandScope 的归属标记，按 owner 临时进入作用域并恢复。
 
-保存通过 gsm_action 能力和 nonce，表单末尾 gsm_collection_complete 防 PHP 截断。错误私有保留本管理员同店同集合字段 120 秒、最多 200 KB，不写业务审计。新规则保留分类任一子树、标签任一／全部、两组 AND、手动选入、排除优先、置顶等语义。派生成员通过 Woo CRUD 写分类 ID，以同步商品实例缓存；不会改变商品内容、价格或发布状态。
+## 2026-11-05 本地业务重置与 Chanel 公共目录
 
-删除为可恢复软删除：deleted_at 与 trash_state 记录此前启用／导航，规则保留，enabled/navigation=false 后重建移除派生成员。集合图片、原生 term、产品、共享词条均不删除；归档用 template_redirect 返回 404，数据／区块／Shop 入口不暴露失效集合。恢复先检查数量和重建限制，重建原规则；needs_review 时保持停用。没有永久清空入口。底层原生 term 与回收站规则继续持久保存，停用／卸载按已有业务保留约定处理。
+用户明确授权清空业务数据，保留七品牌、后台管理员及环境配置，并选择“只导入公共档案，暂不生成销售版本”。本轮已完成一次性本地重置：原5笔HPOS订单、289条商品／变体、155条其他内容记录、7个顾客、84个业务词条及旧子站档案中的业务行已清理。保留2个后台员工／管理员账户、原密码与身份、七品牌注册及联系／邮件／集成配置；保留主题配置记录和原表结构，不重建数据库。页面／菜单／集合／Logo等已删除资源绑定归零；系统默认分类重建，不自动恢复政策或Woo功能页面。
 
-CollectionDisplay::data 只读当前店、启用、未删除、taxonomy_scope=local 且有集合标记的数据；失效或跨店数字 ID 返回 null。query_args 仅允许调用者调整 posts_per_page（1–48）／paged，固定 product、publish、Woo 可见性与严格本店集合 term 条件，不把缺失集合变成无限制查询。商品排序来自集合，手动置顶只保留公开实际成员。
+用户 CSV `wc-product-export-27-8-2026-1787800592981-working.csv` 的72件简单商品已通过Woo原生CSV导入器新建为公共档案，保留SKU、价格、长短描述、349项本地属性、分类层级及补充元数据。72张图片全部从本机香水素材目录导入并校验原图SHA256；无原网站连接，源CSV哈希不变。来源ID只作为元数据记录，不复用其他安装的原生ID；没有生成任何品牌销售版本，七店前台均暂不展示商品。
 
-动态区块 group-shop/collection 在原生页面编辑器从当前店已启用集合下拉选择；用原生 server-side-render 预览，控制数量／列数／分页和标题／描述／图片。短代码 [group_shop_collection] 复用同一查询和主题 Woo 商品卡片，分页键 gsm_page_{id}；finally 恢复 WordPress post、Woo loop 和 product 上下文，不污染同页其他模块。主题可使用 group_shop_collection()/group_shop_collection_query_args()，调用前应检查 function_exists。
+私有成套备份与运行清单：`/private/tmp/group-shop-manager-qa/imports/20261105-chanel-6bd9d69e/`（backup/database.sql、uploads.tgz、source.tgz、qa.env及verified.json）。361张表、旧上传文件、源码和环境文件已备份并校验，包含敏感资料，不提交或公开。当前有效数据基线为72公共／0品牌／72图片／0顾客／0订单／0页面／0菜单／0集合；先前“718项原迁移资料保留”的验收仅为重置前历史，不得继续作为当前数据断言，旧私有fixture中的商品／顾客编号也不可直接复用。
 
-经典 Shop 在 woocommerce_product_query 中把 gsm_collection 条件 AND 到原有属性／价格等约束；不覆盖原有 tax_query。用户未明确排序时应用集合顺序，明确排序时尊重顾客选择。筛选表单只保留原生属性、价格、评分、排序、搜索、语言参数，重置分页；空结果仍显示表单。非法、停用、删除或未配置 Shop 的编号将主查询限制为 [0]。导航 [group_shop_collections] 保持已有兼容。
+1,662项逐字段／图片字节／归属／配置／旧档案清理核对通过，另有24项七域名与实际媒体HTTP核对，以及原生后台72件公共商品和缩略图浏览器检查。报告：`qa/group-shop-manager/import-public-chanel-20261105/REPORT.md`。软件版本仍0.5.7；仅本地数据维护，未发布或连接生产。
 
-此主查询适配不自动改造 Woo 原生 Store API 独立查询的 Product Collection／Filter 区块或第三方 AJAX 列表；需要主题适配、原生 category 条件，或使用本插件区块／读取接口。不会自动替换已有主题首页写死模块。集合描述遵循原生 term HTML 过滤，不能据富文本输入承诺任意 HTML 保留。
+本地重置改变的是数据基线，不改变公共档案＋品牌销售版本模型。旧子站归档表结构仍存在，业务行已按本次用户授权清空；gsm_single_brand_ready／身份ready／品牌UUID／单调序列继续保留，旧商品映射与历史迁移数据报告已从活动选项移除。公共商品继续不直接销售。
 
-## 无限库存（替代 0.1.0 库存模块）
+## 0.5.8 商品展示继承与店铺独立加购（本地）
 
-用户明确要求移除批量库存并永久有货。pre_option_woocommerce_manage_stock 固定 no，产品及变体读取 manage_stock=false、stock_status=instock；保存前 normalize 写入原生属性并清空数量，订单不会扣减。显式 Availability::migrate 逐店经 CRUD 保存现有商品/变体，修正 lookup，使原生缺货过滤也一致。迁移不更改名称、价格、状态、订单或用户。库存类和管理写操作已删除。停用插件后现有原生元数据仍是不管理库存；旧库存数只在升级前完整备份中保留。
+保留 Trovesia add-ons，按店铺独立配置，不继承公共商品规则。公共商品的 add-ons 面板仅提示进入品牌版本配置；品牌版本的选择器只列同店其他简单商品及具体变体。保存前验证完整表单、原生编辑授权和同店关系，拒绝公共／跨店／自身关联；最多20条规则。原生元数据写入也校验归属，现有规则不自动复制或删除。
 
-## 店铺 Logo 与搜索可见性（0.2.1）
+加购时核对规则与商品，子项不继续触发嵌套加购。购物车重算检查真实父行、规则、子商品及变体、所属店铺与可购买状态；规则删除、换绑或商品不可用时移除失效加购并提示重选，不再使用旧价格快照兜底。跟随价格／固定价／折扣继续可用，数量跟随主项；加购价不污染同一商品的普通购物车行。独立原生订单行、父项移除联动及普通迷你购物车数量按钮保持。
 
-每店 option gsm_logo_id 是统一 Logo 引用，缺省回退旧 theme_mod custom_logo，不做批量图片迁移；theme_mod_custom_logo 输出映射到店铺值，原生 theme_mods 新增/更新会回写该店引用。设置保存先校验本店附件/主题，再切主题和设置 Logo。通过默认值保留未提交字段。Logo 和 blog_public 不属于共享网络配置。
+Product presentation 默认动态继承公共商品，涵盖Eyebrow、Key benefits、退货说明、配送说明、Order activity文案及原有配送天数元数据；公共修改即时生效，不向品牌批量复制文案。在该面板勾选“单独设置本店展示信息”后可独立编辑，取消勾选并保存恢复当前公共值。留空仍使用Trovesia原有默认文案；自动订单数的查询与缓存均按当前店铺计算，不继承另一店的数量。继承模式字段不可编辑，服务端忽略伪造字段并阻止直接元数据覆盖；覆盖选择沿用 `_gsm_overrides` 的presentation项。
 
-搜索可见性直接保存原生 blog_public（0/1），由 WordPress 原生机制同步网络 blogs.public 与 noindex，不额外建立 robots 配置。修改原生阅读设置也触发缓存清理。这个开关不等于禁止爬取或隐私访问控制。
+Group Shop Manager 0.5.8、Trovesia Plugin 3.8.4；单店插件保留原有基本行为，多店规则由 ProductExperience 适配层施加。原生编辑和经典加购为当前支持入口，Store API购物车读取／变更已有项经过相同重算；不宣称新增区块加购选择器或第三方编辑器兼容。
 
-Media 适配店铺设置和商品编辑的原生 wp.media，不实现第二套媒体查询/上传。所有媒体 AJAX 附加 gsm_media_store 和按店 nonce；仅网络管理员及允许操作可进入，原生处理器继续校验 upload_files 和原生 nonce。库、上传、编辑均在目标店上下文，未支持的删除等操作直接拒绝，避免附件编号碰撞误作用于主店。原生 JSON 响应通过 wp_die 直接退出，无法经过通常的 finally，因此适配器在原生 die handler 前恢复，并注册 shutdown 兜底；其他跨店操作仍使用 Stores::within 的 finally。媒体弹窗中永久删除请在所属店原生媒体库完成。
+本轮开始只读盘点为72公共＋72品牌版本，已有展示及加购元数据均为0；没有自动改写这些业务商品、建立版本或设置营销规则。29项运行、5项订单统计和23项真实HTTP检查，以及浏览器实际覆盖保存／恢复继承通过；合成资料清理与原商品／元数据／品牌设置快照核对见 `qa/group-shop-manager/v058-local/LOCAL-v058.md`。仅本地，未连接或发布生产。
 
-admin_init 先校验授权但保持主店上下文，直到对应 wp_ajax 媒体 action 执行前才切换；async-upload.php 的直接处理使用 admin_init 最末优先级。这样避免其他插件/主题的一次性后台初始化在目标店触发跳转。QA 原生初始化守卫会检查这个边界，不能提前在 admin_init 开头切换店铺。
+ProductExperience 不引入新表。展示字段的权威为公共字段／本地覆盖标记：原生 get_post_meta 与Woo商品视图get_meta按归属解析来源，保留原始本地元数据以便显式覆盖，不将其误当继承值。原生完整表单在editpost写标题前验证；Trovesia保存回调只在有效覆盖模式写本地字段。公共规则不进入品牌物化器的meta_data，继承展示信息不会顺带复制add-on商品ID或价格。
 
-## 店铺列表、弹窗与域名（0.2.2）
 
-中央店铺设置改为单表，每店一行。新增/编辑是 HTML dialog 内的同源 iframe，只加载一个目标店表单；父页不创建 wp.media 实例，编辑页媒体授权固定到该店，关闭销毁 iframe，重新编辑重建原生媒体模型，避免不同店附件 ID 相同造成浏览器缓存混用。保存沿用 admin-post、网络管理员和 nonce；成功后的同源消息同时校验 origin 与 source，再刷新父列表。失败只短暂保存本管理员表单白名单字段，120 秒过期，不保存 SMTP 凭据。
+## 0.5.9 公开资源与SEO边界
 
-Stores::domain 校验 HTTPS 主机名、网络主店保护和跨网络域名占用（包括已停用店）。保存校验全部设置后，使用原生 update_blog_details 更新分店 domain/path，再写本店 home/siteurl 为 HTTPS 根域名并清 rewrite_rules；不改网络 DOMAIN_CURRENT_SITE。未传域名或域名未变保留旧路径。Stores::create 第三个可选参数是映射域名；旧的两参数调用保留路径式 QA/兼容行为。新增界面自动生成内部标识。
+SeoIsolation在parse_request检查显式商品／页面ID和私有分类归档，非法请求写error=404；template_redirect再次检查归档对象。BrandScope::posts以AND嵌套已有meta_query，不能让OR条件旁路品牌；公开slug查找带post_type，避免页面／商品同名串类型。redirect_canonical停止404猜测和跨注册品牌跳转，old_slug_redirect_post_id验证真实归属后才保留本店旧slug301。
 
-域名只是原生绑定，不提供 DNS/TLS/代理自动配置或公网验证，不发起服务器端域名探测。不能将保存成功当作新域名已可访问。既有 UUID、订单来源快照和客户身份保持；正文/选项中的旧绝对 URL、旧域名 301、第三方回调由独立备份迁移流程处理，不批量替换网络数据。主店域名只读。
+REST在rest_request_before_callbacks拒绝外店／公共商品、父子不匹配变体、页面／文章、评论及私有集合ID。Woo 11 ProductsBySlug使用get_page_by_path／SQL而非受限WP_Query，额外按品牌与公开／内部slug定位销售记录；成功响应必须在rest_dispatch_request转交原生ID处理器，before_callbacks返回非错误响应不会中止原回调。分类响应在rest_request_after_callbacks按当前品牌重算count／review_count，保证嵌入和内部rest_do_request也一致；覆盖产品分类、标签、制造商品牌及原生属性term接口。共享词条名称／slug／描述／封面依旧共享。
 
-## 邮件投递
+Woo FilterData可在WP_Query前命中持久缓存，分类／属性计数经woocommerce_pre_product_filter_data给query_vars加入品牌meta_query与内部标记，再调用相同Store API查询器，避免跨域同形查询复用另一店缓存。价格／库存／评分Store API聚合从受限WP_Query SQL计算，原生Query生成的统计保留品牌meta_query。受信内部unscoped可绕过，标记不是对外授权参数。
 
-利用原始店铺的 WordPress / WooCommerce 发送流程和 FluentSMTP 投递，不引入第二个中央发送器。FluentSMTP 连接和凭据以主店 option 为唯一来源，分店通过 option 过滤器读取，刷新凭据写回主店，不保存分店副本。已核对 FluentSMTP 2.4.1 有请求内静态设置缓存，因此不得通过切换博客后读取多套凭据来假定隔离。分店启用发信后仍必须存在精确的发件地址路由，否则阻止发送，不落入主店默认连接。当前店铺和订单来源决定品牌；后台跨店操作必须在作用域退出前完成订单操作。WooCommerce 原生各店延迟任务仍在本店上下文执行。
+分类Sitemap通过品牌已发布商品关系求可用词条及共享祖先，参与原生列表和分页数量查询；不以全局term count决定店铺目录。用户Sitemap provider关闭且其直接入口404。商品／页面／文章Sitemap、Feed和搜索沿用原生品牌查询，相关／交叉销售ID在公开读取时再过滤。菜单沿用NativeMenus，非法显式菜单可能由WordPress回退到另一个本店菜单，但不得渲染外店菜单。
 
-新店 `mail_enabled=false`；打开需要有效发件与客服邮箱，管理员仍需验证 FluentSMTP 路由和 SPF/DKIM/DMARC。SMTP 强制发件身份可能覆盖过滤器，故不能以本插件设置成功代表邮件已真实送达。失败告警日志不含正文、地址或重置令牌。
-
-## 范围外
-
-SSO、多地址簿、积分与营销、支付与共享卡片、退款、第三方运单、自动继承同步、细粒度客服授权、远程多 WordPress 连接器、自动 DNS/HTTPS、自动域名迁移均未实现。
-
-订单状态仍会触发 WooCommerce 原生通知；无限库存不代表收款成功，支付流程仍未接入。
+the_content／the_excerpt／woocommerce_short_description渲染时使用WP_HTML_Tag_Processor移除指向其他注册店铺业务页的a.href／iframe.src，pre_oembed_result阻止外店嵌入；不改数据库正文，不猜测替换为本站路径。wp-content链接、图片、CSS、JS继续共享。第三方任意PHP／SQL读取不自动授权；新增SEO插件、路由或升级Woo内部FilterData接口必须复跑专门验收。

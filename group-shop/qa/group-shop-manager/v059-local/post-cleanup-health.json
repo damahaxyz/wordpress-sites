@@ -1,0 +1,82 @@
+{
+  "passed": 19,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "www.main.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.main.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.branda.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.brandb.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.brandc.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.brande.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.brandf.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local original product count",
+      "passed": true
+    },
+    {
+      "check": "www.brandg.local original shared-category count",
+      "passed": true
+    },
+    {
+      "check": "GET foreign original product ID is immediate 404",
+      "passed": true
+    },
+    {
+      "check": "HEAD foreign original product ID is immediate 404",
+      "passed": true
+    },
+    {
+      "check": "A original noindex restored",
+      "passed": true
+    },
+    {
+      "check": "Main original 72-product sitemap remains intact",
+      "passed": true
+    },
+    {
+      "check": "Public base product ID unavailable after cleanup",
+      "passed": true
+    }
+  ]
+}

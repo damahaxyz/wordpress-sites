@@ -1,0 +1,8 @@
+{
+    "version": "0.5.3",
+    "passed": 2,
+    "checks": [
+        "Existing public products accept Woo cron saves with brand overrides preserved",
+        "Existing brand editions accept Woo cron saves with their public association retained"
+    ]
+}

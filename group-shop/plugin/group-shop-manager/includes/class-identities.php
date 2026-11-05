@@ -38,26 +38,25 @@ final class Identities {
     public static function find(int $store,string $value,bool $email=false): ?array {
         global $wpdb;
         $field=$email?'email_key':'login_key';
-        $row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.Schema::table('identities')." WHERE network_id=%d AND store_id=%d AND $field=%s",get_current_network_id(),$store,self::key($value)),ARRAY_A);
+        $row=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.Schema::table('identities')." WHERE network_id=%d AND store_id=%d AND $field=%s",Brands::network_id(),$store,self::key($value)),ARRAY_A);
         return $row?:null;
     }
     public static function put(int $id,string $kind,int $store,string $alias,string $email): void {
         global $wpdb;
         if (!in_array($kind,['customer','staff'],true) || ($kind==='customer'&&$store<1) || ($kind==='staff'&&$store!==0)) { throw new \RuntimeException('账户归属无效。'); }
-        $result=$wpdb->insert(Schema::table('identities'),['user_id'=>$id,'network_id'=>get_current_network_id(),'store_id'=>$store,'kind'=>$kind,'login_name'=>$alias,'login_key'=>self::key($alias),'email_key'=>self::key($email)]);
+        $result=$wpdb->insert(Schema::table('identities'),['user_id'=>$id,'network_id'=>Brands::network_id(),'store_id'=>$store,'kind'=>$kind,'login_name'=>$alias,'login_key'=>self::key($alias),'email_key'=>self::key($email)]);
         if ($result===false) { throw new \RuntimeException('当前店铺已有该用户名或邮箱，账户未建立。'); }
     }
     public static function accessible(int $id,?int $store=null): bool {
         if (!$id) { return false; }
-        $store??=get_current_blog_id();
-        $site=is_multisite()?get_site($store):null;
-        if (is_multisite()&&(!$site||(int)$site->network_id!==get_current_network_id()||$site->deleted||$site->archived||$site->spam)) { return false; }
-        if (is_super_admin($id)) { return true; }
+        $store??=Brands::id();
+        try { Stores::assert_store($store); } catch (\Throwable $e) { return false; }
+        if (Brands::root($id)) { return true; }
         $row=self::get($id);
-        if (!$row||(int)$row['network_id']!==get_current_network_id()) { return false; }
+        if (!$row||(int)$row['network_id']!==Brands::network_id()) { return false; }
         if ($row['kind']==='customer') { return self::ready()&&(int)$row['store_id']===$store; }
-        $user=new \WP_User($id,'',$store);
-        return (bool)array_intersect($user->roles,['administrator','shop_manager']);
+        $grants=(array)get_user_meta($id,'_gsm_brand_roles',true);
+        return in_array($grants[$store]??'',['administrator','shop_manager'],true);
     }
     public static function alias(int $id): string {
         $row=self::get($id); return $row?$row['login_name']:(get_userdata($id)->user_login??'');
@@ -69,7 +68,7 @@ final class Identities {
         return array_values(array_filter(array_map(static fn($id)=>\WC_Payment_Tokens::get((int)$id),$ids)));
     }
     public static function staff_creation(): bool {
-        return self::$staff_create || (is_network_admin()&&($GLOBALS['pagenow']??'')==='user-new.php'&&Stores::can_manage());
+        return self::$staff_create || (is_admin()&&($GLOBALS['pagenow']??'')==='user-new.php'&&Stores::can_manage());
     }
     public static function create_staff(array $data): int|\WP_Error {
         Stores::authorize(); self::$staff_create=true;
@@ -84,7 +83,7 @@ final class Identities {
         }
         if (self::staff_creation()) { return 0; }
         if (is_admin()&&in_array($GLOBALS['pagenow']??'',['user-new.php','site-users.php'],true)&&!empty($_REQUEST['role'])&&$_REQUEST['role']!=='customer') { return 0; }
-        return get_current_blog_id();
+        return Brands::id();
     }
     public static function email_exists(mixed $id,string $email): int|false {
         if (self::is_internal()) { return $id?(int)$id:false; }
@@ -100,7 +99,7 @@ final class Identities {
         global $wpdb;
         $keys=['login:'.self::key($alias),'email:'.self::key($email)]; sort($keys);
         foreach ($keys as $key) {
-            $lock='gsm_identity_'.md5(get_current_network_id().':'.$store.':'.$key);
+            $lock='gsm_identity_'.md5(Brands::network_id().':'.$store.':'.$key);
             if (isset(self::$locks[$lock])) { continue; }
             if ((int)$wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s,10)',$lock))!==1) { throw new \RuntimeException('账户正在保存，请稍后重试。'); }
             self::$locks[$lock]=true;
@@ -115,8 +114,8 @@ final class Identities {
         if (self::is_internal() || (str_starts_with($login,'gsmc_')||str_starts_with($login,'gsms_'))) { return $login; }
         // wp_update_user also runs pre_user_login, but usernames are immutable on updates.
         // Only wp_pre_insert_user_data binds this candidate if the operation is actually new.
-        $internal=(self::staff_creation()?'gsms_':'gsmc_'.get_current_blog_id().'_').str_replace('-','',wp_generate_uuid4());
-        self::$pending[$internal]=['alias'=>$login,'store'=>get_current_blog_id()];
+        $internal=(self::staff_creation()?'gsms_':'gsmc_'.Brands::id().'_').str_replace('-','',wp_generate_uuid4());
+        self::$pending[$internal]=['alias'=>$login,'store'=>Brands::id()];
         return $internal;
     }
     private static function rejected(string $message): array {
@@ -128,7 +127,7 @@ final class Identities {
         if (self::is_internal()) { return $data; }
         if ($update) {
             $row=self::get((int)$id);
-            if (!$row) { if (!is_super_admin((int)$id)) { throw new \RuntimeException('账户尚未完成身份迁移。'); } return $data; }
+            if (!$row) { if (!Brands::root((int)$id)) { throw new \RuntimeException('账户尚未完成身份迁移。'); } return $data; }
             if (!is_email($data['user_email'])||strlen($data['user_email'])>100) { throw new \RuntimeException('邮箱无效。'); }
             self::lock((int)$row['store_id'],$row['login_name'],$data['user_email']);
             $other=self::find((int)$row['store_id'],$data['user_email'],true);
@@ -138,7 +137,7 @@ final class Identities {
         $staff=self::staff_creation();
         if (!$staff&&!self::ready()) { throw new \RuntimeException('顾客账户迁移尚未完成，请稍后注册。'); }
         $login=$data['user_login'];
-        $pending=self::$pending[$login]??['alias'=>(string)($raw['user_login']??$login),'store'=>get_current_blog_id()];
+        $pending=self::$pending[$login]??['alias'=>(string)($raw['user_login']??$login),'store'=>Brands::id()];
         $store=$staff?0:(int)$pending['store']; $alias=trim($pending['alias']);
         if ($alias===''||strlen($alias)>60||!validate_username($alias)||(str_starts_with(strtolower($alias),'gsmc_')||str_starts_with(strtolower($alias),'gsms_'))||is_email($alias)) { throw new \RuntimeException('用户名无效，请使用不含邮箱格式的用户名。'); }
         if (!is_email($data['user_email'])||strlen($data['user_email'])>100) { throw new \RuntimeException('邮箱无效。'); }
@@ -173,11 +172,11 @@ final class Identities {
         unset(self::$pending[$user->user_login]);
         if ($pending['kind']==='customer') {
             self::internal(static function () use ($id,$pending): void {
-                $user=new \WP_User($id,'',$pending['store']); $user->set_role('customer');
+                $user=new \WP_User($id); $user->set_role('customer');
                 update_user_meta($id,'primary_blog',$pending['store']);
             });
         }
-        if ($pending['kind']==='staff') { self::internal(static function () use ($id): void { remove_user_from_blog($id,get_current_blog_id()); }); }
+        if ($pending['kind']==='staff') { self::internal(static function () use ($id): void { (new \WP_User($id))->set_role('subscriber'); update_user_meta($id,'_gsm_brand_roles',[]); }); }
         if (empty($raw['nickname'])) { update_user_meta($id,'nickname',$pending['alias']); }
         Customers::record($id);
         self::unlock();

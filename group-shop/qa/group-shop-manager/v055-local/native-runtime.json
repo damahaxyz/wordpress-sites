@@ -1,0 +1,17 @@
+{
+  "version": "0.5.5",
+  "passed": 11,
+  "checks": [
+    "Rebuilding hierarchy from B retains A and shared parent-child links",
+    "Collection counts remain independent instead of summing descendant-only products",
+    "Native SQL list and count agree for scope 0",
+    "Every native category row has the selected ownership for scope 0",
+    "Native SQL list and count agree for scope 6",
+    "Every native category row has the selected ownership for scope 6",
+    "Native SQL list and count agree for scope 7",
+    "Every native category row has the selected ownership for scope 7",
+    "Shared terms with no Woo order metadata remain visible",
+    "Existing and newly created collection terms all have explicit brand ownership",
+    "Native shared drag-order traversal excludes every private collection"
+  ]
+}

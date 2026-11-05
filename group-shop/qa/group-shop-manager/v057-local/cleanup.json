@@ -1,0 +1,13 @@
+{
+  "version": "0.5.7",
+  "temporary_posts_removed": 14,
+  "temporary_terms_tracked": 7,
+  "original_pages_menus_business_settings_and_brands_preserved": true,
+  "brands": 7,
+  "runtime_cache_values_preserved": [
+    "gsm_collections_built_at",
+    "trovesia_page_cache_generation",
+    "trovesia_page_cache_last_purged_at",
+    "trovesia_page_cache_last_reason"
+  ]
+}

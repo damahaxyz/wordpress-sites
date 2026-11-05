@@ -1,0 +1,29 @@
+{
+  "passed": 24,
+  "checks": [
+    "www.main.local: homepage available",
+    "www.main.local: public catalog is not sold as a brand edition",
+    "www.main.local: direct public product ID is hidden",
+    "www.branda.local: homepage available",
+    "www.branda.local: public catalog is not sold as a brand edition",
+    "www.branda.local: direct public product ID is hidden",
+    "www.brandb.local: homepage available",
+    "www.brandb.local: public catalog is not sold as a brand edition",
+    "www.brandb.local: direct public product ID is hidden",
+    "www.brandc.local: homepage available",
+    "www.brandc.local: public catalog is not sold as a brand edition",
+    "www.brandc.local: direct public product ID is hidden",
+    "www.brande.local: homepage available",
+    "www.brande.local: public catalog is not sold as a brand edition",
+    "www.brande.local: direct public product ID is hidden",
+    "www.brandf.local: homepage available",
+    "www.brandf.local: public catalog is not sold as a brand edition",
+    "www.brandf.local: direct public product ID is hidden",
+    "www.brandg.local: homepage available",
+    "www.brandg.local: public catalog is not sold as a brand edition",
+    "www.brandg.local: direct public product ID is hidden",
+    "Local imported image serves exact bytes: 63ac6b42.jpeg",
+    "Local imported image serves exact bytes: b5e71b73.png",
+    "Local imported image serves exact bytes: 21675750.jpeg"
+  ]
+}

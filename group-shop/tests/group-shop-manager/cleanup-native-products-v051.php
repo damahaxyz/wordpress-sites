@@ -1,0 +1,8 @@
+<?php
+use GroupShop\Manager\{Brands,Stores};
+if (!defined('WP_CLI')||!WP_CLI||wp_get_environment_type()!=='local'||!Brands::active()||get_option('home')!=='http://www.main.local') {throw new RuntimeException('Private local QA only');}
+$x=json_decode(file_get_contents('/gsm-private/native-products-v051.json'),true);$allowed=array_map('intval',array_filter([$x['base'],$x['a'],$x['b'],$x['vbase'],$x['va'],$x['vb'],$x['independent']??0,1291,1292,1293]));$removed=0;$source_before=count(Brands::unscoped(static fn()=>get_posts(['post_type'=>'product','post_status'=>'any','numberposts'=>-1,'fields'=>'ids'])));
+Brands::unscoped(static function()use(&$removed,$allowed):void{foreach(get_posts(['post_type'=>'product','post_status'=>'any','numberposts'=>-1]) as $post){if(!in_array($post->ID,$allowed,true)||!str_starts_with($post->post_title,'QA051 ')){continue;}$p=wc_get_product($post->ID);if(!$p){continue;}foreach(wc_get_orders(['limit'=>-1]) as $o){foreach($o->get_items() as $item){if((int)$item->get_product_id()===$p->get_id()){throw new RuntimeException('Temporary fixture has an order');}}}$removed+=1+($p->is_type('variable')?count($p->get_children()):0);$p->delete(true);}});
+foreach([1244,1245,1246,1247,1250,1253] as $id){if(!wc_get_product($id)){throw new RuntimeException('Lost original retained demo');}}
+Stores::purge();wp_cache_flush();
+echo wp_json_encode(['version'=>GSM_VERSION,'temporary_product_records_removed'=>$removed,'parent_products_before'=>$source_before,'parent_products_after'=>count(Brands::unscoped(static fn()=>get_posts(['post_type'=>'product','post_status'=>'any','numberposts'=>-1,'fields'=>'ids']))),'brands'=>count(Stores::all()),'multisite'=>is_multisite()],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)."\n";

@@ -1,0 +1,4 @@
+<?php
+use GroupShop\Manager\Brands;
+if (!defined('WP_CLI')||!WP_CLI||wp_get_environment_type()!=='local'||!Brands::active()||get_option('home')!=='http://www.main.local') {throw new RuntimeException('Private local QA only');}
+Brands::unscoped(static function():void{global $wpdb;$orphans=[];$public=0;$editions=0;foreach(get_posts(['post_type'=>'product','post_status'=>array_keys(get_post_stati()),'numberposts'=>-1]) as $post){$brand=(int)get_post_meta($post->ID,'_gsm_brand_id',true);if(!$brand){++$public;continue;}$base=(int)get_post_meta($post->ID,'_gsm_base_product',true);if(!$base||get_post_type($base)!=='product'||get_post_meta($base,'_gsm_kind',true)!=='base'){ $orphans[]=['id'=>$post->ID,'status'=>$post->post_status,'type'=>wc_get_product($post->ID)?->get_type()]; }else{++$editions;}}echo wp_json_encode(['version'=>GSM_VERSION,'public'=>$public,'linked_brand_products'=>$editions,'unlinked_brand_products'=>$orphans],JSON_PRETTY_PRINT)."\n";});

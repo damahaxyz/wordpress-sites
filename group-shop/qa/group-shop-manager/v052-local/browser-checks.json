@@ -1,0 +1,11 @@
+{
+  "version": "0.5.2",
+  "method": "manual browser verification",
+  "checks": [
+    "Native Products shows add, publish and draft batch actions",
+    "Two selected public products open explicit target-brand confirmation",
+    "Confirming Brand F creates two drafts with automatic AJAX progress",
+    "Completed job shows processed 2/2, success 2, skipped 0, failed 0 and version links"
+  ],
+  "screenshot": "browser-batch-completed.png"
+}

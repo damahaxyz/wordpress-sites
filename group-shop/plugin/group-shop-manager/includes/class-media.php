@@ -29,20 +29,8 @@ final class Media {
         }
     }
     public static function ajax_context(): void {
-        $store=self::target(wp_unslash($_REQUEST));
-        self::$depth=count($GLOBALS['_wp_switched_stack']??[]);
-        if ($store!==get_current_blog_id()) { switch_to_blog($store); }
-        if (!current_user_can('upload_files')) { self::restore(); wp_send_json_error(['message'=>'没有该店媒体权限。'],403); }
-        // Core wp_send_json exits rather than returning through a PHP finally block.
-        // Restore before its original die handler, with shutdown as a fatal/exit fallback.
-        add_filter('wp_die_ajax_handler',static function ($handler) {
-            return static function (...$args) use ($handler): void { self::restore(); $handler(...$args); };
-        },PHP_INT_MAX);
-        register_shutdown_function([self::class,'restore']);
-    }
-    public static function restore(): void {
-        if (self::$depth===null) { return; }
-        while (count($GLOBALS['_wp_switched_stack']??[])>self::$depth) { restore_current_blog(); }
-        self::$depth=null;
+        self::target(wp_unslash($_REQUEST));
+        if (!current_user_can('upload_files')) { wp_send_json_error(['message'=>'没有媒体权限。'],403); }
+        // All brands use the same native media library; never switch WordPress sites.
     }
 }

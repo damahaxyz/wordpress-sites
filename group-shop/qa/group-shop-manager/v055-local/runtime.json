@@ -1,0 +1,29 @@
+{
+  "version": "0.5.5",
+  "passed": 23,
+  "checks": [
+    "New collections persist their store ownership and collection marker",
+    "Collection creation persists two levels of native hierarchy",
+    "Changing parent preserves the native term ID and slug",
+    "Reject self parent before changing existing collection",
+    "Reject descendant parent before changing existing collection",
+    "Reject shared parent before changing existing collection",
+    "Reject foreign parent before changing existing collection",
+    "Reject missing parent before changing existing collection",
+    "Reject editing another store collection by numeric ID",
+    "Public products cannot be manually included in a store collection",
+    "Foreign store products cannot be manually included",
+    "Child membership does not automatically add parent collection membership",
+    "Inherited product save preserves the owned collection relation",
+    "Admin tree orders and indents child collections",
+    "Theme collection data exposes the native parent",
+    "Collection navigation renders nested parent and child lists",
+    "Shop collection selector displays hierarchy",
+    "Parent module query uses its own rules without collecting child-only products",
+    "Deleted collections cannot be chosen as parents",
+    "Trashing a parent leaves child collections usable",
+    "Restoring parent preserves the child relationship",
+    "Brand staff cannot bypass platform-only collection administration",
+    "Store context is restored after rejected and successful collection writes"
+  ]
+}

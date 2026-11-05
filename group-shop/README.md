@@ -1,5 +1,10 @@
 # Group Shop
 
+> 当前 Group Shop Manager 本地已升级 0.5.9 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+
+> 2026-11-06 当前本地为72件Chanel公共商品＋72件主店销售版本；七品牌和后台账号保留。0.5.9已完成原生SEO隔离本地验收，CSS／JS／图片继续共用。此前重置时的0品牌版本是历史基线，当前状态与私有备份见插件HANDOFF／OPERATIONS。
+
+
 `group-shop` 是一套独立的 WordPress + Nginx + MariaDB + Redis 商店环境。
 它与 `13799-shop` 使用不同的 Compose 项目名、宿主机端口、named
 volumes、数据库凭据与 Redis 键前缀，可以在同一台服务器上同时运行。
@@ -96,3 +101,5 @@ ssh root@contabo2 'cd /root/wordpress-sites/group-shop && bash scripts/security-
 
 仅运行自定义代码部署脚本时不会替换数据库或媒体。完整私有备份保存到 `/root/group-shop-backups/`。
 详细部署与验收记录见 `DEPLOYMENT.md`。
+
+本地0.5.8：商品展示支持公共继承／品牌覆盖，add-ons保留并限定本店独立规则。最新验收与当前数据见插件HANDOFF。

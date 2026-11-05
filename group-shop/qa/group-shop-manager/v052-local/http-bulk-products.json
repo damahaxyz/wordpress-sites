@@ -1,0 +1,21 @@
+{
+  "version": "0.5.2",
+  "passed": 15,
+  "checks": [
+    "Native Products exposes all three authorized bulk actions",
+    "Native Apply opens confirmation without creating a product",
+    "Starting a task rejects an invalid confirmation nonce",
+    "Step endpoint rejects an invalid task nonce",
+    "Concurrent native task requests are accepted or safely wait",
+    "Two concurrent add jobs create exactly one sale version and skip the duplicate",
+    "Native task can pause before processing",
+    "Paused HTTP task performs no product writes",
+    "Reload preserves the paused task and progress",
+    "Resumed native task creates simple and variable inherited drafts",
+    "Native bulk publish updates all selected brand drafts",
+    "Native bulk draft updates all selected brand sale versions",
+    "Repeating a confirmed batch preserves all existing versions without extra records",
+    "Employee list offers status actions but no brand-association action",
+    "Another user cannot run the root task"
+  ]
+}

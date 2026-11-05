@@ -592,6 +592,8 @@ final class Site_Experience
     public function render_product_meta_box(\WP_Post $post): void
     {
         wp_nonce_field('trovesia_product_meta', 'trovesia_product_meta_nonce');
+        echo '<input type="hidden" name="trovesia_product_meta_complete" value="1">';
+        do_action('trovesia_product_presentation_controls', $post);
 
         $eyebrow = (string) get_post_meta($post->ID, '_trovesia_eyebrow', true);
         $benefits = (string) get_post_meta($post->ID, '_trovesia_benefits', true);
@@ -599,6 +601,7 @@ final class Site_Experience
         $shipping = (string) get_post_meta($post->ID, '_trovesia_shipping', true);
         $order_activity = (string) get_post_meta($post->ID, '_trovesia_order_activity', true);
         ?>
+        <div class="trovesia-presentation-fields">
         <p>
             <label for="trovesia-eyebrow"><strong><?php esc_html_e('Eyebrow', 'trovesia-plugin'); ?></strong></label><br>
             <input class="widefat" id="trovesia-eyebrow" name="trovesia_eyebrow" type="text" value="<?php echo esc_attr($eyebrow); ?>">
@@ -621,6 +624,7 @@ final class Site_Experience
             <input class="widefat" id="trovesia-order-activity" name="trovesia_order_activity" type="text" value="<?php echo esc_attr($order_activity); ?>" placeholder="<?php esc_attr_e('Orders are processed daily', 'trovesia-plugin'); ?>">
             <span class="description"><?php esc_html_e('Optional. When filled, this text replaces the automatic past-24-hours order message on the product page. Leave blank to keep the automatic count and its default fallback.', 'trovesia-plugin'); ?></span>
         </p>
+        </div>
         <?php
     }
 
@@ -635,6 +639,7 @@ final class Site_Experience
             return;
         }
 
+        if (!apply_filters('trovesia_product_presentation_save_allowed', true, $post_id)) { return; }
         $fields = [
             'trovesia_eyebrow'   => '_trovesia_eyebrow',
             'trovesia_benefits'  => '_trovesia_benefits',
@@ -880,7 +885,7 @@ final class Site_Experience
         $available = [];
         foreach (Addon_Pricing::get_rules($parent_product->get_id()) as $rule) {
             $linked = wc_get_product((int) ($rule['product_id'] ?? 0));
-            if ($linked instanceof \WC_Product && $linked->get_status() === 'publish' && $linked->is_purchasable() && $linked->is_in_stock()) {
+            if (Addon_Pricing::valid_link($parent_product->get_id(),$linked) && $linked->get_status() === 'publish' && $linked->is_purchasable() && $linked->is_in_stock()) {
                 $available[] = ['rule' => $rule, 'linked' => $linked];
             }
         }
@@ -1031,7 +1036,8 @@ final class Site_Experience
 
     private function orders_last_24_hours(): int
     {
-        $cached = get_transient('trovesia_orders_last_24_hours');
+        $cache_key = (string) apply_filters('trovesia_order_activity_cache_key', 'trovesia_orders_last_24_hours');
+        $cached = get_transient($cache_key);
         if ($cached !== false) {
             return max(0, (int) $cached);
         }
@@ -1040,15 +1046,15 @@ final class Site_Experience
             return 0;
         }
 
-        $result = wc_get_orders([
+        $result = wc_get_orders(apply_filters('trovesia_order_activity_query_args', [
             'date_created' => '>' . (time() - DAY_IN_SECONDS),
             'limit'        => 1,
             'paginate'     => true,
             'return'       => 'ids',
             'status'       => ['wc-processing', 'wc-completed', 'wc-on-hold'],
-        ]);
+        ]));
         $count = is_object($result) && isset($result->total) ? (int) $result->total : 0;
-        set_transient('trovesia_orders_last_24_hours', $count, 5 * MINUTE_IN_SECONDS);
+        set_transient($cache_key, $count, 5 * MINUTE_IN_SECONDS);
 
         return $count;
     }

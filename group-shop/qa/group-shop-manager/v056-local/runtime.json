@@ -1,0 +1,27 @@
+{
+  "version": "0.5.6",
+  "passed": 21,
+  "checks": [
+    "New native pages receive their selected store ownership",
+    "Same-store native page hierarchy remains supported",
+    "Page content is independent across stores with no inheritance or synchronization",
+    "Page publishing state is independent across stores",
+    "Foreign parent is rejected before partially saving title or hierarchy",
+    "Native page hierarchy cannot form a cycle",
+    "Root native CRUD cannot reassign an existing page to another store",
+    "A store page cannot be converted to an unowned public template",
+    "Raw metadata cannot bypass fixed page ownership",
+    "Page creation does not leave duplicate ownership metadata",
+    "Native page permalinks retain their owning storefront domain",
+    "A brand administrator can independently edit its own page",
+    "A brand administrator cannot write another store page by numeric ID",
+    "An authorized employee can create an ordinary page in its own store",
+    "Shop Manager does not acquire brand administrator page creation rights",
+    "Trusted root initialization can create an independent page for a specified store",
+    "Legacy policy auto-writer is disabled and cannot overwrite independent brand pages",
+    "No template inheritance service or new policy-binding layer remains",
+    "Existing native privacy-page assignment remains unchanged for store 1",
+    "Existing native privacy-page assignment remains unchanged for store 6",
+    "Existing native privacy-page assignment remains unchanged for store 7"
+  ]
+}

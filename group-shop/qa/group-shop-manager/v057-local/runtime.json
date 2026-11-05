@@ -1,0 +1,6 @@
+{
+  "version": "0.5.7",
+  "passed": 26,
+  "source": "tests/group-shop-manager/native-menus-v057.php",
+  "scope": "local loopback; synthetic fixture only"
+}

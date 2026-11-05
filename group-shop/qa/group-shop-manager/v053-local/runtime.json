@@ -1,0 +1,25 @@
+{
+    "version": "0.5.3",
+    "passed": 19,
+    "checks": [
+        "New root product is public even within a brand context",
+        "Native create capability is dedicated to public-product administrators",
+        "Native CRUD rejects a new unlinked brand product before inserting it",
+        "Materializer rejects missing public source",
+        "New brand version has a public source, empty overrides and draft status",
+        "Duplicating a sales version cannot bypass public inheritance",
+        "Clearing source through native CRUD is rejected without changing stored relation",
+        "Changing an existing brand version to another source is rejected",
+        "Reassigning an existing brand version to another brand is rejected",
+        "Tampered native form cannot detach a brand version",
+        "Native inherited editor still accepts explicit price and title overrides",
+        "Public updates inherit while brand overrides remain effective",
+        "Variable brand edition materializes the public specifications and children",
+        "Existing inherited variation remains editable through valid overrides",
+        "Direct creation of a brand-only variation is rejected",
+        "Brand employee cannot create native products",
+        "Employee CRUD cannot create a standalone product",
+        "Employee can still update authorized brand differences",
+        "Batch inheritance still creates simple and variable versions under the unified model"
+    ]
+}

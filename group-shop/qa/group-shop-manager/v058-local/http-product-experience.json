@@ -1,0 +1,29 @@
+{
+  "version": "0.5.8",
+  "passed": 23,
+  "checks": [
+    "Public editor explains independent brand add-ons without editable rules",
+    "Brand presentation shows inherited public values and an explicit override control",
+    "Add-on picker contains own sales versions and excludes public/foreign products",
+    "Forged foreign add-on is rejected before native product save",
+    "Rejected add-on request leaves title unchanged",
+    "Truncated add-on form is rejected before mutation",
+    "Truncated presentation form is rejected before mutation",
+    "Native inherited product save succeeds while ignoring hidden presentation edits",
+    "Forged inherited field does not replace public presentation",
+    "Native brand presentation override can be saved",
+    "Custom presentation persists after reload",
+    "A presentation override leaves B inheritance unchanged",
+    "Unchecking presentation override restores current public content",
+    "Public presentation can be edited in its original native metabox",
+    "Native public edit reaches both inheriting brand editors",
+    "Actual product page renders inherited presentation and own add-on card",
+    "Guest classic add-to-cart creates own add-on at correct price and quantity",
+    "Another storefront cannot see the A shopping session",
+    "Ordinary mini-cart quantity AJAX remains functional",
+    "HTTP quantity update also synchronizes add-on units",
+    "An add-on quantity cannot be independently changed through mini-cart AJAX",
+    "Own-store add-on can be deliberately rebound to another own product",
+    "Real cart invalidates old child after rule rebind instead of applying new product price"
+  ]
+}

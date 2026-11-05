@@ -1,0 +1,74 @@
+{
+    "brand_policy_and_icon_maps": {
+        "1": {
+            "wp_page_for_privacy_policy": {
+                "source": 3,
+                "native": 3
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "6": {
+            "wp_page_for_privacy_policy": {
+                "source": 22,
+                "native": 875
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "7": {
+            "wp_page_for_privacy_policy": {
+                "source": 25,
+                "native": 1017
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "9": {
+            "wp_page_for_privacy_policy": {
+                "source": 15,
+                "native": 1047
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "11": {
+            "wp_page_for_privacy_policy": {
+                "source": 13,
+                "native": 1063
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "12": {
+            "wp_page_for_privacy_policy": {
+                "source": 13,
+                "native": 1079
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        },
+        "13": {
+            "wp_page_for_privacy_policy": {
+                "source": 13,
+                "native": 1095
+            },
+            "site_icon": {
+                "source": 0,
+                "native": 0
+            }
+        }
+    }
+}

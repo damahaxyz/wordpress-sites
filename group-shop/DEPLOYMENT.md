@@ -1,5 +1,8 @@
 # Group Shop 部署记录
 
+> 当前 Group Shop Manager 本地已升级 0.5.4 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+
+
 部署日期：2026-11-02 至 2026-11-03，Asia/Taipei。
 
 ## 访问与位置

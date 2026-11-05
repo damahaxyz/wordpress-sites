@@ -64,11 +64,11 @@ final class CollectionAdmin {
         if (get_option('gsm_collections_review')) { echo '<div class="notice notice-warning inline"><p>部分集合需要重新选择分类／标签条件，修正后保存即可。</p></div>'; }
         echo '<table class="widefat striped gsm-collection-table"><thead><tr><th>图片</th><th>标题／描述</th><th>选品方式</th><th>已发布商品</th><th>展示位置／状态</th><th>操作</th></tr></thead><tbody>';
         $shown=0;
-        foreach ($all as $id=>$rule) {
-            if ($trash!==!empty($rule['deleted_at'])) { continue; }
-            $term=get_term((int)$id,'product_cat'); if (!$term||is_wp_error($term)) { continue; } $shown++;
+        foreach (Collections::tree(array_filter($all,static fn($rule)=>$trash===!empty($rule['deleted_at']))) as $row) {
+            $id=$row['id']; $term=$row['term']; $rule=$all[$id]; $shown++;
             $image=(int)get_term_meta((int)$id,'thumbnail_id',true); $url=get_term_link($term);
-            echo '<tr data-collection="'.(int)$id.'"><td>'.($image?wp_get_attachment_image($image,'thumbnail',false,['class'=>'gsm-collection-thumb']):'<span class="gsm-collection-no-image">暂无图片</span>').'</td><td><strong>'.esc_html($term->name).'</strong><p>'.esc_html(wp_trim_words(wp_strip_all_tags($term->description),24,'…')).'</p></td><td>'.esc_html(($rule['mode']??'rule')==='manual'?'手动选品':'分类／标签规则').'</td><td>'.(int)$term->count.'</td><td>'.(!empty($rule['shop_filter'])?'页面模块 · Shop 筛选':'页面模块').'<br>'.esc_html($trash?'已删除':(!empty($rule['needs_review'])?'需要修正规则':(!empty($rule['enabled'])?'启用':'停用'))).'</td><td><div class="gsm-product-actions">';
+            $parent=$term->parent?get_term((int)$term->parent,'product_cat'):null;
+            echo '<tr data-collection="'.(int)$id.'"><td>'.($image?wp_get_attachment_image($image,'thumbnail',false,['class'=>'gsm-collection-thumb']):'<span class="gsm-collection-no-image">暂无图片</span>').'</td><td><strong>'.esc_html(str_repeat('— ',$row['depth']).$term->name).'</strong>'.($parent&&!is_wp_error($parent)?'<br><span class="description">父级：'.esc_html($parent->name).'</span>':'').'<p>'.esc_html(wp_trim_words(wp_strip_all_tags($term->description),24,'…')).'</p></td><td>'.esc_html(($rule['mode']??'rule')==='manual'?'手动选品':'分类／标签规则').'</td><td>'.(int)$term->count.'</td><td>'.(!empty($rule['shop_filter'])?'页面模块 · Shop 筛选':'页面模块').'<br>'.esc_html($trash?'已删除':(!empty($rule['needs_review'])?'需要修正规则':(!empty($rule['enabled'])?'启用':'停用'))).'</td><td><div class="gsm-product-actions">';
             if (!$trash) {
                 echo '<a class="button" href="'.esc_url(Admin::url('collections',['store'=>$store,'collection'=>$id])).'">编辑</a>';
                 if (!empty($rule['enabled'])&&!is_wp_error($url)) { echo '<a class="button" href="'.esc_url($url).'" target="_blank" rel="noopener">查看商品</a>'; }
@@ -84,11 +84,11 @@ final class CollectionAdmin {
         $all=Collections::collections();
         if ($id&&(!isset($all[$id])||!empty($all[$id]['deleted_at']))) { throw new \RuntimeException('集合不存在或已删除。'); }
         $spec=$all[$id]??['mode'=>'rule','categories'=>[],'tags'=>[],'tag_match'=>'any','include'=>[],'exclude'=>[],'priority'=>[],'sort'=>'menu_order','enabled'=>true,'navigation'=>false,'shop_filter'=>true];
-        $value=$id?Collections::values($id):['name'=>'','description'=>'','image'=>0,'order'=>0];
+        $value=$id?Collections::values($id):['name'=>'','description'=>'','image'=>0,'order'=>0,'parent'=>0];
         $retry=get_site_transient('gsm_collection_retry_'.get_current_user_id());
         if (is_array($retry)&&$retry['store']===$store&&$retry['collection']===$id) {
             $data=$retry['fields'];
-            foreach (['name','description','image','order'] as $key) { if (isset($data[$key])&&is_scalar($data[$key])) { $value[$key]=$data[$key]; } }
+            foreach (['name','description','image','order','parent'] as $key) { if (isset($data[$key])&&is_scalar($data[$key])) { $value[$key]=$data[$key]; } }
             foreach (['mode','tag_match','sort'] as $key) { if (isset($data[$key])&&is_scalar($data[$key])) { $spec[$key]=$data[$key]; } }
             foreach (['categories','tags','include','exclude','priority'] as $key) { if (isset($data[$key])) { $spec[$key]=Collections::ids($data[$key]); } }
             foreach (['enabled','navigation','shop_filter'] as $key) { $spec[$key]=!empty($data[$key]); }
@@ -98,6 +98,14 @@ final class CollectionAdmin {
         Admin::form('collection_save',$store,'collections'); echo '<input type="hidden" name="collection" value="'.$id.'"><input type="hidden" name="collection_editor" value="1">';
         echo '<div class="gsm-product-layout"><div class="gsm-product-content">';
         Admin::input('集合标题','name',$value['name'],'text','required');
+        $parents=[0=>'无父级（顶层集合）'];
+        foreach (Collections::tree(array_filter($all,static fn($rule)=>empty($rule['deleted_at']))) as $row) {
+            if ($row['id']===$id||($id&&term_is_ancestor_of($id,$row['id'],'product_cat'))) { continue; }
+            $parents[$row['id']]=str_repeat('— ',$row['depth']).$row['term']->name;
+        }
+        if ((int)$value['parent']&&!isset($parents[(int)$value['parent']])) { $parents[(int)$value['parent']]='原父级不可用，请重新选择'; }
+        self::select('父级集合','parent',$parents,$value['parent']);
+        echo '<p class="description">只可选择同店铺未删除的集合。层级用于组织集合，各集合仍按自己的选品规则展示商品。</p>';
         echo '<div class="gsm-field"><label for="gsm_collection_description"><strong>集合描述</strong></label>';
         wp_editor((string)$value['description'],'gsm_collection_description',['textarea_name'=>'description','editor_height'=>140,'media_buttons'=>false,'teeny'=>true,'tinymce'=>['wp_autoresize_on'=>false],'quicktags'=>true]); echo '</div>';
         self::select('选品方式','mode',['rule'=>'根据分类／标签筛选','manual'=>'直接选择商品'],$spec['mode']);

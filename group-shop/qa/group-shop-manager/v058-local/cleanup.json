@@ -1,0 +1,9 @@
+{
+  "version": "0.5.8",
+  "temporary_product_records_removed": 14,
+  "fixture_cart_sessions_removed": 1,
+  "original_posts_and_product_metadata_preserved": true,
+  "original_brand_business_settings_preserved": true,
+  "brands": 7,
+  "parent_products": 144
+}

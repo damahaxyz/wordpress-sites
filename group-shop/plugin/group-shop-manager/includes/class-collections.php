@@ -8,6 +8,7 @@ final class Collections {
     public const MAX_PRODUCTS = 2000;
     private static int $busy = 0;
     private static array $compiled = [];
+    private static bool $terms_all=false;
     private static array $deleting = [];
     private static array $deleting_terms = [];
 
@@ -41,13 +42,17 @@ final class Collections {
             if (self::$busy||self::$deleting_terms||isset(self::$deleting[(int)$id])||!in_array($taxonomy,['product_cat','product_tag'],true)||get_post_type($id)!=='product') { return; }
             clean_object_term_cache((int)$id,'product'); self::changed((int)$id);
         },100,3);
-        add_action('gsm_rebuild_collections', [self::class, 'rebuild_job']);
+        add_action('gsm_rebuild_collections',static function ($brand=1): void { Stores::within((int)$brand,static fn()=>self::rebuild_job()); });
+        add_action('delete_term',static function ($term,$tt,$tax): void {
+            if (!Brands::active()||!in_array($tax,['product_cat','product_tag'],true)) { return; }
+            foreach (Stores::all() as $brand=>$_) { Stores::within((int)$brand,static function () use ($term,$tax): void { $rules=self::collections(); $changed=false; foreach ($rules as &$rule) { if (in_array((int)$term,(array)($rule[$tax==='product_cat'?'categories':'tags']??[]),true)) { $rule['enabled']=false; $rule['needs_review']=true; $changed=true; } } unset($rule); if ($changed) { update_option('gsm_collections',$rules,false); } }); }
+        },5,3);
         add_action('pre_get_posts', [self::class, 'archive_order'], 40);
         add_shortcode('group_shop_collections', [self::class, 'navigation']);
     }
     private static function locked(callable $callback, int $timeout = 10): mixed {
         global $wpdb;
-        $key = 'gsm_collections_' . get_current_blog_id();
+        $key = 'gsm_collections_' . Brands::id();
         if ((int)$wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s,%d)', $key, $timeout)) !== 1) { throw new \RuntimeException('集合正在更新，请稍后重试。'); }
         self::$busy++;
         try { self::$compiled = []; return $callback(); }
@@ -80,7 +85,8 @@ final class Collections {
     private static function validate_values(array $value, int $id = 0): void {
         if ($value['name']==='') { throw new \RuntimeException('名称不能为空。'); }
         if ($value['parent']) {
-            if (!term_exists($value['parent'],'product_cat') || get_term_meta($value['parent'],'_gsm_collection',true) || $value['parent']===$id || ($id && term_is_ancestor_of($id,$value['parent'],'product_cat'))) { throw new \RuntimeException('父分类无效或会产生循环。'); }
+            $parent=$value['parent']; $rules=self::collections();
+            if (!term_exists($parent,'product_cat') || !get_term_meta($parent,'_gsm_collection',true) || (int)get_term_meta($parent,'_gsm_brand_id',true)!==Brands::id() || !isset($rules[$parent]) || !empty($rules[$parent]['deleted_at']) || $parent===$id || ($id && term_is_ancestor_of($id,$parent,'product_cat'))) { throw new \RuntimeException('父级必须是同店铺未删除的商品集合，不能选择自身或子级。'); }
         }
         if ($value['image'] && (!wp_attachment_is_image($value['image']) || get_post_field('post_status',$value['image'])!=='inherit')) { throw new \RuntimeException('集合图片必须来自当前店铺媒体库。'); }
     }
@@ -89,6 +95,23 @@ final class Collections {
         return array_values(array_unique(array_filter(array_map('absint',$values))));
     }
     public static function collections(): array { return (array)get_option('gsm_collections',[]); }
+    /** A filtered tree keeps children visible when their parent is hidden or in trash. */
+    public static function tree(?array $rules=null): array {
+        $terms=[]; $children=[];
+        foreach ($rules??self::collections() as $id=>$rule) {
+            $term=get_term((int)$id,'product_cat');
+            if ($term&&!is_wp_error($term)&&get_term_meta($id,'_gsm_collection',true)&&(int)get_term_meta($id,'_gsm_brand_id',true)===Brands::id()) { $terms[(int)$id]=$term; }
+        }
+        uasort($terms,static fn($a,$b)=>((int)get_term_meta($a->term_id,'order',true)<=>(int)get_term_meta($b->term_id,'order',true))?:strnatcasecmp($a->name,$b->name));
+        foreach ($terms as $id=>$term) { $children[isset($terms[$term->parent])?(int)$term->parent:0][]=$id; }
+        $rows=[]; $seen=[];
+        $walk=static function (int $parent,int $depth) use (&$walk,&$rows,&$seen,$children,$terms): void {
+            foreach ($children[$parent]??[] as $id) { if (isset($seen[$id])) { continue; } $seen[$id]=true; $rows[]=['id'=>$id,'term'=>$terms[$id],'depth'=>$depth]; $walk($id,$depth+1); }
+        };
+        $walk(0,0);
+        foreach ($terms as $id=>$term) { if (!isset($seen[$id])) { $rows[]=['id'=>$id,'term'=>$term,'depth'=>0]; } }
+        return $rows;
+    }
     /** A caller performing a taxonomy batch must rebuild once after this callback. */
     public static function defer(callable $callback): mixed {
         self::$busy++;
@@ -99,7 +122,7 @@ final class Collections {
         return SharedTaxonomies::local_collection(static fn()=>Stores::within($store,static function () use ($store,$id,$data): int {
             return self::locked(static function () use ($store,$id,$data): int {
                 $all=self::collections();
-                if ($id && (!isset($all[$id]) || !empty($all[$id]['deleted_at']))) { throw new \RuntimeException('集合不存在、已删除或不属于当前店铺。'); }
+                if ($id && (!isset($all[$id]) || !empty($all[$id]['deleted_at']) || !get_term_meta($id,'_gsm_collection',true) || (int)get_term_meta($id,'_gsm_brand_id',true)!==$store)) { throw new \RuntimeException('集合不存在、已删除或不属于当前店铺。'); }
                 if (!$id && count(array_filter($all,static fn($rule)=>empty($rule['deleted_at'])))>=50) { throw new \RuntimeException('本版每店最多 50 个集合。'); }
                 self::product_ids(); // Fail before changing a definition if the synchronous limit is exceeded.
                 $spec=['taxonomy_scope'=>'local','mode'=>sanitize_key($data['mode']??'rule'),'categories'=>self::ids($data['categories']??[]),'tags'=>self::ids($data['tags']??[]),'tag_match'=>($data['tag_match']??'any')==='all'?'all':'any','include'=>self::ids($data['include']??[]),'exclude'=>self::ids($data['exclude']??[]),'priority'=>self::ids($data['priority']??[]),'sort'=>sanitize_key($data['sort']??'menu_order'),'enabled'=>!empty($data['enabled']),'navigation'=>!empty($data['navigation']),'shop_filter'=>!empty($data['shop_filter'])];
@@ -112,15 +135,16 @@ final class Collections {
                 }
                 foreach (['include','exclude','priority'] as $field) {
                     if (count($spec[$field])>200) { throw new \RuntimeException('每个选品列表最多 200 件商品。'); }
-                    foreach ($spec[$field] as $product) { if (get_post_type($product)!=='product'||get_post_status($product)==='trash') { throw new \RuntimeException('选品必须属于当前店铺，不能使用变体或已删除商品。'); } }
+                    foreach ($spec[$field] as $product) { if (get_post_type($product)!=='product'||get_post_status($product)==='trash'||BrandScope::product_brand($product)!==$store||get_post_meta($product,'_gsm_kind',true)!=='edition') { throw new \RuntimeException('选品必须属于当前店铺，不能使用公共商品、其他店铺商品、变体或已删除商品。'); } }
                 }
                 $previous=$id?self::values($id):[];
-                $value=['name'=>sanitize_text_field($data['name']??''),'slug'=>$previous['slug']??('gsm-collection-'.wp_generate_uuid4()),'description'=>wp_kses_post($data['description']??''),'parent'=>$previous['parent']??0,'image'=>absint($data['image']??0),'order'=>(int)($data['order']??0)];
+                $value=['name'=>sanitize_text_field($data['name']??''),'slug'=>$previous['slug']??('gsm-collection-'.wp_generate_uuid4()),'description'=>wp_kses_post($data['description']??''),'parent'=>absint($data['parent']??$previous['parent']??0),'image'=>absint($data['image']??0),'order'=>(int)($data['order']??0)];
                 self::validate_values($value,$id);
                 $args=array_intersect_key($value,array_flip(['slug','description','parent']));
                 $result=$id?wp_update_term($id,'product_cat',array_merge($args,['name'=>$value['name']])):wp_insert_term($value['name'],'product_cat',$args);
                 if (is_wp_error($result)) { throw new \RuntimeException($result->get_error_message()); }
                 $id=(int)$result['term_id']; update_term_meta($id,'_gsm_collection',1);
+                update_term_meta($id,'_gsm_brand_id',$store);
                 update_term_meta($id,'thumbnail_id',$value['image']); update_term_meta($id,'order',$value['order']);
                 $all[$id]=$spec; update_option('gsm_collections',$all,false);
                 $review=count(array_filter($all,static fn($rule)=>!empty($rule['needs_review'])));
@@ -135,7 +159,7 @@ final class Collections {
         Stores::within($store,static function () use ($store,$id,$restore): void {
             self::locked(static function () use ($store,$id,$restore): void {
                 $all=self::collections();
-                if (!$id || !isset($all[$id]) || !get_term_meta($id,'_gsm_collection',true)) { throw new \RuntimeException('集合不存在或不属于当前店铺。'); }
+                if (!$id || !isset($all[$id]) || !get_term_meta($id,'_gsm_collection',true) || (int)get_term_meta($id,'_gsm_brand_id',true)!==$store) { throw new \RuntimeException('集合不存在或不属于当前店铺。'); }
                 self::product_ids(); // Validate the rebuild limit before changing trash/restore state.
                 $rule=&$all[$id];
                 if ($restore) {
@@ -161,7 +185,7 @@ final class Collections {
         return $ids;
     }
     private static function compiled(int $id, array $spec): array {
-        $key=get_current_blog_id().':'.$id;
+        $key=Brands::id().':'.$id;
         if (isset(self::$compiled[$key])) { return self::$compiled[$key]; }
         $categories=[];
         foreach ($spec['categories'] as $category) {
@@ -177,6 +201,7 @@ final class Collections {
     }
 
     private static function reconcile(int $product): bool {
+        if (get_post_meta($product,'_gsm_build_state',true)) { return false; }
         $all=self::collections(); if (!$all) { return false; }
         $categories=wp_get_object_terms($product,'product_cat',['fields'=>'ids']); $tags=wp_get_object_terms($product,'product_tag',['fields'=>'ids']);
         if (is_wp_error($categories)||is_wp_error($tags)) { throw new \RuntimeException('读取商品分类失败。'); }
@@ -205,61 +230,73 @@ final class Collections {
         if (self::collections()) { foreach (self::product_ids() as $id) { self::reconcile((int)$id); } }
         update_option('gsm_collections_built_at',time(),false); delete_option('gsm_collections_dirty');
     }
+    public static function refresh_brand(int $brand): void { Stores::within($brand,static fn()=>self::locked(static fn()=>self::rebuild_local())); }
     public static function rebuild(int $store): void {
         Stores::authorize(); Stores::within($store,static function () use ($store): void {
             self::locked(static function () use ($store): void { self::rebuild_local(); Stores::purge(); Schema::audit('collections_rebuilt',$store); });
         });
     }
     private static function changed(int $product): void {
+        if (get_post_meta($product,'_gsm_build_state',true)) { return; }
+        if (Brands::unrestricted()) { return; }
+        if (Brands::active()) { $brand=BrandScope::product_brand($product); if (!$brand) { return; } if ($brand!==Brands::id()) { Stores::within($brand,static fn()=>self::changed($product)); return; } }
         if (self::$busy||self::$deleting_terms||isset(self::$deleting[$product])||!in_array(get_post_status($product),['publish','draft','private','pending','future'],true)||!self::collections()) { return; }
         try { self::locked(static function () use ($product): void { if (self::reconcile($product)) { Stores::purge(); } },0); }
         catch (\Throwable $error) {
             update_option('gsm_collections_dirty',1,false);
-            if (!wp_next_scheduled('gsm_rebuild_collections')) { wp_schedule_single_event(time()+30,'gsm_rebuild_collections'); }
-            Schema::audit('collection_rebuild_deferred',get_current_blog_id(),$product,['reason'=>get_class($error)]);
+            if (!wp_next_scheduled('gsm_rebuild_collections',[Brands::id()])) { wp_schedule_single_event(time()+30,'gsm_rebuild_collections',[Brands::id()]); }
+            Schema::audit('collection_rebuild_deferred',Brands::id(),$product,['reason'=>get_class($error)]);
         }
     }
     private static function terms_changed(): void {
+        if (Brands::unrestricted()) { return; }
+        if (Brands::active()&&!self::$terms_all&&!self::$busy) { self::$terms_all=true; try { foreach (Stores::all() as $brand=>$_) { Stores::within((int)$brand,static fn()=>self::terms_changed()); } } finally { self::$terms_all=false; } return; }
         if (self::$busy||self::$deleting_terms||!self::collections()) { return; }
         try { self::locked(static function (): void { self::rebuild_local(); Stores::purge(); },0); }
         catch (\Throwable $error) {
             update_option('gsm_collections_dirty',1,false);
-            if (!wp_next_scheduled('gsm_rebuild_collections')) { wp_schedule_single_event(time()+30,'gsm_rebuild_collections'); }
-            Schema::audit('collection_rebuild_deferred',get_current_blog_id(),0,['reason'=>get_class($error)]);
+            if (!wp_next_scheduled('gsm_rebuild_collections',[Brands::id()])) { wp_schedule_single_event(time()+30,'gsm_rebuild_collections',[Brands::id()]); }
+            Schema::audit('collection_rebuild_deferred',Brands::id(),0,['reason'=>get_class($error)]);
         }
     }
     public static function rebuild_job(): void {
         try { self::locked(static function (): void { self::rebuild_local(); Stores::purge(); }); }
         catch (\Throwable $error) {
             $attempt=(int)get_option('gsm_collections_dirty',0)+1; update_option('gsm_collections_dirty',$attempt,false);
-            if ($attempt<3&&!wp_next_scheduled('gsm_rebuild_collections')) { wp_schedule_single_event(time()+60,'gsm_rebuild_collections'); }
-            Schema::audit('collection_rebuild_failed',get_current_blog_id(),0,['reason'=>get_class($error)]);
+            if ($attempt<3&&!wp_next_scheduled('gsm_rebuild_collections',[Brands::id()])) { wp_schedule_single_event(time()+60,'gsm_rebuild_collections',[Brands::id()]); }
+            Schema::audit('collection_rebuild_failed',Brands::id(),0,['reason'=>get_class($error)]);
         }
     }
     public static function archive_order(\WP_Query $query): void {
-        if (is_admin()||!$query->is_main_query()||!$query->is_tax('product_cat')||isset($_GET['orderby'])) { return; }
+        if (is_admin()||!$query->is_main_query()||!$query->is_tax('product_cat')) { return; }
         $term=$query->get_queried_object(); if (!$term instanceof \WP_Term) { return; }
         $spec=self::collections()[$term->term_id]??null; if (!$spec||($spec['taxonomy_scope']??'')!=='local'||!$spec['enabled']) { return; }
+        // Hierarchy organizes collections; each archive keeps its own rule membership.
+        $tax=(array)$query->get('tax_query');
+        $query->set('tax_query',['relation'=>'AND',$tax,['taxonomy'=>'product_cat','field'=>'term_id','terms'=>[$term->term_id],'include_children'=>false]]);
+        if (isset($_GET['orderby'])) { return; }
         if ($spec['sort']==='manual') {
-            $members=get_posts(['post_type'=>'product','post_status'=>'publish','posts_per_page'=>self::MAX_PRODUCTS,'fields'=>'ids','orderby'=>'menu_order title','order'=>'ASC','tax_query'=>[['taxonomy'=>'product_cat','terms'=>[$term->term_id]]]]);
+            $members=get_posts(['post_type'=>'product','post_status'=>'publish','posts_per_page'=>self::MAX_PRODUCTS,'fields'=>'ids','orderby'=>'menu_order title','order'=>'ASC','tax_query'=>[['taxonomy'=>'product_cat','terms'=>[$term->term_id],'include_children'=>false]]]);
             $ids=array_merge(array_values(array_intersect($spec['priority'],$members)),array_values(array_diff($members,$spec['priority'])));
             if ($query->get('post__in')) { $ids=array_values(array_intersect($ids,$query->get('post__in'))); }
             $query->set('post__in',$ids?:[0]); $query->set('orderby','post__in'); $query->set('order','ASC');
         } else { $query->set('orderby',match($spec['sort']) { 'date'=>'date','title'=>'title',default=>'menu_order title' }); $query->set('order',$spec['sort']==='date'?'DESC':'ASC'); }
     }
     public static function navigation(): string {
-        $all=self::collections();
-        $items=[];
-        foreach ($all as $id=>$spec) {
-            if (($spec['taxonomy_scope']??'')!=='local'||empty($spec['enabled'])||empty($spec['navigation'])) { continue; }
-            $term=get_term((int)$id,'product_cat'); $url=get_term_link((int)$id,'product_cat');
-            if (!$term||is_wp_error($term)||is_wp_error($url)) { continue; }
-            $items[]=['order'=>(int)get_term_meta((int)$id,'order',true),'name'=>$term->name,'url'=>$url];
-        }
-        usort($items,static fn($a,$b)=>($a['order']<=>$b['order'])?:strnatcasecmp($a['name'],$b['name']));
-        if (!$items) { return ''; }
-        $html='<nav class="gsm-collections" aria-label="'.esc_attr__('Product collections','group-shop-manager').'"><ul>';
-        foreach ($items as $item) { $html.='<li><a href="'.esc_url($item['url']).'">'.esc_html($item['name']).'</a></li>'; }
-        return $html.'</ul></nav>';
+        $rules=array_filter(self::collections(),static fn($spec)=>($spec['taxonomy_scope']??'')==='local'&&!empty($spec['enabled'])&&!empty($spec['navigation'])&&empty($spec['deleted_at']));
+        $rows=self::tree($rules);
+        if (!$rows) { return ''; }
+        $index=0;
+        $render=static function (int $depth) use (&$render,&$index,$rows): string {
+            $html='<ul>';
+            while (isset($rows[$index])&&$rows[$index]['depth']===$depth) {
+                $row=$rows[$index++]; $url=get_term_link($row['term']);
+                $html.='<li>'.(!is_wp_error($url)?'<a href="'.esc_url($url).'">'.esc_html($row['term']->name).'</a>':esc_html($row['term']->name));
+                if (isset($rows[$index])&&$rows[$index]['depth']>$depth) { $html.=$render($depth+1); }
+                $html.='</li>';
+            }
+            return $html.'</ul>';
+        };
+        return '<nav class="gsm-collections" aria-label="'.esc_attr__('Product collections','group-shop-manager').'">'.$render(0).'</nav>';
     }
 }

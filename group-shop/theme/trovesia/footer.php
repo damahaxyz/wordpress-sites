@@ -27,6 +27,9 @@
         </div>
         <div>
             <h2><?php esc_html_e('Customer care', 'trovesia'); ?></h2>
+            <?php if (has_nav_menu('footer')) : ?>
+                <?php wp_nav_menu(['theme_location'=>'footer','container'=>false,'fallback_cb'=>false,'depth'=>0]); ?>
+            <?php else : ?>
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/track-order/')); ?>"><?php esc_html_e('Track order', 'trovesia'); ?></a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Contact us', 'trovesia'); ?></a></li>
@@ -44,6 +47,7 @@
                     </a>
                 </li>
             </ul>
+            <?php endif; ?>
         </div>
         <div class="site-footer__promise">
             <h2><?php esc_html_e('Need a hand?', 'trovesia'); ?></h2>

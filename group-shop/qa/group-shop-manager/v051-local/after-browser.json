@@ -1,0 +1,13 @@
+{
+    "version": "0.5.1",
+    "passed": 7,
+    "checks": [
+        "Real native parent POST finishes with correct restored inheritance",
+        "Real browser native AJAX persists B Large variation price 131 and explicit override",
+        "Brand variation edit preserves public maximum price",
+        "Native public-product creation writes exactly one correct brand marker",
+        "Employee cannot forge a replacement public-product association",
+        "Native automatic draft has one brand and no premature public slug",
+        "First real native save derives usable public slug from product title"
+    ]
+}

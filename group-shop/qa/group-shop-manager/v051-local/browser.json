@@ -1,0 +1,25 @@
+{
+  "version": "0.5.1",
+  "passed": 19,
+  "checks": [
+    "Inherited title editor hidden",
+    "Inherited full description editor hidden",
+    "Inherited image editor hidden",
+    "Shared category editor hidden",
+    "Price override choice remains visible",
+    "Enabling override reveals editable native price",
+    "Inherited variation Add manually hidden",
+    "Shared variation defaults hidden",
+    "Variation price override reveals native price input",
+    "Saved variation price override survives reload",
+    "Public product title remains editable",
+    "Public classification remains editable",
+    "Public product hides irrelevant inheritance choices",
+    "Public product keeps brand-version assignment controls",
+    "Final inherited editor hides ineffective title control",
+    "Empty General tab hidden while price inherits",
+    "General tab returns when price becomes independently editable",
+    "Final price field is available after enabling override",
+    "Family filter can be cleared directly from visible list controls"
+  ]
+}

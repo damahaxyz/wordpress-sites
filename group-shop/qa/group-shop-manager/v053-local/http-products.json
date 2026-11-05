@@ -1,0 +1,23 @@
+{
+  "version": "0.5.3",
+  "passed": 17,
+  "checks": [
+    "Bare Products defaults to public despite a previously selected brand cookie",
+    "Retired type selector and independent-product mode are absent",
+    "The single combined selector defaults to public and retains source/version columns",
+    "Selecting Brand A returns only inherited A products",
+    "Selecting Brand B excludes public and other brand editions",
+    "Native status counts follow the combined brand and optional public-source scope",
+    "Status navigation retains the chosen brand",
+    "Root brand editor shows fixed ownership and public source instead of reassignment dropdowns",
+    "Tampered real native POST cannot detach the source or partly save title",
+    "Actual native POST still saves enabled brand title and price differences",
+    "Add new while viewing a brand opens a public product without independent ownership controls",
+    "Real native creation persists a public draft even in a brand context",
+    "Employee selector excludes public maintenance and native Add new is hidden",
+    "Employee cannot bypass the public-first workflow with direct Add new URL",
+    "Combined selection cannot grant access to an unauthorized brand",
+    "Staff selector can switch to its separately authorized Brand B",
+    "Central product tab no longer exposes a standalone editor"
+  ]
+}

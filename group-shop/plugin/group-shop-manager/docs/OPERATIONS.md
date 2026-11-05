@@ -1,279 +1,172 @@
-# 部署、验证与回滚
+# 本地运行、迁移与回滚（0.5.9）
 
-**0.4.0 当前仅本地开发。用户已撤销后续自动上线授权，等全部改完明确通知后才允许发布。下文历史生产步骤不得在当前任务执行。**
+用户要求后续改动只在本地验证，收到新的明确发布通知前不得部署、连接生产执行转换或清理旧站点表。线上版本仅沿用此前记录 0.2.2，本次未连接核实或变更；根目录 DEPLOYMENT.md 为历史生产记录，不能当作本次执行授权。
 
-## 0.4.0 账户拆分迁移与回滚（仅本地授权）
+## 当前实际环境
 
-这是数据结构及身份语义升级，不能按旧版本“替换代码无用户迁移”的说明操作。当前本地已经显式完成初次迁移；**没有生产授权，也未接触生产。** 旧用户相关验收脚本默认共享密码／自动加店，已不代表当前行为，不能重跑后据其断言恢复旧策略。
+项目 `/Users/dodo/Documents/wordpress-sites/group-shop`；独立私有 QA `/private/tmp/group-shop-manager-qa`，Docker context desktop-linux，项目 group-shop-manager-qa。当前 `GSM_QA_MULTISITE=0`，WordPress 原生站点编号始终 1。测试环境 WordPress 7.0.4、PHP 8.3、WooCommerce 11.1.2、FluentSMTP 2.4.1。
 
-迁移前私有匹配备份位于 `/private/tmp/group-shop-manager-qa/backups/identity-v040-before/`，包括 database.sql 与 plugin.tgz。未导出生产数据；测试密码、重置令牌在 `.identity-private/`，不得提交或展示。代码新版本建身份索引，但 ready 未开启时顾客注册／登录关闭，网络超级管理员保留救援登录；后台访问和激活不会自行拆分用户。
+| 品牌 ID | HTTP 本地域名 |
+|---|---|
+| 1 | www.main.local |
+| 6 | www.branda.local |
+| 7 | www.brandb.local |
+| 9 | www.brandc.local |
+| 11 | www.brande.local |
+| 12 | www.brandf.local |
+| 13 | www.brandg.local |
 
-流程：维护期间先备份并暂停用户／订单写入；读取 `UserMigration::plan()`，未知角色、停用归属、多网络成员或无所属店顾客会阻止，需明确身份后再迁移，不能跳过错误或猜归主店。显式 `run()` 持迁移锁、禁用邮件、按源保存完成检查点，全部成功才开启 ready；部分失败可按检查点续跑，但不能宣称多表／多店全事务。原管理员／Shop Manager 保留员工管理 ID 与授权，customer-only 店拆分独立顾客；超级管理员身份保持。
+宿主 hosts 精确指向 127.0.0.1；Apache 80 端口只将这些主机代理到 127.0.0.1:18087。七个 Docker DNS 别名指向 QA Nginx，不访问公网同名主机。没有改系统代理、其他站点、生产、独立 trovesia-shop。主入口 http://www.main.local/wp-admin/admin.php?page=group-shop-manager&gsm_brand=0 。旧 `/wp-admin/network/` 书签在 Nginx 跳到单站后台。
 
-仅供当前本地复验的安全入口（脚本严格限制 local＋主店 .local，不能拿去生产或删除限制）：
+启动现有卷：
 
 ```bash
 cd /Users/dodo/Documents/wordpress-sites/group-shop
 DOCKER_CONTEXT=desktop-linux docker compose \
   --project-directory /private/tmp/group-shop-manager-qa \
   --env-file /private/tmp/group-shop-manager-qa/.qa.env \
-  -f scripts/group-shop-manager/compose.qa.yaml --profile tools run --rm -T wpcli \
-  --allow-root --url=http://www.main.local --user=gsm-admin \
-  eval-file /gsm-tests/migrate-identities-local.php
-```
-
-已完成的账户重跑不再拆分。新 ID 一次复制密码哈希和默认地址起点，不能读取明文密码，之后不再同步；旧共享顾客会话撤销。订单以 Woo CRUD 修改顾客 ID，保留状态、金额及地址快照；产品评论作者、所属店持久购物车、下载权限、既有付款令牌随身份迁移，令牌写入仍用 CRUD，不发生支付。自定义会员积分／订阅／第三方元数据不自动猜测搬迁。
-
-回滚时保持维护窗口，先另备份当前状态，再恢复该迁移前完整数据库与匹配 plugin.tgz 源码并清理缓存，验证旧用户／订单归属；只回退 PHP 会让同邮箱解析和已拆分 ID 失配。恢复前备份会丢弃备份后的新变更，应先评估并保留；不得在线随意降级。停用／卸载仍默认保留业务数据，不能当成迁移回滚。
-
-当前测试入口：`isolated-users.php`（需私有 `/gsm-private` 挂载）→ `prepare-identity-http.php` → `check-isolated-users-local.py`；后者从 `/private/tmp/group-shop-manager-qa` 执行。原生员工＋并发验收 `check-native-identity-admin-local.py` 后运行 `native-identity-admin.php` 核对并清理临时用户；迁移完整性 `identity-integrity.php` 用临时合成资料、经典与 HPOS 订单及明确假令牌，finally 清除。完整证据见 `qa/group-shop-manager/v040-local/LOCAL-v040.md`。旧 v036 共享身份测试及旧发布器 fixture 仅为历史记录，不适用于当前模式。
-
-原生姓名／邮箱编辑仍使用当前店解析；网络用户编辑其他店顾客时不要从当前店执行 Woo 邮箱确认／游客订单关联，界面与服务器已限制。所有新第三方按邮箱查询（含资料导出／会员／SSO）必须接入本店索引；原生 get_user_by('email') 在同邮箱多行时无店铺含义。线上以后另获授权时应先核对实际 WordPress／Woo 版本和插件组合，再制定生产迁移，不直接沿用本地脚本。
-
-## 当前本地域名（2026-11-04）
-
-用户最终确认改用 `.local`，现有代理包含 `*.local` 例外，不需要改代理。当前使用 **HTTP、80 端口**，没有安装 HTTPS 证书。浏览器打开 http://www.main.local/wp-admin/admin.php?page=group-shop-manager 。同一 gsm-admin 账户／原密码可以登录各店，域名间分别登录。
-
-| blog_id | 本地域名 | 原店铺／数据 |
-|---|---|---|
-| 1 | www.main.local | 原 Group Shop QA 主店 |
-| 6 | www.branda.local | 原 Brand A renamed |
-| 7 | www.brandb.local | 原 Brand B |
-| 9 | www.brandc.local | 原 QA Shared Store，保留店名 |
-| 11 | www.brande.local | 新建 Brand E 空白测试店 |
-| 12 | www.brandf.local | 新建 Brand F 空白测试店 |
-| 13 | www.brandg.local | 新建 Brand G 空白测试店 |
-
-用户已把这七个主机名写入本机 hosts 的 127.0.0.1 行。Apache 原先占用 80；在 /opt/homebrew/etc/httpd/httpd.conf 末尾 Include 本项目 scripts/group-shop-manager/apache.qa-domains.conf，先保留原默认站，再对七个精确 ServerName／Alias 代理至 127.0.0.1:18087，并 Require local。其他 Host 保持原站点，本轮实测 127.0.0.1 仍跳转原 www.tikool.com。没有改独立 trovesia-shop 或生产。
-
-QA Compose 的 GSM_QA_DOMAIN 可配置主网络域名；私有 .qa.env 当前为 www.main.local。未配置时仍保留 localhost:${GSM_QA_PORT} 的历史安装默认。不能全局定义 WP_HOME／WP_SITEURL。七店原生 domain/path、home/siteurl 与网络 wp_site／siteurl 已一致，均根路径。容器 Nginx 的七个网络别名使 PHP／WP-CLI 内部请求直接到 QA 容器，避免公网解析。
-
-**启动现有环境**（Docker Desktop 已运行）：
-
-```bash
-cd /private/tmp/group-shop-manager-qa
-DOCKER_CONTEXT=desktop-linux docker compose --project-directory "$PWD" --env-file .qa.env \
   -f scripts/group-shop-manager/compose.qa.yaml up -d db wordpress nginx
 ```
 
-本机 Homebrew Apache 也需要运行；若暂停，使用 `brew services start httpd` 启动原有服务。这里只启动现有环境，**不要重跑旧 fixture 安装器**。暂停测试容器时对同一 compose 使用 stop，不执行 down -v。bootstrap 已支持读取最终 QA 主域名，但不会自动重建这份七店映射／数据或安装宿主 Apache Include。临时 QA 目录／卷被清理后的全新重建需按实际需要重新映射，不能把下方旧 localhost fixture 命令直接用于当前网络。
+宿主既有 Homebrew Apache 也须运行。暂停用同套 compose stop，不能 down -v。不要重跑历史 bootstrap／prepare-local 安装器。源码只读挂载，环境和密码文件私有。Compose 仅在 GSM_QA_MULTISITE=1 定义网络常量，现在不开启 WP_ALLOW_MULTISITE／MULTISITE。
 
-迁移已进行序列化安全 URL 替换，范围为各店选项、非历史订单的文章／商品正文与元数据、term 描述／元数据；保留 GUID、订单快照、用户和网络审计表。每店 upload_url_path 显式设为本店 `http://域名/wp-content/uploads`，不包含 sites/{id}，由原生 Multisite 追加目录。这可避免 switch_to_blog 的跨店媒体继承主站 WP_CONTENT_URL；图片文件、附件编号和实际上传目录不搬动。
+本地为真实前台验收已设置 woocommerce_coming_soon=no；各品牌 blog_public 保持既有状态，邮件和支付 MU 拦截保留。Coming Soon 关闭不等于生产开放，也不等于允许收录。所有验收只用合成资料、example.invalid 邮箱和 loopback 域名。
 
-原 localhost 根地址跳转新主站；原 /brand-a/、/brand-b/、/qa-shared-store/ 路径不再作为店铺入口。生产店铺编辑 UI 仍按既有规则绑定 HTTPS，本次本地 HTTP 映射经受限 QA CLI 完成，没有放宽插件的生产校验。
+## 已执行的迁移
 
-当前只读验收：
+迁移前匹配备份：`/private/tmp/group-shop-manager-qa/backups/single-brand-20261104-e59hs1sh/`。
 
-```bash
-python3 /Users/dodo/Documents/wordpress-sites/group-shop/scripts/group-shop-manager/check-local-domains.py
-```
+- database.sql：完整迁移前数据库，含旧网络表；权限 600。
+- source.tgz：匹配的迁移前插件、脚本、测试和根 AGENTS；含旧 Multisite 运行代码。
+- qa.env：迁移前私有环境配置，Multisite 开启。
+- multisite-export.bin：通过原生 API 读取的私有序列化快照，包含敏感测试字段，不提交或展示。
 
-脚本要求私有 QA 环境标记和七域名均解析 127.0.0.1；无代理 HTTP、限制跳转目标、私下读原测试密码，只注销自己的会话。41 项通过，报告与浏览器截图在 qa/group-shop-manager/local-domains-20261104/；另核对七店原生 URL／数据不变量、Apache／Nginx 语法和容器内 DNS／HTTP。历史集成／HTTP 脚本大多严格限定 localhost，当前会拒绝执行；保持保护，后续需显式适配固定本地域名和店铺定位，不能简单去掉保护或伪装主站地址。
+先暂停写入、完成备份和原生导出／预检，准备平台管理员与品牌注册表；再关闭本地网络常量、使用原生单站上下文显式导入。`SingleMigration` 持独占锁、事务与禁发信保护，全部成功才置 gsm_single_brand_ready；出错回滚并清缓存。WordPress 配置切换到导入完成之间是维护窗口，不是无停机操作。
 
-**私有备份与回退**：/private/tmp/group-shop-manager-qa/backups/domains-20261104T040254Z/。database.sql 为改域名前四店 localhost 网络，database-before-local.sql 为已补三店但仍用 .com 的中间状态；原 .qa.env、compose.qa.yaml、nginx.qa.conf、httpd.conf 及迁移／核对报告同存，目录 700、数据库及私有文件 600。凭据和 SQL 不复制到源码或公开报告。
+导入 7 品牌、67 个商品、89 个变体、5 笔订单、17 条评论（含 10 产品评论）、36 附件、90 页面、24 集合；生成 41 个原生公共父商品及相应公共变体。重新映射非主站原生 ID，订单／商品引用、页面选项、隐私页和菜单跟随精确映射。保留原域名、UUID、价格／状态／描述／图片及订单金额／地址快照；本地顾客独立用户 ID 和密码不变，员工授权转为品牌角色映射。迁移撤销原会话，后台需重新登录。
 
-若明确需要回到原 localhost：先备份回退前新增数据，在 QA 维护窗口同时恢复原数据库、.qa.env 和 QA compose／Nginx 配置，重建仅此项目的 wordpress／nginx；恢复原 httpd.conf 并语法检查、平滑加载。完整数据库回退会撤回 E／F／G 新站和回退点之后的数据，不能仅修改网络常量或只退源码。此次未变更上传文件，原文件卷保留；用户 hosts 修改独立管理。当前不执行回退。
+原 uploads 文件不搬动，附件继续引用已有 uploads/sites/N；旧子站表、历史 catalog 和 audit 不删除，作为迁移档案。不能把档案表误当运行数据或再启动旧同步器。
 
-## 环境与安装模式
+当前源下载权限、付款令牌、税率和退款为零；不据此承诺生产特殊商品／订阅／积分／会员插件的通用迁移。原先临时购物车／会话不是业务历史快照，切换后需重新建立会话；不承诺将任意第三方持久购物车结构自动合并。
 
-主店：`root@contabo2:/root/wordpress-sites/group-shop`，域名 `www.animecats.online`。WordPress 7.0.4 / PHP 8.3 / WooCommerce 11.1.2 为本次验收基准，实际以后更新要记录到 HANDOFF。
+本地迁移入口 scripts／tests 均有 local、.local、WP_CLI 或当前私有路径限制，不能删除保护后用于生产。已完成 run() 返回既有报告，不重复导入。旧 CategoryMigration、UserMigration、SharedTaxonomies 写入入口在 0.5.0 退休；旧测试只代表历史版本，不能再直接执行。0.5.0 在 Multisite 网页下返回迁移维护保护；未 ready 的单站不会自动转换。任意全新安装初始化不在本次迁移验收范围。
 
-历史 0.1.x 验收曾在本地 Docker 未启动时使用 contabo2 上的独立 QA 项目 `group-shop-manager-qa`，独立数据库/卷和 127.0.0.1:18086，不允许暴露到公网。QA 只复制可信 WooCommerce 程序，不复制生产客户或订单。
+## 当前验收入口
 
-## 0.3.7 主商品发布退休验收
+证据总览：`qa/group-shop-manager/v050-local/LOCAL-v050.md`。
 
-仅在现有 .local 隔离 QA，未发布生产。用现有 tools WP-CLI（--allow-root --url=http://www.main.local --user=gsm-admin）运行 /gsm-tests/catalog-state.php 记录只读摘要、/gsm-tests/retired-publisher.php 验证退休 API 与本店 CRUD；从私有 QA 目录执行 python3 scripts/group-shop-manager/check-retired-publisher-local.py，再次运行只读摘要。25 集成＋17 HTTP＋15 数据保留核对通过，三份商品／变体、附件、映射摘要一致。报告与浏览器截图在 v037-local。临时商品 finally 清除，HTTP 临时会话注销。
-
-旧发布处理器和 API 均删除，现有商品、变体、媒体及历史映射保留，无新清理迁移。旧映射仍用于分类／标签归属同步，禁止把退休发布功能误解为授权清空 gsm_catalog 或解除既有分类规则。未来整体上线仍遵循前序共享分类迁移的备份要求，回退本次代码会恢复旧发布功能，不需要反向迁移本轮业务数据。
-
-**历史套件限制更新：** product-editor.php、shared-taxonomies.php、collections-v032.php 等用 Catalog::publish 生成 fixtures，该 API 已删除；加上现有 localhost 前提，它们不再是当前可直接运行的重建／验收步骤。不可放宽保护后执行或为测试恢复发布器。下文原命令保留作历史记录；当前这轮入口为 retired-publisher.php、catalog-state.php、check-retired-publisher-local.py。新验收必须使用明确隔离环境与原生 CRUD fixture。
-
-## 0.3.6 原生网络用户验收
-
-仍在现有 .local 隔离 QA，保留域名、路由、数据库和容器配置。三个生产源码 PHP 文件语法通过；26 集成＋22 HTTP 检查，报告 qa/group-shop-manager/v036-local/。用既有 tools WP-CLI（--allow-root --url=http://www.main.local --user=gsm-admin）运行 /gsm-tests/native-users.php，保存成功 JSON 为 native-users.json，再从私有 QA 目录运行 python3 scripts/group-shop-manager/check-native-users-local.py。前者仅允许 local 和准确主店 home，后者验证 QA 目录、GSM_QA_DOMAIN、loopback DNS 及跳转白名单，不能改成生产目标运行。
-
-PHP 套件只对临时合成用户测试注册／跨店角色／默认地址／密码失效，并 finally 删除该用户；不改真实或已有测试用户密码。HTTP 为只读页面检查，逐域注销自己的临时会话。网络用户原 Sites、编辑、搜索和权限保持，来源不可编辑，不执行回填。新增列依赖 WP 6.8 的 network-specific hook，符合插件原 Requires at least 6.8。
-
-无业务数据迁移。回退本轮代码只恢复客户标签／列表，不需要恢复用户表或清理新增元数据；未来整体发布回滚仍遵循此前共享分类等改动的匹配备份要求。仍无发布授权，不运行 deploy-* 或任何线上用户操作。
-
-## 0.3.5 原生 Reviews 验收
-
-本轮在当前 .local 隔离 QA（主店 www.main.local，Brand A/B 为 www.branda.local／www.brandb.local，宿主解析 127.0.0.1）进行；保留既有映射与 Docker 环境。新验证不再使用旧 localhost 路径，无生产连接或部署。
-
-在私有 QA 根目录，用既有 compose／.qa.env／desktop-linux 的 WP-CLI tools 服务执行 `--allow-root --url=http://www.main.local --user=gsm-admin eval-file /gsm-tests/native-reviews.php`，将成功 JSON 保存到项目 qa/group-shop-manager/v035-local/native-reviews.json；再执行 `python3 scripts/group-shop-manager/check-native-reviews-local.py`。前者要求 local 环境和准确主店 home，后者核对显式本机目录、GSM_QA_DOMAIN、loopback DNS 和跳转白名单，不能改成生产域名运行。
-
-18 集成＋32 HTTP 通过；浏览器另外核对主站与 Brand A 店铺列、原生审核／回复控件。合成评论审核后恢复原始通过状态；会话单独注销，未清除用户其他会话。数据不迁移；回退本次代码仅恢复旧 UI／审核处理器，无新评论字段需清理，已有评论、评分、回复与历史审计保持。整体待发布版本回滚仍遵循此前共享分类等迁移的完整备份要求。
-
-## 0.3.4 原生订单验收
-
-无订单业务数据迁移，不删除历史订单、备注或审计。旧订单标签回到概览，旧写处理器拒绝；原生权限与通知接管状态和备注，不再使用中央有限状态白名单。回退本次代码会恢复旧 UI／处理器，不需要反向迁移订单；未来整体发布仍须满足此前共享分类等版本的完整备份要求。
-
-在原 localhost:18087 合成网络执行 qawp eval-file /gsm-tests/native-orders.php，将 JSON 存到 qa/group-shop-manager/v034-local/native-orders.json，再从私有 QA 目录运行 python3 scripts/group-shop-manager/check-native-orders-local.py。报告 31 集成＋29 HTTP，检查目标店 HPOS／传统 URL、原生订单／备注、旧处理器拒绝和来源权限。脚本只允许原隔离地址，不可改成生产域名执行。
-
-检查后发现 QA 站点已被外部操作改为 www.main.com／www.branda.com 等独立域名；未回改。后续原地址 HTTP 重跑被登录／版本断言终止，分店浏览器验证未完成。当前环境不再满足这些脚本的 localhost 前提，重跑前需先确认本地域名映射与隔离路由，不能直接访问公网同名域名。详见 HANDOFF 与 v034-local/LOCAL-v034.md。仍无上线授权。
-
-## 0.3.3 原生归属提示验收
-
-只有只读界面和样式变化，无业务数据迁移；仍仅本地。真实 HTTP 核对原生分类／标签列表、集合及普通词条标记、原生编辑页、集合管理链接和既有分店重定向；临时验收会话独立注销。10 项核对及浏览器排版／链接验证通过，报告见 qa/group-shop-manager/v033-local/LOCAL-v033.md。
-
-不需要重跑合成数据安装器或执行共享分类清理，更不能据此发布线上。未来获明确发布通知后仍按既有备份与部署流程处理。原生页面只列当前站点，跨店汇总仍通过中央集合列表，不是新增跨店原生查询。
-
-## 0.3.2 集合本地验收与兼容
-
-只在私有 /private/tmp/group-shop-manager-qa、desktop-linux、loopback 18087 运行，不连接生产。集合没有新业务表；新字段是每店 gsm_collections 的 shop_filter、deleted_at、trash_state，旧集合缺省不进入新增 Shop 筛选。已有归档 slug／parent 保持，新集合自动生成内部地址。上线／回滚约束与 0.3.1 的共享词表备份要求保持，当前仍无发布授权。
-
-在 bootstrap 和 prepare-local.php 后运行 collections-v032.php、product-editor.php、shared-taxonomies.php；将 JSON 报告存到项目 qa/group-shop-manager/v032-local/ 对应 collections.json、product-editor.json、shared-taxonomies.json。HTTP 脚本从该目录读取 fixtures，必须在私有 QA 目录运行：
+PHP 测试使用同套 compose 的工具容器，按需要只读／私有读写挂载：
 
 ```bash
-cd /private/tmp/group-shop-manager-qa
-python3 scripts/group-shop-manager/check-collections-local.py
-python3 scripts/group-shop-manager/check-product-editor-local.py
+DOCKER_CONTEXT=desktop-linux docker compose \
+  --project-directory /private/tmp/group-shop-manager-qa \
+  --env-file /private/tmp/group-shop-manager-qa/.qa.env \
+  -f scripts/group-shop-manager/compose.qa.yaml --profile tools run --rm -T \
+  -v /private/tmp/group-shop-manager-qa/.identity-private:/gsm-private:rw \
+  wpcli --allow-root --url=http://www.main.local --user=gsm-admin \
+  eval-file /gsm-tests/single-brand-data.php
 ```
 
-两脚本严格限定 localhost:18087、私下读测试密码、finally 注销自己的 HTTP 会话，不输出 Cookie／凭据。PHP 套件调用方式沿用下节 qawp。报告 36 集合／动态区块、30 集合 HTTP、34 商品、29 共享分类、25 商品 HTTP，共 154 项。浏览器另外真实创建、媒体选封面、手选、删除恢复；Chrome 实测原生区块选择／预览／保存草稿。
+single-brand-data 为现有迁移资料只读完整性；runtime 会创建公共／品牌商品及临时优惠券，不能随意重跑遗留 fixture。真实 HTTP 脚本必须从 `/private/tmp/group-shop-manager-qa` 执行，且校验全部目标 loopback，不能拿生产域名替换保护：check-single-brand-local.py、check-single-brand-admin-local.py、check-single-brand-reset-local.py。后两者有原生新增员工／注册／改密副作用；必须遵循报告中的 fixture 准备和清理流程，重置密钥只存私有文件。
 
-匿名 Shop 验收需要合成 Brand A 关闭 Woo 的 Coming soon（woocommerce_coming_soon=no），否则只会看到准备上线页面。collections-v032.php 只对本地合成该店设置此项；blog_public 禁止收录、邮件／支付 MU 拦截不变。生产站点可见性不在本次改动范围，不复制 QA 设置。
+当前测试临时员工、并发／注册顾客、零支付订单和 100% 优惠券已在验收后清理；保留一组公共档案和 A／B 商品版本供人工验收。不要将这些临时测试优惠券带到生产。根管理员浏览器会话不作清理目标；仅撤销测试顾客／员工会话。
 
-本次内置浏览器没有加载 WordPress 原生 blob 编辑画布；普通集合后台及媒体控件可正常使用。Chrome 验证画布、区块和预览正常；未降低浏览器或服务器安全策略。原生区块测试草稿与合成前台专题页保留在本地供检查，未修改现有首页模板。
+## 成套回滚
 
-将来收到新发布通知后，仍先备份数据库／代码／uploads，核对既有集合规则、slug、成员、原生共享分类投影，再发布并做真实 HTTP。回退 0.3.1 不理解回收站标记和新增入口，需恢复匹配备份或明确处理删除状态，不能认为只退源码即可完整回滚。
+回滚会丢失迁移后写入，应先停止写入并另备份当前数据库／源码／配置，保留之后需要合并的数据。**不能仅改 GSM_QA_MULTISITE=1，不能只降级 PHP。**
 
-下文 0.3.1／0.3.0 操作记录属于历史基准；当前测试报告和 fixtures 以 v032-local 为准。
+1. 在本地维护窗口停止 Web 访问，保留数据库服务及卷；确认上述备份属于本项目、本时间点。
+2. 先移开当前新增 0.5.0 插件文件，再从 source.tgz 在仓库根恢复匹配插件、脚本、测试和 AGENTS。只覆盖会遗留新类文件，不能视为完全恢复。勿触及其他项目。
+3. 通过匹配的本地 WP-CLI／数据库工具导入 database.sql；凭据从私有 env 读取，不把密码写进 shell 命令或日志。
+4. 恢复 qa.env、旧 compose 与 Nginx（source.tgz 内）；重建 wordpress／nginx 容器以恢复网络常量，清理对象／页面／重写缓存。
+5. 核对 Multisite、原网络管理员、七店域名、原数据数量和订单快照，重新登录。原上传文件未删除，无需伪造重建。
 
-## 0.3.1 本地验收与未来升级注意
+identity-v040-before 是更早用户拆分前备份，不是本次关闭 Multisite 的回滚基线。停用／卸载默认保留业务资料，也不能替代成套回滚。
 
-当前本机 QA 继续使用 loopback 18087、desktop-linux、私有 /private/tmp/group-shop-manager-qa；邮件／支付拦截保持。旧 integration.php 和 v030 分类验收仅适用历史独立词表方案，不可用于 0.3.1。新网络先用下文 bootstrap 建立，再运行本地限定、不会删除既有站点的 prepare-local.php。以下 qawp 仅用于该私有合成 QA，绝不用于生产：
+## 将来生产迁移前
 
-```bash
-cd /private/tmp/group-shop-manager-qa
-qawp() {
-  DOCKER_CONTEXT=desktop-linux docker compose --project-directory "$PWD" --env-file .qa.env \
-    -f scripts/group-shop-manager/compose.qa.yaml --profile tools run --rm -T wpcli \
-    --allow-root --user=gsm-admin "$@"
-}
-qawp eval-file /gsm-tests/prepare-local.php
-qawp eval-file /gsm-tests/product-editor.php > qa-product-editor-v031.json
-qawp eval-file /gsm-tests/shared-taxonomies.php > qa-shared-taxonomies-v031.json
-qawp eval-file /gsm-tests/store-settings.php > qa-store-settings-v031.json
-qawp eval-file /gsm-tests/store-list.php > qa-store-list-v031.json
-```
+须先收到用户明确发布通知，再核对实际版本、插件、数据规模、支付／税务／物流／订阅组合和域名路由，另建维护、备份、迁移、验收与回滚方案。本次专用 .local 快照不是通用生产迁移器；不得把删除 Multisite 常量当成完整迁移。
 
-HTTP 脚本 check-product-editor-local.py 从项目 qa/group-shop-manager/v031-local/{product-editor,shared-taxonomies}.json 读 fixtures，所以重建时先将上述前两份报告放入对应项目路径，再在私有 QA 目录执行该脚本。它只接受 localhost:18087，私下读取测试密码并在 finally 注销自己的会话，不输出 Cookie／凭据。包含公共 API 上下架隔离、无效表单／权限／图片归属、原生分类 AJAX／表单同步。浏览器还须验证本店媒体上传／选择与富文本插图实际 URL、变体批量填价保存、Visual／Code、Code 工具栏、图片排序及响应布局。当前报告见 v031-local/LOCAL-v031.md。
+## 0.5.1 本地原生 Products 验收（2026-11-05）
 
-未来若收到新的明确线上发布通知：先备份匹配数据库、代码和 uploads；维护窗口内先 CategoryMigration::run() 处理旧集合映射与退休元数据，再 SharedTaxonomies::reconcile(true) 汇集并投影唯一主站词表，核对集合、默认分类、映射商品归属和本地图片。普通网络管理员 admin_init 也会执行迁移，不能把上传代码与数据迁移当成无关步骤。当前不要执行这些线上流程。
+该版本补列表和有效编辑控件，不需要重跑单站迁移或拆分身份；生产未发布。报告／截图见 qa/group-shop-manager/v051-local/。PHP native-products-v051.php 创建本地临时公共、品牌及可变商品，再运行 check-native-products-v051-local.py；真实浏览器验证价格显隐和原生变体 AJAX 保存，native-products-v051-after.php 核对持久化。cleanup-native-products-v051.php 按私有 fixture 的明确编号、保留失败 fixture 编号和 QA051 标题前缀清理，先检查订单引用。需要重跑时读各脚本断言和私有准备流程，不直接使用当前已清理的 fixture。
 
-汇集会把分店独有普通词条纳入主站；同 slug 以主站内容为准，原默认分类映射主站默认，既有分店内容差异及映射商品归属会统一。保留原生 term ID、集合定义与其他元数据；集合不共享。若普通共享词条与集合 slug 冲突则显示同步错误，处理命名后重试，禁止静默覆盖或直删核心表。用户新决定已经授权本地合成数据转换，未授权线上执行。
+本轮清理16条临时商品／变体，原父商品数恢复114，七品牌和原始资料核对保留。上述步骤只在本地；不产生真实邮件、付款、新员工或生产操作。界面版本回退使用匹配单站源码，不能拿迁移前0.4 Multisite源码替代；关闭Multisite的完整回滚仍遵守前文成套恢复。
 
-修订号仅在该批次投影与商品归属全部成功后写入；失败在后台展示并下次网络管理员请求重试，没有跨店事务承诺。停用站点重新启用后补做。完整回滚需要匹配数据库／代码／uploads，源码退回 0.3.0 不会撤销合并的词表、关系和复制图片。停用／卸载不会删除业务数据。
+## 0.5.2 本地批量商品验收（2026-11-05）
 
-下面的 0.3.0／0.2.x 章节为历史操作说明，不能覆盖本节最新共享分类语义与只本地约束。
+不重跑迁移，继续单站七品牌。本地测试顺序：WP-CLI eval-file /gsm-tests/bulk-products-v052.php（挂载私有目录到 /gsm-private），再从私有 QA 目录运行 check-bulk-products-v052-local.py；后者仅 loopback，依赖前者生成的私有 fixture，不能只运行一半。PHP覆盖混合结果、幂等、部分变体写入故障／清理／重试、回收站去重、状态冲突、权限和任务归属；HTTP覆盖原生 Apply、nonce、并发任务、暂停／刷新／继续和状态批量写入。浏览器仅操作 QA052 测试商品，截图不含凭据。
 
-## 本机 QA（0.3.0）
+中断后先检查最近测试任务，勿直接重跑准备脚本（会把进行中的任务当最近任务）。cleanup-bulk-products-v052.php 严格限定 local＋main.local、QA052及随机后缀，订单引用检查后通过 Woo CRUD 清除本轮临时商品／变体，并只清理全部选择均属于该fixture的任务。不触碰原始商品、保留演示或其他用户任务；清理后运行 single-brand-data.php 的718项只读核对。报告见 qa/group-shop-manager/v052-local/LOCAL-v052.md。任务私有清单和凭据仅在 .identity-private，不入库或日志。
 
-Docker Desktop context 为 desktop-linux；独立目录 /private/tmp/group-shop-manager-qa，通过四个符号链接引用本项目 plugin/theme/scripts/tests。该目录名是 bootstrap 的保护条件；不要在 group-shop 根目录运行合成测试。首次建立链接后：
+正常用户任务没有定时后台处理，保持页面打开；关闭后进入 Products → 批量任务继续。记录最后更新起24小时到期，产品本身不删除；失败项可重试，部分成功不回滚。未完整建立的版本先检查草稿并 Update；回收站版本先恢复，不能用重复添加当恢复。没有新增业务表或自动初始化流程，继续禁止生产部署。
 
-```bash
-DOCKER_CONTEXT=desktop-linux bash /private/tmp/group-shop-manager-qa/scripts/group-shop-manager/qa-bootstrap.sh
-```
+## 0.5.3 公共／品牌统一继承验收（2026-11-05）
 
-默认新 QA 使用 localhost:18087；老的 18086 QA 仍可由 .qa.env 中 GSM_QA_PORT 指定。脚本生成 root 私有的测试凭据（本机为当前账户私有，权限 600）、独立数据库/WordPress 卷，使用官方固定版本 WooCommerce/FluentSMTP，绝不挂载生产数据库/卷。目录中的 .qa.env/.qa-admin-password/日志不进入 Git。MU 拦截发信并关闭可用支付，不能部署生产。
+当前已保存品牌商品全部有公共来源，不重跑单站迁移，不改变销售商品或变体ID。products-v053-preflight.php只读检查，结果45公共记录（含2自动草稿）／71品牌版本／无未关联品牌商品。products-v053-autodrafts.php仅处理本地未保存、无来源的auto-draft，先将原元数据私有备份至/gsm-private/products-v053-autodrafts.json，再改公共归属；本轮2条，无内容／状态修改。重复执行不会再改已公共的记录。此入口没有生产迁移授权，不作为独立商品通用迁移器。
 
-如果本机代理 DNS 把官方域名解析为 198.18 私网地址，WP 下载器会安全拒绝。不要关闭校验；从宿主用正常 HTTPS 下载官方 woocommerce.11.1.2.zip、fluent-smtp.2.4.1.zip 放 QA 的 qa-packages/，bootstrap 会只读挂载这些包本地安装。
+验收顺序：本地WP-CLI以gsm-admin运行products-v053.php（挂载私有目录到/gsm-private），私有QA目录执行check-products-v053-local.py，另products-v053-cron.php覆盖无登录用户的既有Woo定时写入；真实浏览器只操作QA053商品验证合并筛选。凭据、表单nonce、fixture编号仅私有文件，不写日志。HTTP读取原生表单须排除未点击的submit按钮，避免测试意外上架。
 
-```bash
-cd /private/tmp/group-shop-manager-qa
-DOCKER_CONTEXT=desktop-linux docker compose --project-directory "$PWD" --env-file .qa.env \
-  -f scripts/group-shop-manager/compose.qa.yaml --profile tools run --rm -T wpcli \
-  --allow-root --user=gsm-admin eval-file /gsm-tests/integration.php > qa-report-v030.json
-```
+cleanup-products-v053.php仅清理QA053随机后缀临时记录，先检查订单引用，保留原商品／演示和其他用户任务。完成后运行single-brand-data.php核对718项原始资料。当前删除16条临时商品／变体及1任务，114父商品、287商品及变体保留。报告qa/group-shop-manager/v053-local/LOCAL-v053.md。旧0.5.1／0.5.2套件创建独立商品，不能直接在当前模型重跑；历史报告保留。
 
-历史 0.3.0 的 integration.php 使用合成用户/商品/订单（0.3.1 禁止执行该旧套件，使用上节新流程），重建 brand-a/brand-b；只有 WP_ENVIRONMENT_TYPE=local 且 localhost:18086/18087 才执行。接着运行 store-settings.php、store-list.php；HTTP 使用 check-qa-collections.py 与 check-native-admin-local.py，后者读取本地 QA 密码，不输出 Cookie/密码，成功后注销该次 HTTP 会话。UI 需验证原生新增分类、集合读取本店新项，以及旧分类入口不出现。
+没有开启或恢复Multisite，无新业务表、真实邮件、支付或生产操作。要回退本轮两个自动草稿标记，需使用私有备份对照确认它们仍为未保存auto-draft，恢复对应元数据；已开始编辑则不能盲目覆盖。完整架构回滚仍必须遵循前述成套备份规则。
 
-当前环境为本机真正容器，不是 SSH 转发；验收后保留运行供用户浏览，端口只绑定 127.0.0.1。要暂停仅 stop 本 QA 项目，不停其他本机服务。临时目录若已被清理，先确认只针对本合成 QA 再重建，不能用生产凭据恢复它。
+## 0.5.4 退休中央商品入口（2026-11-05）
 
-## 0.3.0 数据清理（待用户另行授权发布）
+本轮纯入口及旧服务清理，不重跑迁移／商品fixture。私有QA目录运行check-retired-products-v054-local.py，检查五标签、概览原生链接、旧列表／编辑跳转、无效范围404、旧保存／状态410及nonce403、集合页面仍可访问。仅GET与拒绝的旧POST，无商品业务写入；无新增fixture需要清理。浏览器核对五标签，截图及报告qa/group-shop-manager/v054-local/。
 
-已删除模板/继承/覆盖代码及两个页面，保留本店原生分类/标签与商品集合。无单独分类业务表，不应删除 WordPress 核心表或 gsm_catalog/gsm_audit。
+代码恢复需使用当前单站匹配版本，不恢复旧Multisite功能。商品数据与集合规则保留；原生商品管理和批量操作仍可使用。共享集合媒体／编辑器资源不能因删除ProductAdmin一并删除。集合评估仅文档，不作为实施或生产授权。
 
-未来发布应在维护窗口先完成清理与规则验收，再开放前台；未迁移的规则不会把旧来源编号解释成本店编号。网络管理员普通 admin_init 会按活动店的 gsm_native_categories_version 运行清理（AJAX 跳过）。也可在已授权的维护窗口调用 CategoryMigration::run/store：先把旧集合条件映射成本店编号，持久化 taxonomy_scope=local，再清除三个退休 termmeta，重建集合并记录版本。无法唯一对应的规则停用，需管理员重新选择条件保存；不能直接删源映射而遗漏集合条件转换。
+## 0.5.5 分类范围与集合层级验收（2026-11-05）
 
-原生 term 的 ID/文字/图片/层级/SEO 元数据、附件、基本商品归属、UUID、客户、订单保留。旧规则现在依据本店实际子树，若原模板层级不同，成员变化属于新语义，应逐集合核对。非活动店重新启用后会补做。失败可重试，不能批量删除真实分类来“清理模板”。
+继续单站.local私有环境，无业务迁移或部署。先以gsm-admin运行collections-v055.php（挂载.identity-private至/gsm-private），生成QA055随机后缀的公共／品牌销售商品和共享／私有集合；私有清单collections-v055.json保存测试编号和原分类／成员关系／各品牌规则快照，不提交。若文件已存在先检查／清理，禁止覆盖未清理fixture。接着运行native-taxonomy-v055.php检查列表SQL计数和跨品牌全局层级缓存，再从/private/tmp/group-shop-manager-qa运行check-taxonomy-v055-local.py验证真实分类分页、编辑／拒绝POST和归档。
 
-必须备份匹配数据库和代码；退回旧源码不会恢复已删元数据或旧集合条件。完整回滚需要匹配备份，保留备份后增量。**目前不运行任何线上清理或发布。**
+cleanup-collections-v055.php只清理当前随机后缀QA055商品和词条，订单引用预检后Woo CRUD删除；移除各品牌中本轮集合规则，逐项比较原词条ID／名称／slug／parent、原分类标签成员关系及原集合规则。随后运行single-brand-data.php完成原始迁移资料核对。源码和测试证据见qa/group-shop-manager/v055-local/。浏览器仅核对列表与fixture编辑，不改业务集合或用户会话。
 
-## 首次部署的必要顺序
+不重跑旧Multisite分类／集合套件。没有term迁移或公共目录重建，回退代码也不应自动清除用户后来设置的parent；若需回滚用户实际层级变更，应备份并显式恢复对应term parent。改变层级会改变原生归档URL，现有ID引用保留；本轮没有上线或生产旧URL重定向配置。
 
-1. 用旧版 `scripts/security-baseline.sh check` 检查现有线上，失败必须调查。
-2. 用 `scripts/security-backup.sh` 创建 root 私有完整备份；另备份旧 compose/nginx/脚本/主题/安全清单，记录精确位置。
-3. 建立 `security-reports/deployment-in-progress`，使监控暂时避开升级窗口。
-4. 上传插件及新只读挂载、允许名单、主题品牌适配和安全脚本。
-5. 先以 `WORDPRESS_MULTISITE=0` 使用新版 Compose，保持原主店 URL，运行 `wp core multisite-convert --base=/ --skip-config` 创建网络表。
-6. 然后才设置 `.env` 的 `WORDPRESS_MULTISITE=1`、`WORDPRESS_NETWORK_DOMAIN=www.animecats.online`，重建 WordPress 容器并重载 Nginx。
-7. 网络启用 WooCommerce 和 Group Shop Manager；保留主店原业务插件和数据。启用共享主题，明确初始化来源测试数据（不得无意重放订单）。
-8. 对主店已有用户回填首次来源，对已有测试订单只补归属元数据，不改状态、不发信。
-9. 恢复 root 所有权、只读挂载和可写 uploads/cache，授权代码验证后更新 manifest；安全检查、首页、后台、商品、购物车与共享账号验证通过。
-10. 移除部署标记，检查监控、更新 HANDOFF / CHANGELOG / 根部署记录。不能以插件激活成功代替多店验收。
+## 0.5.6 原生页面分店验收（2026-11-05）
 
-Compose 的多站点分支不能再全局 define WP_HOME/WP_SITEURL，否则所有店铺会被钉到主域名。独立域名由原生 blog 表和每站 home/siteurl 决定。Nginx 子目录重写必须只匹配有前缀的路径，并置于 `if (!-e $request_filename)` 内，保留已有 WordPress 文件及目录。否则 `/wp-admin/index.php` 会被误改成 `/index.php` 而自循环，`/wp-admin/admin.php` 会变成 `/admin.php` 返回 404。
+最新范围仅原生Pages按店铺独立管理，没有模板继承／同步或新用途绑定。继续使用.local私有环境。WP-CLI以gsm-admin运行native-pages-v056.php（挂载.identity-private至/gsm-private）生成QA056随机后缀的合成主店／A／B页面，私有native-pages-v056.json保存编号和原页面／设置快照；文件已存在时先检查／清理，不能覆盖。随后从/private/tmp/group-shop-manager-qa运行check-native-pages-v056-local.py验证列表、Gutenberg REST、同店新建／独立编辑、拒绝写入及签名草稿预览。
 
-每次路由部署必须通过真实 HTTP 请求检查主店及分店的 `/wp-admin/`、`wp-admin/admin.php?page=group-shop-manager`、`wp-admin/network/` 和登录页，跟随重定向且限制最大次数；未登录时应抵达登录页，不能自循环或 404。还应检查登录后管理页、原生静态资源和上传 PHP 阻断。CLI 调用 Admin::render() 只能验证渲染函数，不能代表这些入口可访问。
+cleanup-native-pages-v056.php仅清理当前后缀与私有编号的合成页面及其原生修订；逐项比较原页面ID、标题、正文、摘要、状态、parent、内部slug和作者，品牌注册表及原业务设置保持。缓存generation／清理时间／原因属于运行记录，允许随测试保存更新，不把其变化误当业务迁移。最后运行single-brand-data.php核对原始迁移资料。
 
-服务器回归入口：`python3 scripts/group-shop-manager/check-http-routes.py`。从 loopback 上游发送真实 HTTP，默认检查主店，跟随最多 8 次跳转，验证登录表单、核心 CSS 和 PHP 阻断。第二店铺运行 `python3 scripts/group-shop-manager/check-http-routes.py --host test.animecats.online --subsite`；路径式店铺可指定 `--store slug`。传入 `--cookie-file` 时读取 root 私有的短期测试 Cookie 并检查已登录页面，不输出 Cookie；验收后必须撤销该测试会话并删除文件。中央插件管理页属于主店；分店使用原生商品后台，不注册中央菜单。
+没有新增业务表、生产操作或政策数据转换。之前未交付的模板方案fixture已清理，相关原页面及业务设置另已私有核对保留；品牌sequence继续单调递增，不回用临时测试分配过的编号。停用／卸载继续保留页面和品牌数据，回退本轮代码不删除页面。
 
-容器 Nginx 配置是单文件只读挂载。rsync 原子替换宿主文件后，仅执行 `nginx -s reload` 可能仍读取挂载固定的旧 inode；必须 `docker compose up -d --no-deps --force-recreate nginx` 重新挂载，再验证容器内配置和真实 HTTP。这与宿主证书代理 Nginx 的 `nginx -t && nginx -s reload` 是两个不同层级。
+## 2026-11-05 本地业务重置与 Chanel 公共目录
 
-## 第二店铺域名（2026-11-03）
+用户明确授权清空业务数据，保留七品牌、后台管理员及环境配置，并选择“只导入公共档案，暂不生成销售版本”。本轮已完成一次性本地重置：原5笔HPOS订单、289条商品／变体、155条其他内容记录、7个顾客、84个业务词条及旧子站档案中的业务行已清理。保留2个后台员工／管理员账户、原密码与身份、七品牌注册及联系／邮件／集成配置；保留主题配置记录和原表结构，不重建数据库。页面／菜单／集合／Logo等已删除资源绑定归零；系统默认分类重建，不自动恢复政策或Woo功能页面。
 
-第二店铺 blog 2 已从 `/demo-store/` 映射到 `https://test.animecats.online/`。主网络的 DOMAIN_CURRENT_SITE 仍为 www.animecats.online；只更新 blog 2 的 domain/path、home/siteurl，并在该店表内进行序列化安全 URL 替换。编号、UUID、草稿商品 18、禁止收录和关闭邮件保持。不同域名仍分别登录。
+用户 CSV `wc-product-export-27-8-2026-1787800592981-working.csv` 的72件简单商品已通过Woo原生CSV导入器新建为公共档案，保留SKU、价格、长短描述、349项本地属性、分类层级及补充元数据。72张图片全部从本机香水素材目录导入并校验原图SHA256；无原网站连接，源CSV哈希不变。来源ID只作为元数据记录，不复用其他安装的原生ID；没有生成任何品牌销售版本，七店前台均暂不展示商品。
 
-宿主 Nginx 配置源码 `nginx/host/test.animecats.online.conf` 对应 `/etc/nginx/conf.d/group-shop-test.conf`，代理同一个 127.0.0.1:8086，以 Host 区分店铺。主店宿主配置包含旧 `/demo-store/` 到新域名的 301。已有其他服务的通配符域名配置未修改。
+私有成套备份与运行清单：`/private/tmp/group-shop-manager-qa/imports/20261105-chanel-6bd9d69e/`（backup/database.sql、uploads.tgz、source.tgz、qa.env及verified.json）。361张表、旧上传文件、源码和环境文件已备份并校验，包含敏感资料，不提交或公开。当前有效数据基线为72公共／0品牌／72图片／0顾客／0订单／0页面／0菜单／0集合；先前“718项原迁移资料保留”的验收仅为重置前历史，不得继续作为当前数据断言，旧私有fixture中的商品／顾客编号也不可直接复用。
 
-Let's Encrypt 分店证书安装到 `/root/ssl/group-shop-test/{fullchain.pem,privkey.pem}`，私钥 root-only；acme.sh 使用 `/var/www/acme` 的 HTTP 验证并设置续期安装和 `nginx -t && nginx -s reload`。备份 `/root/group-shop-backups/20261102T175306Z`；变更前宿主配置 `deploy-backups/gsm-store2-domain/`。如撤销域名映射，应同时恢复 blog 2 的域名/路径、home/siteurl、该店媒体链接及主店旧路径规则，不能仅删除新域名 vhost。
+1,662项逐字段／图片字节／归属／配置／旧档案清理核对通过，另有24项七域名与实际媒体HTTP核对，以及原生后台72件公共商品和缩略图浏览器检查。报告：`qa/group-shop-manager/import-public-chanel-20261105/REPORT.md`。软件版本仍0.5.7；仅本地数据维护，未发布或连接生产。
 
-## 后续代码部署
+本轮维护入口均位于 scripts/group-shop-manager/，不由插件或HTTP加载：local-catalog-common.php、reset-business-local.php、import-public-csv-local.php、finalize-public-csv-local.php、verify-public-csv-local.php。只接受WP_CLI、local、DB_NAME=gsm_qa、wp_前缀、受控平台管理员、精确.local注册表、/gsm-import私有挂载和GSM_LOCAL_CATALOG_ACTION相应动作；执行前必须校验源文件及备份哈希。reset-started／reset-complete标记阻止自动重复清空；导入仅支持本轮检查过的简单商品，图片逐项记录，商品按本批来源SHA和SKU跳过已完成项；完成标记禁止重复导入。不能把此一次性授权用作后续自动清空许可。
 
-### 0.2.2 店铺列表与域名
+执行时暂停本项目wordpress/nginx防并发，数据库服务保留；使用原生Woo／WP CRUD清理当前对象，inactive旧子站业务表只清行，不switch_to_blog或删除表。保留基础角色／品牌配置、系统taxonomy、主题样式记录与上传访问控制文件，旧媒体／日志／购物会话／任务和已删除资源绑定清理。Woo维护命令会生成仅含customer字段的运行会话，finalize清理并停用该CLI进程的shutdown会话回写；之后新访问产生会话属于正常行为。
 
-本次代码升级不修改现有域名，无需执行数据迁移；验证升级前后 domain/path/home/siteurl、UUID、Logo、主题、收录及用户/订单计数。列表和弹窗需经真实浏览器/HTTP 验证，不能只用 CLI 渲染。测试 store-list.php 仅允许隔离 QA，切勿运行到生产。
+回滚须先暂停Web并另备份导入后的状态，恢复上述database.sql＋uploads.tgz及匹配的源码／环境，刷新缓存再恢复服务；不能仅导入旧商品或开启Multisite。备份位于私有目录，密码／顾客资料不得输出到报告。不要重跑旧single-brand-data.php或旧fixture清理脚本来“修复”新基线。页面、菜单和品牌销售版本后续由用户重新建立，不自动播种。
 
-分店改域名前：备份；配置 DNS 与精确 Nginx server_name 代理到 127.0.0.1:8086、传递 Host/X-Forwarded-Proto；申请/安装证书与续期；再在弹窗保存域名。不要依赖服务器其他服务的通配符配置。新域名根路径和 HTTPS 写入本店原生配置，主网络常量不变。已有内容另外进行本店范围内的序列化安全 URL 迁移（排除历史订单快照/共享数据），为旧地址配置 301，更新第三方回调，验证前台、后台、媒体和登录无循环。插件不自动探测或配置这些基础设施。
+## 0.5.8 展示继承与独立加购验收（2026-11-05）
 
-回退域名时同时恢复该店 domain/path/home/siteurl、链接迁移、旧新代理和证书安排；回退插件代码不会撤销原生域名修改。主店域名不开放 UI 修改。
+本轮开始实际已有72公共＋72品牌商品，不能按旧清空基线恢复0品牌。只使用新合成商品与私有清单，不触碰用户商品。验收顺序：product-experience-v058.php创建QA058随机后缀公共／A／B／变体，并保存当前全部posts／postmeta／品牌注册及业务bank快照；check-product-experience-v058-local.py验证真实原生表单和游客购物车；浏览器实际覆盖保存再取消；cleanup-product-experience-v058.php校验ID／随机后缀及订单引用，清理fixture及含其商品的会话，并比较原资料快照。
 
-### 0.2.1 店铺设置
+order-activity-v058.php另建3笔零金额无顾客订单，验证店铺查询／缓存隔离，在finally中用Woo CRUD删除并恢复原缓存，核对原HPOS行；不付款、不发真实邮件，MU拦截保留。此脚本若中断，先看私有order-activity-v058.json，不重复建立订单。商品fixture文件存在时禁止重新初始化或覆盖。
 
-复用 manager-plugin 部署流程，不需要重跑 0.2.0 无限库存迁移或改域名。现有 Logo 懒读取旧 custom_logo，保存后形成店铺引用；现有 blog_public 值保留，不批量切换收录。QA 用 store-settings.php 验证保存/恢复/原生同步，浏览器还需验证媒体库的当前店归属、上传、选择和移除，不能仅用 CLI 控件渲染代替。
+52项展示／加购运行和HTTP检查、5项订单统计、原生浏览器保存及60个PHP／JS／Python语法核对见qa/group-shop-manager/v058-local/。未对业务资料批量写覆盖标记、复制文案或继承规则。软件回退必须保留本轮之后用户编辑的资料，不删除presentation覆盖标记或加购规则来冒充回滚；完整备份仍遵守成套恢复规则。仅本地，禁止自动发布。
 
-QA 合成数据由 root WP-CLI 生成，新建 uploads 目录可能为 root 所有；浏览器上传测试前恢复 QA uploads 为 33:33。生产仍由原安全基线维护权限，不允许为媒体功能开放代码目录写权限。
 
-跨店媒体只在带独立授权的媒体请求内切换，原生 wp_die 和 shutdown 恢复；该请求退出模型例外见 ARCHITECTURE。永久删除等不在弹窗适配范围，使用所属店原生媒体页。无新账号/权限/SSO，仍只给网络管理员使用。
+## 0.5.9 SEO隔离复验（2026-11-06）
 
-### 0.2.0 升级
+仍仅本地，保留邮件／支付MU拦截。当前144父商品为72公共＋72主店版本；不要重跑旧重置或迁移fixture。测试前完整SQL备份为/private/tmp/group-shop-manager-qa/.identity-private/seo-v059/before-qa.sql（权限600，含敏感资料，不提交／输出）。本轮私有清单seo-isolation-v059.json已在成功清理后删除；runtime.json／cleanup.json另保留于同一私有seo-v059目录，并将无敏感结果复制至版本QA目录。
 
-1. 完成隔离集成、浏览器和 HTTP 验证；线上原版本安全检查通过后做 `scripts/security-backup.sh` 全量私有备份。
-2. 使用 `scripts/deploy-manager-plugin.sh` 部署插件（包含删除旧 inventory 类），保留已有域名、宿主和容器 Nginx 路由。
-3. 上传本项目的 `scripts/group-shop-manager/upgrade-v020.php`，在服务器主店维护 WP-CLI 执行：
+WP-CLI继续使用当前compose、gsm-admin、--url=http://www.main.local及.identity-private:/gsm-private:rw挂载，按以下顺序运行：
 
-```bash
-docker compose --profile tools run --rm -T --user 0:0 \
-  -e TROVESIA_MAINTENANCE=1 -v "$PWD/scripts/group-shop-manager:/gsm-ops:ro" \
-  wpcli --allow-root --user=1 eval-file /gsm-ops/upgrade-v020.php </dev/null
-```
+1. seo-isolation-v059.php：必须fresh fixture；创建随机QA059后缀的A／B销售商品／变体、页面／文章、共享分类／标签、私有集合、菜单及评论，保存八表与七品牌bank完整快照。仅临时将A／B blog_public=1及菜单位置指向合成菜单；私有清单存在即拒绝重建。
+2. check-seo-isolation-v059.php：运行对象／查询／原生Woo REST与聚合缓存检查，准备合成页面的旧跨店业务链接及旧slug。改动仅限清单内合成记录。
+3. 从/private/tmp/group-shop-manager-qa运行scripts/group-shop-manager/check-seo-isolation-v059-local.py：固定连接127.0.0.1:18087，以七个注册.local Host请求；覆盖允许收录后的Sitemap、canonical、JSON-LD、页面／商品／变体、分类／集合、评论、统计、菜单、正文、搜索／Feed与旧slug。CSS／JS／图片不列入跨域失败；不会追踪生产或任意外部URL。
+4. cleanup-seo-isolation-v059.php：校验随机前缀、私有ID、订单引用和并发配置差异；只删除本轮记录并恢复A／B索引及菜单、集合配置，逐行比较八表和七品牌业务bank。失败时检查私有清单，不用SQL快照覆盖用户测试期间的新工作。
 
-脚本严格验证 group-shop 主域名、test 分店及版本，逐店关闭库存管理并经 CRUD 保存现有商品/变体、修正 lookup，再给分店应用分类模板。比对商品名称、售价、发布状态、订单/用户计数和 UUID，检查后台页。请求内阻止邮件，不创建订单、不操作支付。可重复运行，保留分店字段覆盖；不会建立另一个 demo 店。旧 `accept-production.php` 已限制为历史 0.1.0，不能用于新版网络。
-
-4. 使用真实 HTTP 验证主店/test 的未登录与已登录后台、新分类页和商品供货状态。恢复权限、授权文件 manifest、安全门禁、缓存和监控，并更新 HANDOFF 和部署报告。
-
-新版没有额外共享分类表；新增每站 termmeta 和集合 option。无限库存的原生元数据会持久化，停用插件不会恢复旧数量。回退 0.1.0 代码也不会撤销这些数据变更；若需要完整恢复旧库存/分类，须按已验证备份恢复数据库并处理备份后的增量订单。
-
-完成首次迁移后使用 `scripts/deploy-manager-plugin.sh`，或 `scripts/deploy-all.sh` 同时发布主题与三个业务插件。脚本有部署前后安全门禁和组件备份。涉及数据库、Compose、服务器重写和网络设置时不能只部署插件目录。
-
-PHP 容器的 group-shop-manager、Trovesia 代码和安全工具为只读挂载。WP-CLI 执行受控安装使用服务器 root 的维护入口。不得为了安装插件关闭现有基线或将代码目录交给 web 用户写入。
-
-## 回滚
-
-普通插件故障：网络停用 group-shop-manager，再恢复匹配版本代码、主题适配与 manifest；店铺业务数据不会因停用或卸载被删除。
-
-首次 Multisite 迁移故障：恢复迁移前完整数据库、wp-config、.env、Compose、Nginx 和旧代码，再重建受影响容器。仅停用插件不会把 Multisite 变回单站。恢复数据库会覆盖备份后数据；本轮数据已获授权为测试数据，未来有真实订单后必须先处理增量数据，不可直接覆盖。
-
-备份、数据库和凭据留在 root 私有目录；文档只记录路径，不记录具体密钥。
+本轮46运行检查、141 HTTP请求中的315检查通过；清理24内容／商品／菜单项、7词条、3评论，八表和原业务bank核对一致，仍144父商品。复验可重复但必须新fixture，并在完成后清理；禁止清理用户后来创建的版本。作者Sitemap关闭属于当前SEO行为；回退源码不删除业务数据，生产发布仍需新的明确授权和实际环境验收。

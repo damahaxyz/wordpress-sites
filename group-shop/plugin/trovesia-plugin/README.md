@@ -1,5 +1,9 @@
 # Trovesia Shop Plugin
 
+Local version 3.8.4. Group Shop Manager 0.5.8 adds store-scoped add-on configuration and public-product presentation inheritance. Add-ons remain separate native product/cart/order lines and are configured only on brand sale versions; rules are not inherited from public products. Each form supports up to 20 rules. Invalid or rebound cart children are removed with a notice; ordinary mini-cart quantity controls remain available.
+
+Presentation inherits by default. Select “单独设置本店展示信息” to edit the brand copy independently; unchecking restores the current public copy. Automatic order counts remain store-specific. This local revision does not deploy, seed marketing rules, or migrate existing product data.
+
 ## Branded WooCommerce emails
 
 All WooCommerce HTML messages share the Trovesia storefront palette, typography,

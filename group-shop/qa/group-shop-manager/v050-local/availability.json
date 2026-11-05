@@ -1,0 +1,76 @@
+{
+  "version": "0.5.0",
+  "passed": 14,
+  "checks": [
+    {
+      "host": "www.branda.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.branda.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.brandb.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.brandc.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.brandc.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.brande.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.brande.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.brandf.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.brandf.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.brandg.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.brandg.local",
+      "path": "/my-account/",
+      "status": 200
+    },
+    {
+      "host": "www.main.local",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "host": "www.main.local",
+      "path": "/my-account/",
+      "status": 200
+    }
+  ]
+}

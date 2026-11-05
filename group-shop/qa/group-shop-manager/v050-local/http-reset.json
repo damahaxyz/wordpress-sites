@@ -1,0 +1,11 @@
+{
+  "version": "0.5.0",
+  "passed": 5,
+  "checks": [
+    "B frontend same-email independent password succeeds",
+    "Password-reset link is rejected on another shop domain",
+    "Owning-shop native reset changes the A password",
+    "B password still works after A reset",
+    "B existing session survives A password reset"
+  ]
+}

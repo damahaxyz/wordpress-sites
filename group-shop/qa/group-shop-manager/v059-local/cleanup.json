@@ -1,0 +1,19 @@
+{
+    "version": "0.5.9",
+    "temporary_posts_removed": 24,
+    "temporary_terms_removed": 7,
+    "temporary_reviews_removed": 3,
+    "original_tables_verified": [
+        "posts",
+        "postmeta",
+        "terms",
+        "termmeta",
+        "term_taxonomy",
+        "term_relationships",
+        "comments",
+        "commentmeta"
+    ],
+    "brands": 7,
+    "brand_business_banks_restored": true,
+    "parent_products": 144
+}

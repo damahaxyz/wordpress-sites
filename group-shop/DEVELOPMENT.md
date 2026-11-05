@@ -1,5 +1,8 @@
 # Group Shop 自定义开发
 
+> 当前 Group Shop Manager 本地已升级 0.5.9 单站多品牌并关闭 Multisite；生产未发布。当前状态和专用本地启动／迁移／回滚请读 [插件 HANDOFF](plugin/group-shop-manager/docs/HANDOFF.md) 与 [OPERATIONS](plugin/group-shop-manager/docs/OPERATIONS.md)。下文为原项目／历史部署说明，不是本次部署授权。
+
+
 多店铺插件开发先读 `AGENTS.md` 与 `plugin/group-shop-manager/docs/HANDOFF.md`。新增功能、数据、配置、限制、权限或部署变更必须同时更新对应文档和 CHANGELOG。原有 Trovesia 主题及业务插件说明保留如下。
 
 ## 目录职责

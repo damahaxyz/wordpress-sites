@@ -1,0 +1,19 @@
+{
+    "version": "0.5.1",
+    "passed": 13,
+    "checks": [
+        "One native public product has distinct native A\/B sale versions",
+        "Explicit A title and price overrides persist",
+        "Forged or stale hidden description, weight and purchase-note edits restore shared source",
+        "Turning off overrides restores current public values",
+        "A override edits never modify B price",
+        "Native edit links carry appropriate public or A brand scope",
+        "Public family resolves both native brand editions",
+        "Inherited rows expose source\/family navigation and omit misleading Quick Edit",
+        "Native variation overrides save before parent synchronization",
+        "Variation specifications and common shipping fields always inherit source",
+        "Removing variation overrides restores public variation fields",
+        "Brand variation enable\/disable remains independently effective",
+        "A variation editing preserves B version"
+    ]
+}

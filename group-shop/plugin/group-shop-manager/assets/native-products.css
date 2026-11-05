@@ -1,0 +1,12 @@
+.gsm-field-hidden { display:none !important; }
+.gsm-override-options { border-top:1px solid #ddd; padding-top:12px; }
+.gsm-override-options > .form-field > label:first-child { float:left; width:150px; margin-left:-150px; }
+.gsm-inheritance-notice { padding:12px 16px; border-left:4px solid #2271b1; background:#fff; margin:12px 0; }
+.gsm-inheritance-notice p { margin:4px 0; }
+.column-gsm_brand { width:130px; }
+.column-gsm_base { width:190px; }
+.column-gsm_versions { width:160px; }
+.gsm-variation-inheritance { padding:8px 0; border-bottom:1px solid #ddd; }
+.gsm-variation-spec { margin-left:12px; font-weight:normal; }
+
+.gsm-family-filter { display:inline-flex;align-items:center;gap:8px;padding:4px 8px;background:#fff;border:1px solid #c3c4c7;margin:0 6px 4px 0; }

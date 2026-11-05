@@ -1,0 +1,16 @@
+{
+  "version": "0.5.0",
+  "passed": 10,
+  "checks": [
+    "Native single-site Add User creates an independent employee",
+    "Native employee profile accepts explicit A/B brand grants",
+    "New native employee can actually log into an authorized brand",
+    "Brand employee cannot change shared mall payment/tax/settings",
+    "Brand employee cannot read global legacy sales reports",
+    "Native single-site customer role forgery is rejected",
+    "Central native REST editor reads selected A brand through signed context",
+    "Selected A central REST context refuses B product ID",
+    "Tampering with signed REST brand context is rejected",
+    "Concurrent same-brand registration has exactly one successful identity"
+  ]
+}

@@ -25,7 +25,7 @@ final class Customers {
             if (is_email($name)||str_starts_with(strtolower($name),'gsmc_')||str_starts_with(strtolower($name),'gsms_')||strlen($name)>60) { $errors->add('gsm_username','用户名无效，请使用非邮箱格式的用户名。'); }
             return $errors;
         },20,3);
-        add_filter('rest_user_query',static function ($args) { $args['blog_id']=get_current_blog_id(); return $args; });
+        add_filter('rest_user_query',[BrandScope::class,'user_query']);
         add_filter('rest_pre_insert_user',static function ($data,$request) {
             $roles=$request->get_param('roles');
             if ($roles&&array_diff((array)$roles,['customer'])) { return new \WP_Error('gsm_role_locked','员工请通过网络用户入口创建或授权。',['status'=>403]); }
@@ -34,7 +34,7 @@ final class Customers {
         add_filter('rest_pre_dispatch',static function ($result,$server,$request) {
             if (preg_match('#^/(?:wc/v[1-3]/customers|wp/v2/users)/(\d+)(?:/|$)#',$request->get_route(),$m)) {
                 $row=Identities::get((int)$m[1]);
-                if ($row&&(($row['kind']==='customer'&&(int)$row['store_id']!==get_current_blog_id())||($row['kind']==='staff'&&str_starts_with($request->get_route(),'/wc/')))) { return new \WP_Error('gsm_user_scope','此账户不属于当前店铺的顾客。',['status'=>403]); }
+                if ($row&&(($row['kind']==='customer'&&Brands::query_scope()!==null&&(int)$row['store_id']!==Brands::id())||($row['kind']==='staff'&&str_starts_with($request->get_route(),'/wc/')))) { return new \WP_Error('gsm_user_scope','此账户不属于当前店铺的顾客。',['status'=>403]); }
             }
             return $result;
         },20,3);
@@ -71,11 +71,11 @@ final class Customers {
         add_action('woocommerce_store_api_cart_errors',static function ($errors): void { if (self::staff_shopping()) { $errors->add('gsm_staff_checkout','请使用本店独立顾客账户下单。'); } });
     }
     private static function staff_shopping(): bool {
-        $id=get_current_user_id(); return $id&&(is_super_admin($id)||(Identities::get($id)['kind']??'')==='staff');
+        $id=get_current_user_id(); return $id&&(Brands::root($id)||(Identities::get($id)['kind']??'')==='staff');
     }
     public static function local_customer(int $id): bool {
         $row=Identities::get($id);
-        return $row&&$row['kind']==='customer'&&(int)$row['store_id']===get_current_blog_id();
+        return $row&&$row['kind']==='customer'&&(int)$row['store_id']===Brands::id();
     }
     private static function employee_entry(): bool {
         return ($GLOBALS['pagenow']??'')==='wp-login.php' || !empty($_REQUEST['gsm_employee']);
@@ -83,13 +83,13 @@ final class Customers {
     public static function resolve(string $input,bool $employee=false): ?\WP_User {
         $input=trim($input); if ($input===''||str_starts_with(strtolower($input),'gsmc_')||str_starts_with(strtolower($input),'gsms_')) { return null; }
         $email=is_email($input)!==false;
-        $customer=Identities::find(get_current_blog_id(),$input,$email);
+        $customer=Identities::find(Brands::id(),$input,$email);
         $staff=Identities::find(0,$input,$email);
         $row=$employee?($staff??$customer):($customer??$staff);
         if ($row) { return get_userdata((int)$row['user_id'])?:null; }
         // A network super administrator stays reachable before the explicit migration.
         $native=get_user_by($email?'email':'login',$input);
-        return $native&&is_super_admin($native->ID)?$native:null;
+        return $native&&Brands::root($native->ID)?$native:null;
     }
     private static function failure(): \WP_Error { return new \WP_Error('gsm_invalid_login','用户名、邮箱或密码不正确，或此店尚未注册。'); }
     public static function authenticate(mixed $user,string $login,string $password): mixed {
@@ -110,7 +110,7 @@ final class Customers {
         return $id&&Identities::accessible((int)$id)?(int)$id:false;
     }
     public static function record(int $id): void {
-        $row=Identities::get($id); $store=$row&&$row['kind']==='customer'?(int)$row['store_id']:get_current_blog_id();
+        $row=Identities::get($id); $store=$row&&$row['kind']==='customer'?(int)$row['store_id']:Brands::id();
         add_user_meta($id,'_gsm_first_store',$store,true);
         add_user_meta($id,'_gsm_store_'.$store.'_joined_at',gmdate('c'),true);
     }
@@ -124,8 +124,8 @@ final class Customers {
         if ($row&&$row['kind']==='customer') {
             return (int)$row['store_id']===$store&&$role==='customer'?$allowed:new \WP_Error('gsm_customer_scope','顾客只能属于原店铺并使用 Customer 角色。');
         }
-        if (is_super_admin($id)||($row&&$row['kind']==='staff')) {
-            return Stores::can_manage()&&in_array($role,['administrator','shop_manager'],true)?$allowed:new \WP_Error('gsm_staff_grant','员工店铺权限只能由网络管理员分配。');
+        if (Brands::root($id)||($row&&$row['kind']==='staff')) {
+            return Stores::can_manage()&&in_array($role,['administrator','shop_manager'],true)?$allowed:new \WP_Error('gsm_staff_grant','员工品牌权限只能由商城总管理员分配。');
         }
         return new \WP_Error('gsm_unclassified','请先完成账户身份迁移或从网络用户入口创建员工。');
     }
@@ -133,12 +133,12 @@ final class Customers {
         if (Identities::is_internal()) { return $check; }
         $row=Identities::get($id); if (!$row) { return $check; }
         if ($row['kind']==='staff') {
-            if (str_ends_with($key,'capabilities')&&!Stores::can_manage()) { return false; }
+            if ((str_ends_with($key,'capabilities')||$key==='_gsm_brand_roles')&&!Stores::can_manage()) { return false; }
             return $check;
         }
         global $wpdb;
         if (preg_match('/^'.preg_quote($wpdb->base_prefix,'/').'(?:\d+_)?capabilities$/D',$key)) {
-            $home=$wpdb->get_blog_prefix((int)$row['store_id']).'capabilities';
+            $home=$wpdb->prefix.'capabilities';
             if ($key!==$home || $value!==['customer'=>true]) { return false; }
         }
         if ($key==='primary_blog'&&(int)$value!==(int)$row['store_id']) { return false; }
@@ -147,7 +147,7 @@ final class Customers {
     public static function protect_delete_meta(mixed $check,int $id,string $key,mixed $value,mixed $all=null): mixed {
         if (Identities::is_internal()) { return $check; }
         $row=Identities::get($id);
-        if ($row&&$row['kind']==='staff'&&str_ends_with($key,'capabilities')&&!Stores::can_manage()) { return false; }
+        if ($row&&$row['kind']==='staff'&&(str_ends_with($key,'capabilities')||$key==='_gsm_brand_roles')&&!Stores::can_manage()) { return false; }
         if ($row&&$row['kind']==='customer'&&(str_ends_with($key,'capabilities')||$key==='primary_blog')) { return false; }
         return $check;
     }
@@ -157,16 +157,24 @@ final class Customers {
         $row=Identities::get($target); if (!$row) { return $caps; }
         if ($row['kind']==='customer') {
             if (in_array($cap,['promote_user','remove_user'],true)) { return ['do_not_allow']; }
-            if (!is_super_admin($actor)&&((int)$row['store_id']!==get_current_blog_id()||($cap==='delete_user'))) { return ['do_not_allow']; }
-        } elseif (!is_super_admin($actor)&&$actor!==$target) { return ['do_not_allow']; }
+            if (!Brands::root($actor)&&((int)$row['store_id']!==Brands::id()||($cap==='delete_user'))) { return ['do_not_allow']; }
+        } elseif (!Brands::root($actor)&&$actor!==$target) { return ['do_not_allow']; }
         return $caps;
     }
     public static function customer_caps(array $all,array $requested,array $args,\WP_User $user): array {
-        if (Identities::is_internal()||is_super_admin($user->ID)) { return $all; }
-        $row=Identities::get($user->ID); if (!$row||$row['kind']!=='customer') { return $all; }
-        if (!Identities::accessible($user->ID)) { return array_fill_keys(array_keys($all),false); }
-        $allowed=['exist'=>true]+(get_role('customer')->capabilities??['read'=>true]);
-        foreach (['view_order','pay_for_order','order_again','download_file','download_order_item'] as $key) { if (isset($all[$key])) { $allowed[$key]=$all[$key]; } }
+        if (Identities::is_internal()||Brands::root($user->ID)) { return $all; }
+        $row=Identities::get($user->ID); if (!$row) { return $all; }
+        if ($row['kind']==='staff') {
+            $grants=(array)get_user_meta($user->ID,'_gsm_brand_roles',true); $role=(string)($grants[Brands::id()]??'');
+            $names=['exist','read','upload_files','list_users','edit_users','manage_woocommerce','moderate_comments','assign_product_terms'];
+            foreach (['products','shop_orders','shop_coupons'] as $type) { foreach (['edit_','edit_others_','edit_private_','edit_published_','publish_','read_private_','delete_','delete_others_','delete_private_','delete_published_'] as $prefix) { $names[]=$prefix.$type; } }
+            if ($role==='administrator') { $names[]='gsm_manage_menus'; if (NativeMenus::request_context()) { $names[]='edit_theme_options'; } foreach (['posts','pages'] as $type) { foreach (['edit_','edit_others_','edit_private_','edit_published_','publish_','read_private_','delete_','delete_others_','delete_private_','delete_published_'] as $prefix) { $names[]=$prefix.$type; } } }
+            $allowed=in_array($role,['administrator','shop_manager'],true)?array_fill_keys($names,true):['exist'=>true];
+        } else {
+            if (!Identities::accessible($user->ID)) { return array_fill_keys(array_keys($all),false); }
+            $allowed=['exist'=>true]+(get_role('customer')->capabilities??['read'=>true]);
+            foreach (['view_order','pay_for_order','order_again','download_file','download_order_item'] as $key) { if (isset($all[$key])) { $allowed[$key]=$all[$key]; } }
+        }
         foreach ($all as $key=>$value) { if (!isset($allowed[$key])) { $allowed[$key]=false; } }
         return $allowed;
     }
@@ -177,7 +185,7 @@ final class Customers {
     }
     private static function can_reset(int $id): bool {
         $row=Identities::get($id);
-        if (is_super_admin($id)||($row&&$row['kind']==='staff'&&get_current_blog_id()===Stores::main_id())) { return true; }
+        if (Brands::root($id)||($row&&$row['kind']==='staff'&&Brands::id()===Stores::main_id())) { return true; }
         return Identities::accessible($id);
     }
     public static function allow_reset(mixed $allow,int $id): mixed { return self::can_reset($id)?$allow:false; }
@@ -197,7 +205,7 @@ final class Customers {
         if (($_REQUEST['action']??'')==='register') { wp_safe_redirect(wc_get_page_permalink('myaccount')); exit; }
     }
     public static function reset_message(string $message,string $key,string $login,\WP_User $user): string {
-        $row=Identities::get($user->ID); $staff=is_super_admin($user->ID)||($row['kind']??'')==='staff';
+        $row=Identities::get($user->ID); $staff=Brands::root($user->ID)||($row['kind']??'')==='staff';
         $scope=$staff?'此员工账户密码用于已授权的各店铺。':'新密码只用于当前店铺的顾客账户，不影响其他店铺。';
         $url=add_query_arg(['action'=>'rp','key'=>$key,'login'=>$login],home_url('/wp-login.php'));
         return sprintf("%s\n\n有人请求重设您的账户密码。%s\n如非本人操作，请忽略此邮件。\n\n%s\n",wp_specialchars_decode(get_bloginfo('name'),ENT_QUOTES),$scope,$url);

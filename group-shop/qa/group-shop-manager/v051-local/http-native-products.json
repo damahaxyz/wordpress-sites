@@ -1,0 +1,26 @@
+{
+  "version": "0.5.1",
+  "passed": 20,
+  "checks": [
+    "All-brand native search includes public and both sale versions",
+    "Native list includes brand/kind filters and source/version columns",
+    "A list filter excludes B and public records",
+    "Public-only filter returns native bases without brand editions",
+    "Independent filter includes a native standalone A product and excludes linked versions",
+    "Public family navigation returns exactly two versions with a clear-filter link",
+    "Native status links preserve the selected product family",
+    "Native status counts follow current family scope",
+    "Native family edit links carry each target brand context",
+    "Native form completeness",
+    "Actual native POST restores inherited title and price despite submitted stale edits",
+    "Actual native POST preserves shared shipping and content",
+    "Native POST persists explicitly enabled B title and price",
+    "Native POST restores inheritance when flags are removed",
+    "Native AJAX cannot add private specs to a linked brand variable product",
+    "Legacy inherited editor offers native editing without a second ineffective form",
+    "Employee editor shows ownership and source as text instead of unusable disabled dropdowns",
+    "Classic variation AJAX rejects a foreign product before loading fields",
+    "Employee explicit B scope still uses only its granted brand query",
+    "List brand selection cannot grant access to unauthorized C"
+  ]
+}

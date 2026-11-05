@@ -75,27 +75,31 @@ final class Addon_Pricing
 
     public function render_meta_box(\WP_Post $post): void
     {
+        if(!apply_filters('trovesia_addon_parent_allowed',true,$post->ID)){
+            echo '<p>加购规则在各店铺的商品版本中独立设置，不随公共商品继承。请进入对应品牌版本配置。</p>';return;
+        }
+        do_action('trovesia_addon_controls',$post);
         $rules = self::get_rules($post->ID);
         $parent = wc_get_product($post->ID);
         $variation_values = $parent instanceof \WC_Product_Variable
             ? array_values(array_unique(array_merge(...array_values($parent->get_variation_attributes()))))
             : [];
-        $products = wc_get_products([
+        $products = wc_get_products(apply_filters('trovesia_addon_product_query_args',[
             'exclude' => [$post->ID],
             'limit'   => -1,
             'orderby' => 'name',
             'order'   => 'ASC',
             'status'  => ['publish', 'draft', 'private'],
             'type'    => 'simple',
-        ]);
-        $variable_products = wc_get_products([
+        ],$post->ID));
+        $variable_products = wc_get_products(apply_filters('trovesia_addon_product_query_args',[
             'exclude' => [$post->ID],
             'limit'   => -1,
             'orderby' => 'name',
             'order'   => 'ASC',
             'status'  => ['publish', 'draft', 'private'],
             'type'    => 'variable',
-        ]);
+        ],$post->ID));
         foreach ($variable_products as $variable_product) {
             if (! $variable_product instanceof \WC_Product_Variable) {
                 continue;
@@ -107,6 +111,7 @@ final class Addon_Pricing
                 }
             }
         }
+        $products=array_values(array_filter($products,static fn($linked)=>self::valid_link($post->ID,$linked)));
         usort($products, static fn (\WC_Product $left, \WC_Product $right): int => strcasecmp(
             self::linked_product_label($left),
             self::linked_product_label($right)
@@ -124,6 +129,8 @@ final class Addon_Pricing
         <template id="trovesia-addon-rule-template">
             <?php $this->render_rule_row('__INDEX__', self::empty_rule(), $products, $variation_values); ?>
         </template>
+        <input type="hidden" name="trovesia_addon_rules_complete" value="1">
+        <input type="hidden" name="trovesia_addon_rule_count" value="<?php echo count($rules); ?>">
         <style>
             .trovesia-addon-rule { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; padding:16px; margin:0 0 12px; border:1px solid #dcdcde; border-radius:8px; background:#fff; }
             .trovesia-addon-rule p { margin:0; }
@@ -139,14 +146,20 @@ final class Addon_Pricing
                 const add = document.querySelector('.trovesia-add-addon');
                 const template = document.querySelector('#trovesia-addon-rule-template');
                 if (!root || !add || !template) return;
+                const count = document.querySelector('[name=trovesia_addon_rule_count]');
+                const syncCount = () => { if(count) count.value=String(root.children.length); add.disabled=root.children.length>=20; };
+                syncCount();
                 add.addEventListener('click', () => {
+                    if(root.children.length>=20) return;
                     const index = Number(root.dataset.nextIndex || 0);
                     root.insertAdjacentHTML('beforeend', template.innerHTML.replaceAll('__INDEX__', String(index)));
                     root.dataset.nextIndex = String(index + 1);
+                    syncCount();
                 });
                 root.addEventListener('click', (event) => {
                     const button = event.target.closest('.trovesia-remove-addon');
                     if (button) button.closest('.trovesia-addon-rule')?.remove();
+                    syncCount();
                 });
             })();
         </script>
@@ -234,6 +247,29 @@ final class Addon_Pricing
         <?php
     }
 
+    /** Shared by the picker, native form, metadata guard and runtime cart checks. */
+    public static function valid_link(int $parent_id, $linked): bool
+    {
+        $parent=wc_get_product($parent_id);
+        $ok=$parent&&$linked instanceof \WC_Product&&$parent_id!==$linked->get_id()
+            &&in_array($linked->get_type(),['simple','variation'],true)
+            &&(!$linked->is_type('variation')||$linked->get_parent_id()!==$parent_id)
+            &&apply_filters('trovesia_addon_parent_allowed',true,$parent_id);
+        return (bool)apply_filters('trovesia_addon_link_allowed',(bool)$ok,$parent_id,$linked);
+    }
+
+    public static function validate_form(int $id,array $post): ?\WP_Error
+    {
+        $rows=$post['trovesia_addons']??[];
+        if(!apply_filters('trovesia_addon_parent_allowed',true,$id)||($post['trovesia_addon_rules_complete']??'')!=='1'||!is_array($rows)||!isset($post['trovesia_addon_rule_count'])||(int)$post['trovesia_addon_rule_count']!==count($rows)||count($rows)>20){return new \WP_Error('trovesia_addon_form','加购表单不完整，请刷新后重试（最多20条规则）。');}
+        $seen=[];
+        foreach($rows as $row){
+            foreach(['id','product_id','title','selection_group','group_title','group_description','pricing_mode','fixed_price','compare_at_price','discount_percent','quantity','allowed_values'] as $key){if(!isset($row[$key])||!is_string($row[$key])){return new \WP_Error('trovesia_addon_form','加购规则字段不完整。');}}
+            if(!self::valid_link($id,wc_get_product(absint($row['product_id'])))){return new \WP_Error('trovesia_addon_link','加购商品必须是本站的其他简单商品或有效变体。');}
+            if($row['id']!==''&&isset($seen[$row['id']])){return new \WP_Error('trovesia_addon_duplicate','加购规则编号重复，请刷新重试。');}$seen[$row['id']]=true;
+        }return null;
+    }
+
     public function save_settings(int $post_id): void
     {
         if (
@@ -245,6 +281,8 @@ final class Addon_Pricing
             return;
         }
 
+        $error=self::validate_form($post_id,$_POST);
+        if(is_wp_error($error)){return;}
         $submitted = isset($_POST['trovesia_addons']) && is_array($_POST['trovesia_addons'])
             ? wp_unslash($_POST['trovesia_addons'])
             : [];
@@ -262,7 +300,7 @@ final class Addon_Pricing
             $product_id = absint($row['product_id'] ?? 0);
             $linked = $product_id > 0 && $product_id !== $post_id ? wc_get_product($product_id) : false;
             if (
-                ! $linked
+                ! self::valid_link($post_id,$linked)
                 || ! in_array($linked->get_type(), ['simple', 'variation'], true)
                 || ($linked instanceof \WC_Product_Variation && $linked->get_parent_id() === $post_id)
             ) {
@@ -313,6 +351,7 @@ final class Addon_Pricing
      */
     public static function get_rules(int $parent_product_id): array
     {
+        if(!apply_filters('trovesia_addon_parent_allowed',true,$parent_product_id)){return [];}
         $rules = get_post_meta($parent_product_id, self::RULES_META, true);
 
         if (! is_array($rules)) {
@@ -394,6 +433,7 @@ final class Addon_Pricing
     public function capture_selected_addons(array $cart_item_data, int $product_id, int $variation_id, int $quantity): array
     {
         unset($quantity);
+        if(!empty($cart_item_data['_trovesia_addon_parent_key'])){unset($cart_item_data['_trovesia_selected_addons']);return $cart_item_data;}
 
         $requested = isset($_POST['trovesia_addons']) && is_array($_POST['trovesia_addons'])
             ? array_map('sanitize_key', wp_unslash($_POST['trovesia_addons']))
@@ -406,7 +446,7 @@ final class Addon_Pricing
         $selected_groups = [];
         foreach (self::get_rules($product_id) as $rule) {
             $rule_id = (string) ($rule['id'] ?? '');
-            if ($rule_id !== '' && in_array($rule_id, $requested, true) && $this->rule_allows_variation($rule, $variation_id)) {
+            if ($rule_id !== '' && in_array($rule_id, $requested, true) && self::valid_link($product_id,wc_get_product((int)$rule['product_id'])) && $this->rule_allows_variation($rule, $variation_id)) {
                 $group = sanitize_key((string) ($rule['selection_group'] ?? ''));
                 if ($group !== '' && isset($selected_groups[$group])) {
                     continue;
@@ -431,7 +471,8 @@ final class Addon_Pricing
      */
     public function add_selected_addons(string $cart_item_key, int $product_id, int $quantity, int $variation_id, array $variation, array $cart_item_data): void
     {
-        unset($variation_id, $variation);
+        unset($variation);
+        if(!empty($cart_item_data['_trovesia_addon_parent_key'])){return;}
 
         if (! function_exists('WC') || ! WC()->cart) {
             return;
@@ -445,7 +486,7 @@ final class Addon_Pricing
             }
 
             $linked = wc_get_product((int) $rule['product_id']);
-            if (! $linked || ! $linked->is_purchasable() || ! $linked->is_in_stock()) {
+            if (!self::valid_link($product_id,$linked) || !$this->rule_allows_variation($rule,$variation_id) || $linked->get_status()!=='publish' || ! $linked->is_purchasable() || ! $linked->is_in_stock()) {
                 continue;
             }
 
@@ -473,54 +514,32 @@ final class Addon_Pricing
         }
     }
 
+    /** Recheck the real parent/child products before applying any rule price. */
+    public function cart_rule(array $item, \WC_Cart $cart): ?array
+    {
+        $parent=$cart->get_cart_item((string)($item['_trovesia_addon_parent_key']??''));
+        $parent_id=(int)($item['_trovesia_addon_parent_product_id']??0);
+        if(!$parent_id||!$parent||!empty($parent['_trovesia_addon_parent_key'])||(int)$parent['product_id']!==$parent_id){return null;}
+        $rule=self::get_rule($parent_id,(string)($item['_trovesia_addon_rule_id']??''));
+        $actual=(int)(($item['variation_id']??0)?:($item['product_id']??0));
+        $linked=wc_get_product($actual);$main=wc_get_product($parent_id);
+        if(!$rule||(int)$rule['product_id']!==$actual||!self::valid_link($parent_id,$linked)||!$main||!$main->is_purchasable()||!$linked->is_purchasable()||$linked->get_status()!=='publish'||!$this->rule_allows_variation($rule,(int)($parent['variation_id']??0))){return null;}
+        if($linked->is_type('variation')&&(int)$item['product_id']!==$linked->get_parent_id()){return null;}
+        return $rule;
+    }
+
     public function apply_cart_addon_prices(\WC_Cart $cart): void
     {
-        // Cart blocks can change a linked line directly. Keep its quantity tied
-        // to the main item before totals and the mini-cart are rendered.
-        foreach ($cart->get_cart() as $child_key => $cart_item) {
-            $parent_key = (string) ($cart_item['_trovesia_addon_parent_key'] ?? '');
-            if ($parent_key === '') {
-                continue;
-            }
-
-            $parent = $cart->get_cart_item($parent_key);
-            if (! is_array($parent) || $parent === []) {
-                $cart->remove_cart_item($child_key);
-                continue;
-            }
-
-            $rule = self::get_rule(
-                (int) ($cart_item['_trovesia_addon_parent_product_id'] ?? 0),
-                (string) ($cart_item['_trovesia_addon_rule_id'] ?? '')
-            );
-            $multiplier = $rule === null ? 1 : max(1, (int) ($rule['quantity'] ?? 1));
-            $expected = max(1, (int) ($parent['quantity'] ?? 1)) * $multiplier;
-            if ((int) ($cart_item['quantity'] ?? 0) !== $expected) {
-                $cart->set_quantity($child_key, $expected, false);
-            }
-        }
-
-        foreach ($cart->get_cart() as $cart_item) {
-            if (empty($cart_item['_trovesia_addon_rule_id']) || empty($cart_item['_trovesia_addon_parent_product_id'])) {
-                continue;
-            }
-
-            $rule = self::get_rule(
-                (int) $cart_item['_trovesia_addon_parent_product_id'],
-                (string) $cart_item['_trovesia_addon_rule_id']
-            );
-            $price = $rule === null
-                ? (float) ($cart_item['_trovesia_addon_price_snapshot'] ?? 0)
-                : self::calculate_rule_price($rule);
-            $regular = $rule === null
-                ? $price
-                : max($price, self::calculate_rule_regular_price($rule));
-
-            if (isset($cart_item['data']) && $cart_item['data'] instanceof \WC_Product) {
-                $cart_item['data']->set_regular_price($regular);
-                $cart_item['data']->set_sale_price($price < $regular ? $price : '');
-                $cart_item['data']->set_price($price);
-            }
+        foreach($cart->get_cart() as $key=>$item){
+            if(empty($item['_trovesia_addon_parent_key'])&&empty($item['_trovesia_addon_rule_id'])){continue;}
+            $rule=$this->cart_rule($item,$cart);
+            if(!$rule){$cart->remove_cart_item($key);$message=__('An add-on is no longer available. Please choose it again.','trovesia-plugin');if(!wc_has_notice($message,'notice')){wc_add_notice($message,'notice');}continue;}
+            $parent=$cart->get_cart_item((string)$item['_trovesia_addon_parent_key']);
+            $expected=max(1,(int)$parent['quantity'])*max(1,(int)$rule['quantity']);
+            if((int)$item['quantity']!==$expected){$cart->set_quantity($key,$expected,false);}
+            $price=self::calculate_rule_price($rule);$regular=max($price,self::calculate_rule_regular_price($rule));
+            $cart->cart_contents[$key]['data']=clone $item['data'];
+            $product=$cart->cart_contents[$key]['data'];$product->set_regular_price($regular);$product->set_sale_price($price<$regular?$price:'');$product->set_price($price);
         }
     }
 
@@ -541,7 +560,8 @@ final class Addon_Pricing
                 (int) ($cart_item['_trovesia_addon_parent_product_id'] ?? 0),
                 (string) ($cart_item['_trovesia_addon_rule_id'] ?? '')
             );
-            $multiplier = $rule === null ? 1 : max(1, (int) ($rule['quantity'] ?? 1));
+            $rule=$this->cart_rule($cart_item,WC()->cart);if(!$rule){WC()->cart->remove_cart_item($child_key);continue;}
+            $multiplier=max(1,(int)$rule['quantity']);
             WC()->cart->set_quantity($child_key, $quantity * $multiplier, false);
         }
     }
@@ -632,9 +652,9 @@ final class Addon_Pricing
                 (int) $cart_item['_trovesia_addon_parent_product_id'],
                 (string) $cart_item['_trovesia_addon_rule_id']
             );
-            $price = $rule === null
-                ? max(0, (float) ($cart_item['_trovesia_addon_price_snapshot'] ?? 0))
-                : self::calculate_rule_price($rule);
+            $rule=$this->cart_rule($cart_item,WC()->cart);
+            if(!$rule){return '';}
+            $price=self::calculate_rule_price($rule);
             $product->set_price($price);
         }
 
@@ -711,6 +731,7 @@ final class Addon_Pricing
             return;
         }
 
+        if(!WC()->cart||!$this->cart_rule($values,WC()->cart)){throw new \Exception(__('The add-on changed. Please refresh your cart.','trovesia-plugin'));}
         $parent = wc_get_product($parent_id);
         $item->add_meta_data(
             __('Add-on for', 'trovesia-plugin'),

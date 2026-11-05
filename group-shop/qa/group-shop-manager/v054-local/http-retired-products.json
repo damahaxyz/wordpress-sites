@@ -1,0 +1,17 @@
+{
+  "version": "0.5.4",
+  "passed": 11,
+  "checks": [
+    "Manager shows exactly five tabs without the retired product tab",
+    "Overview product links go directly to native brand Products",
+    "Old brand-list URL redirects to native Products with its brand selected",
+    "Old unscoped product URL redirects to the public directory",
+    "Old product-editor URL redirects to the correct native editor",
+    "Invalid or mismatched legacy product scope is rejected: store=999999",
+    "Invalid or mismatched legacy product scope is rejected: store=7",
+    "Authenticated legacy edition_save POST is retired without processing products",
+    "Authenticated legacy edition_status POST is retired without processing products",
+    "Legacy POST still requires a valid native nonce",
+    "Collection management remains available after removal of product-only modules"
+  ]
+}

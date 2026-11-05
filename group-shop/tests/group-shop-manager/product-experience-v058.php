@@ -1,0 +1,54 @@
+<?php
+use GroupShop\Manager\{Brands,Stores,ProductVersions,ProductExperience};
+use Trovesia\Plugin\{Addon_Pricing,Site_Experience};
+if(!defined('WP_CLI')||!WP_CLI||wp_get_environment_type()!=='local'||!Brands::active()||get_option('home')!=='http://www.main.local'||!Brands::root()){throw new RuntimeException('Private local QA only');}
+$path='/gsm-private/product-experience-v058.json';if(file_exists($path)){throw new RuntimeException('Clean prior QA058 fixture before repeating');}global $wpdb;
+$f=['suffix'=>bin2hex(random_bytes(3)),'ids'=>[],'before_posts'=>$wpdb->get_results("SELECT * FROM {$wpdb->posts} ORDER BY ID",ARRAY_A),'before_meta'=>$wpdb->get_results("SELECT * FROM {$wpdb->postmeta} ORDER BY meta_id",ARRAY_A),'brands'=>Brands::registry(),'banks'=>[]];foreach(Stores::all() as $b=>$_){$f['banks'][$b]=Brands::raw_options((int)$b);}
+$persist=static function()use(&$f,$path){file_put_contents($path,wp_json_encode($f));chmod($path,0600);};register_shutdown_function($persist);$persist();$checks=[];$root=get_current_user_id();
+$check=static function($ok,$name)use(&$checks){if(!$ok){throw new RuntimeException('FAIL: '.$name);}$checks[]=$name;};
+$base=static function($key,$price='30')use(&$f,$persist){$p=new WC_Product_Simple();$p->set_name('QA058 '.$key.' '.$f['suffix']);$p->set_regular_price($price);$p->set_status('draft');$p->save();$f[$key]=$p->get_id();$f['ids'][]=$p->get_id();$persist();return $p->get_id();};
+$main=$base('base');$extra=$base('extra','20');$other=$base('other','70');
+foreach(['a'=>[6,$main],'b'=>[7,$main],'extra_a'=>[6,$extra],'extra_b'=>[7,$extra],'other_a'=>[6,$other]] as $key=>[$brand,$source]){$id=ProductVersions::ensure_edition($source,$brand)['id'];$f[$key]=$id;$f['ids'][]=$id;$persist();Stores::within($brand,static function()use($id){$p=wc_get_product($id);$p->set_status('publish');$p->save();});}
+foreach(array_slice(ProductExperience::META,0,5) as $key){update_post_meta($main,$key,'QA058 shared '.substr($key,10));}
+$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)===get_post_meta($main,'_trovesia_eyebrow',true),'New brand presentation reads its public source without copying unrelated metadata');
+update_post_meta($main,'_trovesia_eyebrow','QA058 shared updated');$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)==='QA058 shared updated'&&get_post_meta($f['b'],'_trovesia_eyebrow',true)==='QA058 shared updated','Public text changes reach inheriting A and B immediately');
+update_post_meta($f['a'],'_trovesia_eyebrow','Forged direct override');$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)==='QA058 shared updated','Raw metadata cannot override presentation in inheritance mode');
+update_post_meta($f['a'],'_gsm_overrides',['presentation']);update_post_meta($f['a'],'_trovesia_eyebrow','QA058 own A');$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)==='QA058 own A','Explicit brand presentation override persists');
+update_post_meta($main,'_trovesia_eyebrow','QA058 public latest');$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)==='QA058 own A'&&get_post_meta($f['b'],'_trovesia_eyebrow',true)==='QA058 public latest','An overriding store remains independent while the other follows public edits');
+delete_post_meta($f['a'],'_trovesia_order_activity');$check(get_post_meta($f['a'],'_trovesia_order_activity',true)==='','Custom blank activity text preserves normal per-store automatic fallback');
+update_post_meta($f['a'],'_gsm_overrides',[]);$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)==='QA058 public latest','Turning off override restores latest public value');
+$f['shared_eyebrow']='QA058 public latest';
+$rule=static fn($id,$mode='fixed',$price=5)=>['id'=>'qa058-extra','product_id'=>$id,'title'=>'QA058 extra','selection_group'=>'','group_title'=>'','group_description'=>'','pricing_mode'=>$mode,'fixed_price'=>$price,'compare_at_price'=>0,'discount_percent'=>25,'quantity'=>2,'default_selected'=>false,'allowed_values'=>[]];
+$good=$rule($f['extra_a']);Stores::within(6,static function()use($f,$good,$extra,$check,$rule){
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$good]);$check(Addon_Pricing::get_rules($f['a'])[0]['product_id']===$f['extra_a'],'Own store add-on rule can be configured');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$rule($f['extra_b'])]);$check(Addon_Pricing::get_rules($f['a'])[0]['product_id']===$f['extra_a'],'Cross-store metadata rule cannot replace own rule');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$rule($extra)]);$check(Addon_Pricing::get_rules($f['a'])[0]['product_id']===$f['extra_a'],'Public base product cannot be an add-on');
+ $check(!Addon_Pricing::valid_link($f['a'],wc_get_product($f['a'])),'A product cannot add itself');
+});
+update_post_meta($main,'_trovesia_addon_rules',[$good]);$check(Addon_Pricing::get_rules($main)===[]&&Addon_Pricing::get_rules($f['b'])===[],'Public rules are inactive and never inherited by another store');
+$validform=['trovesia_addon_rules_complete'=>'1','trovesia_addon_rule_count'=>'1','trovesia_addons'=>[array_map(static fn($v)=>is_array($v)?'':(string)$v,$good)]];
+$check(Addon_Pricing::validate_form($f['a'],$validform)===null,'Complete native add-on form is accepted');$bad=$validform;unset($bad['trovesia_addon_rules_complete']);$check(is_wp_error(Addon_Pricing::validate_form($f['a'],$bad)),'Truncated add-on forms are rejected');$bad=$validform;$bad['trovesia_addons'][0]['product_id']=(string)$f['extra_b'];$check(is_wp_error(Addon_Pricing::validate_form($f['a'],$bad)),'Forged foreign product ID is rejected before native save');
+// Variable add-ons must use an actual same-store variation, never another store child.
+$attr=new WC_Product_Attribute();$attr->set_name('Size');$attr->set_options(['Small']);$attr->set_visible(true);$attr->set_variation(true);
+$v=new WC_Product_Variable();$v->set_name('QA058 variable '.$f['suffix']);$v->set_status('draft');$v->set_attributes([$attr]);$v->save();$f['vbase']=$v->get_id();$f['ids'][]=$v->get_id();$persist();
+$child=new WC_Product_Variation();$child->set_parent_id($v->get_id());$child->set_attributes(['size'=>'Small']);$child->set_regular_price('12');$child->set_status('publish');$child->save();$f['ids'][]=$child->get_id();WC_Product_Variable::sync($v->get_id());$persist();
+foreach(['va'=>6,'vb'=>7] as $key=>$brand){$id=ProductVersions::ensure_edition($v->get_id(),$brand)['id'];$f[$key]=$id;$f['ids'][]=$id;$p=wc_get_product($id);$f[$key.'_child']=$p->get_children()[0];$f['ids']=array_merge($f['ids'],$p->get_children());$persist();Stores::within($brand,static function()use($id){$p=wc_get_product($id);$p->set_status('publish');$p->save();});}
+$check(Addon_Pricing::valid_link($f['a'],wc_get_product($f['va_child']))&&!Addon_Pricing::valid_link($f['a'],wc_get_product($f['vb_child'])),'Variable add-on selection is restricted to a same-store child');
+Stores::within(6,static function()use(&$f,$check,$good,$rule){
+ WC()->cart->empty_cart();$addon=Addon_Pricing::instance();$_POST=['trovesia_addons'=>['qa058-extra']];$key=WC()->cart->add_to_cart($f['a'],2);$_POST=[];WC()->cart->calculate_totals();$cart=WC()->cart->get_cart();$children=array_filter($cart,static fn($i)=>!empty($i['_trovesia_addon_parent_key']));$item=reset($children);$childkey=key($children);
+ $check(count($cart)===2&&$item['quantity']===4,'One add-on remains a separate cart line and follows parent quantity');
+ $check((float)$item['data']->get_price()===5.0,'Fixed add-on price is applied to the correct store product');
+ WC()->cart->set_quantity($key,3);WC()->cart->calculate_totals();$check(WC()->cart->get_cart_item($childkey)['quantity']===6,'Parent quantity updates synchronize add-on quantity');
+ $standalone=WC()->cart->add_to_cart($f['extra_a'],1);WC()->cart->calculate_totals();$check((float)WC()->cart->get_cart_item($standalone)['data']->get_price()===20.0,'Add-on pricing does not alter an ordinary line for the same product');
+ $order=new WC_Order();$line=new WC_Order_Item_Product();$addon->add_order_item_data($line,$childkey,WC()->cart->get_cart_item($childkey),$order);$check((int)$line->get_meta('_trovesia_addon_parent_product_id')===$f['a'],'Checkout uses native separate order-line metadata');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$rule($f['other_a'])]);WC()->cart->calculate_totals();$check(!WC()->cart->get_cart_item($childkey),'Replacing the configured linked product invalidates the old child instead of repricing it');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$rule($f['extra_a'],'discount')]);WC()->cart->empty_cart();$_POST=['trovesia_addons'=>['qa058-extra']];$key=WC()->cart->add_to_cart($f['a']);$_POST=[];WC()->cart->calculate_totals();$children=array_filter(WC()->cart->get_cart(),static fn($i)=>!empty($i['_trovesia_addon_parent_key']));$item=reset($children);$check((float)$item['data']->get_price()===15.0,'Percentage discount uses the own-store linked product price');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[$rule($f['extra_a'],'follow')]);WC()->cart->calculate_totals();$item=WC()->cart->get_cart_item(key($children));$check((float)$item['data']->get_price()===20.0,'Follow mode uses the current own-store price');
+ update_post_meta($f['a'],'_trovesia_addon_rules',[]);WC()->cart->calculate_totals();$check(count(WC()->cart->get_cart())===1,'Deleting the rule removes its child and does not trust an old price snapshot');
+ WC()->cart->empty_cart();update_post_meta($f['a'],'_trovesia_addon_rules',[$good]);$_POST=['trovesia_addons'=>['qa058-extra']];$key=WC()->cart->add_to_cart($f['a']);$_POST=[];WC()->cart->remove_cart_item($key);$check(WC()->cart->get_cart()===[],'Removing a main line removes its add-on lines');
+ $check(has_action('wp_ajax_nopriv_trovesia_update_cart_quantity',[$addon,'update_cart_quantity'])!==false,'Ordinary mini-cart quantity endpoint remains registered');
+});
+$staffs=$wpdb->get_col("SELECT user_id FROM ".GroupShop\Manager\Schema::table('identities')." WHERE kind='staff' AND user_id<>".$root);$staff=(int)($staffs[0]??0);if($staff){wp_set_current_user($staff);Stores::within(7,static function()use($f,$check){$before=get_post_meta($f['a'],'_trovesia_eyebrow',true);update_post_meta($f['a'],'_trovesia_eyebrow','Foreign staff edit');$check(get_post_meta($f['a'],'_trovesia_eyebrow',true)===$before,'Staff cannot edit presentation of a different store');});wp_set_current_user($root);}
+$GLOBALS['product']=wc_get_product($f['b']);Stores::within(7,static function()use($check){ob_start();Site_Experience::instance()->render_product_eyebrow();$html=ob_get_clean();$check(str_contains($html,'QA058 public latest'),'Frontend presentation renders effective inherited text');});
+$f['rule']=$good;$persist();if(WC()->session){remove_action('shutdown',[WC()->session,'save_data'],20);WC()->session->destroy_session();}
+echo wp_json_encode(['version'=>GSM_VERSION,'trovesia_version'=>TROVESIA_PLUGIN_VERSION,'passed'=>count($checks),'checks'=>$checks],JSON_PRETTY_PRINT)."\n";

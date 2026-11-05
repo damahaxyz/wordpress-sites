@@ -26,7 +26,7 @@ final class CollectionDisplay {
         wp_register_style('gsm-collections',plugins_url('assets/collections.css',GSM_FILE),[],GSM_VERSION);
         wp_register_script('gsm-collection-block',plugins_url('assets/collection-block.js',GSM_FILE),['wp-blocks','wp-element','wp-block-editor','wp-components','wp-server-side-render'],GSM_VERSION,true);
         $items=[];
-        foreach (Collections::collections() as $id=>$rule) { $data=self::data((int)$id); if ($data) { $items[]=['value'=>(int)$id,'label'=>$data['title']]; } }
+        foreach (Collections::tree(array_filter(Collections::collections(),static fn($rule)=>!empty($rule['enabled'])&&empty($rule['deleted_at']))) as $row) { $data=self::data($row['id']); if ($data) { $items[]=['value'=>$row['id'],'label'=>str_repeat('— ',$row['depth']).$data['title']]; } }
         wp_localize_script('gsm-collection-block','gsmCollectionBlocks',['items'=>$items]);
         register_block_type('group-shop/collection',[
             'api_version'=>3,'editor_script'=>'gsm-collection-block','style'=>'gsm-collections','supports'=>['html'=>false],
@@ -43,7 +43,7 @@ final class CollectionDisplay {
         $term=get_term($id,'product_cat');
         if (!$term || is_wp_error($term) || !get_term_meta($id,'_gsm_collection',true)) { return null; }
         $image=(int)get_term_meta($id,'thumbnail_id',true); $url=get_term_link($term);
-        return ['id'=>$id,'title'=>$term->name,'description'=>$term->description,'image_id'=>$image,'image_url'=>$image?(wp_get_attachment_image_url($image,'large')?:''):'','url'=>is_wp_error($url)?'':$url,'sort'=>$rule['sort'],'shop_filter'=>!empty($rule['shop_filter']),'order'=>(int)get_term_meta($id,'order',true)];
+        return ['id'=>$id,'parent'=>(int)$term->parent,'title'=>$term->name,'description'=>$term->description,'image_id'=>$image,'image_url'=>$image?(wp_get_attachment_image_url($image,'large')?:''):'','url'=>is_wp_error($url)?'':$url,'sort'=>$rule['sort'],'shop_filter'=>!empty($rule['shop_filter']),'order'=>(int)get_term_meta($id,'order',true)];
     }
     public static function query_args(int $id,array $options=[]): array {
         $size=max(1,min(48,absint($options['posts_per_page']??8)));
@@ -113,9 +113,9 @@ final class CollectionDisplay {
     }
     public static function filter_form(array|string $attributes=[]): string {
         $items=[];
-        foreach (Collections::collections() as $id=>$rule) { $data=self::data((int)$id); if ($data && $data['shop_filter']) { $items[]=$data; } }
+        $rules=array_filter(Collections::collections(),static fn($rule)=>!empty($rule['enabled'])&&!empty($rule['shop_filter'])&&empty($rule['deleted_at']));
+        foreach (Collections::tree($rules) as $row) { $data=self::data($row['id']); if ($data) { $data['title']=str_repeat('— ',$row['depth']).$data['title']; $items[]=$data; } }
         if (!$items) { return ''; }
-        usort($items,static fn($a,$b)=>($a['order']<=>$b['order'])?:strnatcasecmp($a['title'],$b['title']));
         $html='<form method="get" action="'.esc_url(wc_get_page_permalink('shop')).'" class="gsm-shop-collection-filter"><label>商品集合 <select name="gsm_collection"><option value="">全部商品</option>';
         foreach ($items as $item) { $html.='<option value="'.$item['id'].'" '.selected(self::selected(),$item['id'],false).'>'.esc_html($item['title']).'</option>'; }
         $html.='</select></label>';

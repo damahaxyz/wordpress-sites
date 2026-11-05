@@ -1,0 +1,25 @@
+{
+    "version": "0.5.0",
+    "passed": 19,
+    "checks": [
+        "Real Store API checkout persists the A brand and owning customer",
+        "Virtual free checkout finalizes without a payment gateway",
+        "Checkout snapshots the native A product at its own 129 price and one unit",
+        "B native order queries cannot include the A checkout",
+        "Actual native product editor POST preserves A price override",
+        "Actual native A edit preserves B independent price",
+        "Actual same-email registration persists separate brand customer IDs",
+        "Even native order CRUD rejects employee identity as a shopping customer",
+        "Staff cart token cannot bypass separate-customer checkout policy",
+        "Direct native order email rendering uses the owning brand links and support identity",
+        "Plain-text native order email uses owning brand context",
+        "Native email sender resolves order brand even when invoked from main context",
+        "Native resend mail headers retain owning brand after template scope restores",
+        "HTML\/plain mail rendering restores both brand and native context",
+        "Creating a new brand never creates a native WordPress site",
+        "New brand defaults to noindex, no mail, and no borrowed logo",
+        "New brands do not automatically grant existing employees",
+        "New brand has a native own-account page and matching public URL",
+        "Temporary brand and native pages cleanly removed after acceptance"
+    ]
+}

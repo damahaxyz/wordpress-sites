@@ -1,0 +1,28 @@
+{
+    "version": "0.5.2",
+    "passed": 22,
+    "checks": [
+        "Selection deduplicates and confirmation creates no products",
+        "Repeated confirmation never changes an in-progress target",
+        "Paused jobs perform no writes",
+        "Mixed batch reports created, existing\/nonpublic skipped and missing failed",
+        "New brand version is a draft with empty overrides and inherited values",
+        "Existing independent title, price, state and metadata remain byte-for-byte unchanged",
+        "Replayed completed steps are idempotent",
+        "Repeated add skips the existing version without duplication",
+        "A child-write failure reports failure and removes only the new partial product",
+        "Retry creates a complete inherited variable version with both children",
+        "Variable brand draft retains public specifications",
+        "Trashed associated versions are preserved and never silently duplicated",
+        "Bulk publish changes only selected sale versions and skips public\/already published",
+        "Status batch does not write an already-published overridden version",
+        "Bulk draft changes the selected brand version only",
+        "Changed publication state after selection is skipped without overwriting",
+        "Incomplete existing drafts are reported instead of duplicated",
+        "Explicit draft update completes an interrupted version; retry then safely skips it",
+        "More than 200 distinct selections are rejected before execution",
+        "Employee cannot create brand associations",
+        "Employee can publish own A product and cannot change unauthorized E",
+        "Job identifiers cannot expose another user task"
+    ]
+}

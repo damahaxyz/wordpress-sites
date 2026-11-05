@@ -23,12 +23,12 @@ services:
       WORDPRESS_DEBUG: "1"
       GSM_QA_MULTISITE: ${GSM_QA_MULTISITE:-0}
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_ALLOW_MULTISITE', true);
         define('DISABLE_WP_CRON', true);
         define('WP_ENVIRONMENT_TYPE', 'local');
         define('WP_DEBUG_LOG', true);
         define('WP_DEBUG_DISPLAY', false);
         if (getenv('GSM_QA_MULTISITE') === '1') {
+          define('WP_ALLOW_MULTISITE', true);
           define('MULTISITE', true);
           define('SUBDOMAIN_INSTALL', false);
           define('DOMAIN_CURRENT_SITE', '${GSM_QA_DOMAIN:-localhost:${GSM_QA_PORT:-18086}}');

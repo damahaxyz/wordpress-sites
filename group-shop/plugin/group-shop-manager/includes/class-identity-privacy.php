@@ -16,7 +16,7 @@ final class IdentityPrivacy {
             return $items;
         },PHP_INT_MAX);
     }
-    private static function id(string $email): int { return (int)(Identities::find(get_current_blog_id(),$email,true)['user_id']??0); }
+    private static function id(string $email): int { return (int)(Identities::find(Brands::id(),$email,true)['user_id']??0); }
     private static function reader(): object {
         return new class extends \WC_Privacy_Exporters {
             public static function customer_fields($user): array { return parent::get_customer_personal_data($user); }

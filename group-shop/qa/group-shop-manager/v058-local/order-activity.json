@@ -1,0 +1,12 @@
+{
+  "version": "0.5.8",
+  "passed": 5,
+  "checks": [
+    "Order activity cache keys differ between stores",
+    "Store A count includes only its own two synthetic orders",
+    "Store B count does not reuse A cache and includes only its own order",
+    "Returning to A preserves its own cached count",
+    "All synthetic orders removed and original HPOS order rows preserved"
+  ],
+  "synthetic_orders_removed": 3
+}

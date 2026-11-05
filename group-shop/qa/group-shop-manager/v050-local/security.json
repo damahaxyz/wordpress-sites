@@ -1,0 +1,33 @@
+{
+    "version": "0.5.0",
+    "passed": 27,
+    "checks": [
+        "Native new menus receive explicit brand ownership",
+        "Native menus are isolated by brand",
+        "Brand administrator cannot acquire global capability: install_plugins",
+        "Brand administrator cannot acquire global capability: activate_plugins",
+        "Brand administrator cannot acquire global capability: update_plugins",
+        "Brand administrator cannot acquire global capability: delete_plugins",
+        "Brand administrator cannot acquire global capability: edit_plugins",
+        "Brand administrator cannot acquire global capability: manage_options",
+        "Brand administrator cannot acquire global capability: switch_themes",
+        "Brand administrator cannot acquire global capability: edit_theme_options",
+        "Brand administrator cannot acquire global capability: promote_users",
+        "Brand administrator cannot acquire global capability: create_users",
+        "Brand administrator cannot acquire global capability: unfiltered_html",
+        "Brand administrator can edit own native pages and cannot edit A pages",
+        "Shop Manager does not inherit brand administrator page privileges",
+        "Shop Manager retains own native product editing with foreign-ID refusal",
+        "Native employee Add Product auto-draft receives own brand before first save",
+        "Employee cannot reassign product ownership through native metadata",
+        "Employee metadata injection cannot self-grant another brand",
+        "Real native profile POST persisted both explicit employee grants",
+        "Shared category display counts do not include other brands or mutate shared cache",
+        "Native privacy-policy page resolves own brand: 6",
+        "Native privacy-policy page resolves own brand: 7",
+        "Native category queries hide foreign private collections even with explicit include",
+        "Native term assignment cannot attach a B collection to an A sale product",
+        "Foreign native REST coupon ID is denied",
+        "New native review receives A ownership and is absent from B query"
+    ]
+}

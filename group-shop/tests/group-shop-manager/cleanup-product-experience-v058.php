@@ -1,0 +1,14 @@
+<?php
+use GroupShop\Manager\{Brands,Stores};
+if(!defined('WP_CLI')||!WP_CLI||wp_get_environment_type()!=='local'||!Brands::active()||get_option('home')!=='http://www.main.local'||!Brands::root()){throw new RuntimeException('Private local QA only');}
+$path='/gsm-private/product-experience-v058.json';$f=json_decode(file_get_contents($path),true);if(!preg_match('/^[a-f0-9]{6}$/D',$f['suffix'])){throw new RuntimeException('Invalid fixture');}global $wpdb;$ids=array_values(array_unique(array_map('intval',$f['ids'])));
+foreach($ids as $id){$p=get_post($id);if(!$p||!in_array($p->post_type,['product','product_variation'],true)||!str_starts_with($p->post_title,'QA058 ')||!str_contains($p->post_title,$f['suffix'])){throw new RuntimeException('Unexpected product cleanup target');}}
+foreach(Brands::unscoped(static fn()=>wc_get_orders(['limit'=>-1])) as $order){foreach($order->get_items() as $item){if(array_intersect($ids,[(int)$item->get_product_id(),(int)$item->get_variation_id()])){throw new RuntimeException('Fixture has an actual order; inspect before cleanup');}}}
+$sessions=0;foreach($wpdb->get_results("SELECT session_key,session_value FROM {$wpdb->prefix}woocommerce_sessions") as $row){$session=maybe_unserialize($row->session_value);$cart=maybe_unserialize($session['cart']??[]);foreach((array)$cart as $item){if(in_array((int)($item['product_id']??0),$ids,true)){$wpdb->delete($wpdb->prefix.'woocommerce_sessions',['session_key'=>$row->session_key]);++$sessions;break;}}}
+Brands::unscoped(static function()use($ids){foreach(array_reverse($ids) as $id){$p=wc_get_product($id);if($p){$p->delete(true);}}});
+if($wpdb->get_results("SELECT * FROM {$wpdb->posts} ORDER BY ID",ARRAY_A)!==$f['before_posts']){throw new RuntimeException('Original product/content snapshot changed');}
+if($wpdb->get_results("SELECT * FROM {$wpdb->postmeta} ORDER BY meta_id",ARRAY_A)!==$f['before_meta']){throw new RuntimeException('Original product metadata snapshot changed');}
+if(Brands::registry()!==$f['brands']){throw new RuntimeException('Brand registry changed');}
+$runtime=['trovesia_page_cache_generation','trovesia_page_cache_last_purged_at','trovesia_page_cache_last_reason','gsm_collections_built_at'];foreach($f['banks'] as $id=>$old){$now=Brands::raw_options((int)$id);foreach($runtime as $key){unset($old[$key],$now[$key]);}if($now!==$old){throw new RuntimeException('Original brand business settings changed');}}
+Stores::purge();wp_cache_flush();unlink($path);
+echo wp_json_encode(['version'=>GSM_VERSION,'temporary_product_records_removed'=>count($ids),'fixture_cart_sessions_removed'=>$sessions,'original_posts_and_product_metadata_preserved'=>true,'original_brand_business_settings_preserved'=>true,'brands'=>count(Brands::registry()),'parent_products'=>(int)$wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type='product'")],JSON_PRETTY_PRINT)."\n";
